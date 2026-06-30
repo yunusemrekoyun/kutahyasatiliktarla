@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: linear-gradient(180deg, #f7f2e8 0%, #ece2d2 100%);
+  color: #1f2a1d;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  transition: all 180ms ease;
+}
+
+button:hover,
+a:hover {
+  opacity: 0.96;
+}
+
+::selection {
+  background: rgba(133, 171, 139, 0.28);
+  color: #1f2a1d;
+}
+
+/* Anchored sections clear the sticky desktop header. */
+section[id] {
+  scroll-margin-top: 84px;
+}
+
+/* Keyboard accessibility: visible, on-brand focus ring. */
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #3d5638;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Respect reduced-motion preferences. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- Leaflet map theming (brand pins + premium popups) ---- */
+.kst-pin-wrap {
+  background: transparent;
+  border: 0;
+}
+
+.kst-pin {
+  width: 30px;
+  height: 30px;
+  border-radius: 50% 50% 50% 0;
+  background: #3d5638;
+  border: 2px solid #faf7ef;
+  transform: rotate(-45deg);
+  box-shadow: 0 4px 10px rgba(31, 42, 29, 0.45);
+  display: grid;
+  place-items: center;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.kst-pin-wrap:hover .kst-pin {
+  background: #2d4228;
+}
+
+.kst-pin-inner {
+  width: 9px;
+  height: 9px;
+  border-radius: 9999px;
+  background: #faf7ef;
+  transform: rotate(45deg);
+}
+
+.leaflet-container {
+  font-family: 'Plus Jakarta Sans', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  background: #e7e0d2;
+  /* Contain Leaflet's internal z-indexes (panes/controls up to 1000) so they
+     never punch through modals, the bottom nav, or other UI layers. */
+  isolation: isolate;
+  z-index: 0;
+}
+
+/* Keep map zoom controls modest and inside the map's own stacking context. */
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 2 !important;
+}
+
+.leaflet-tooltip {
+  background: #1f2a1d;
+  color: #faf7ef;
+  border: 0;
+  border-radius: 9999px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 6px 18px rgba(31, 42, 29, 0.35);
+}
+
+.leaflet-tooltip-top::before {
+  border-top-color: #1f2a1d;
+}
+
+.leaflet-control-zoom a {
+  color: #1f2a1d;
+  border-color: #d9e3d5 !important;
+}
