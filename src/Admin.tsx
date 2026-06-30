@@ -1,4 +1,7 @@
-import { useRef, useState, type FormEvent, type ReactNode } from 'react';
+'use client';
+
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Leaf,
   LogIn,
@@ -91,16 +94,27 @@ const TABS = [
 type TabKey = (typeof TABS)[number]['key'];
 
 export default function Admin() {
-  const { content, saveContent, resetContent, leads, clearLeads } = useStore();
-  const [authed, setAuthed] = useState(
-    () => sessionStorage.getItem(SESSION_KEY) === '1'
-  );
+  const { content, hydrated, saveContent, resetContent, leads, clearLeads } =
+    useStore();
+  const router = useRouter();
+  const [authed, setAuthed] = useState(false);
   const [pw, setPw] = useState('');
   const [pwErr, setPwErr] = useState(false);
 
   const [draft, setDraft] = useState<SiteContent>(() =>
     structuredClone(content)
   );
+
+  // sessionStorage is unavailable during SSR — read the auth flag after mount.
+  useEffect(() => {
+    setAuthed(sessionStorage.getItem(SESSION_KEY) === '1');
+  }, []);
+
+  // Re-sync the editable draft once persisted content hydrates from storage.
+  useEffect(() => {
+    setDraft(structuredClone(content));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
   const [tab, setTab] = useState<TabKey>('genel');
   const [saved, setSaved] = useState(false);
   const [openListing, setOpenListing] = useState<string | null>(null);
@@ -117,11 +131,7 @@ export default function Admin() {
   }
 
   function goSite() {
-    if (window.location.pathname.toLowerCase().includes('/admin')) {
-      window.location.assign('/');
-    } else {
-      window.location.hash = '';
-    }
+    router.push('/');
   }
 
   function save() {

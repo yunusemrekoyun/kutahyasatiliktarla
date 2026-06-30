@@ -1,3 +1,5 @@
+'use client';
+
 import {
   createContext,
   useCallback,
@@ -25,6 +27,7 @@ export type Lead = {
 
 type Store = {
   content: SiteContent;
+  hydrated: boolean;
   saveContent: (c: SiteContent) => void;
   resetContent: () => void;
   leads: Lead[];
@@ -35,6 +38,7 @@ type Store = {
 const StoreContext = createContext<Store | null>(null);
 
 function readJSON<T>(key: string, fallback: T): T {
+  if (typeof window === 'undefined') return fallback;
   try {
     const raw = localStorage.getItem(key);
     if (!raw) return fallback;
@@ -70,24 +74,40 @@ function mergeContent(stored: Partial<SiteContent> | null): SiteContent {
 }
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [content, setContent] = useState<SiteContent>(() =>
-    mergeContent(readJSON<Partial<SiteContent> | null>(CONTENT_KEY, null))
-  );
-  const [leads, setLeads] = useState<Lead[]>(() => readJSON<Lead[]>(LEADS_KEY, []));
+  const [content, setContent] = useState<SiteContent>(() => mergeContent(null));
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+
+  // Load persisted state on the client after mount. Reading localStorage here
+  // (rather than in the useState initializer) keeps the server-rendered HTML
+  // and first client render identical, avoiding hydration mismatches; the
+  // stored data is then swapped in.
+  useEffect(() => {
+    setContent(
+      mergeContent(readJSON<Partial<SiteContent> | null>(CONTENT_KEY, null))
+    );
+    setLeads(readJSON<Lead[]>(LEADS_KEY, []));
+    setHydrated(true);
+  }, []);
 
   const saveContent = useCallback((c: SiteContent) => {
     setContent(c);
-    localStorage.setItem(CONTENT_KEY, JSON.stringify(c));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(CONTENT_KEY, JSON.stringify(c));
+    }
   }, []);
 
   const resetContent = useCallback(() => {
     setContent(defaultContent);
-    localStorage.removeItem(CONTENT_KEY);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(CONTENT_KEY);
+    }
   }, []);
 
   useEffect(() => {
+    if (!hydrated) return;
     localStorage.setItem(LEADS_KEY, JSON.stringify(leads));
-  }, [leads]);
+  }, [leads, hydrated]);
 
   const addLead = useCallback((lead: Omit<Lead, 'id' | 'createdAt'>) => {
     const id = `lead_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
@@ -99,13 +119,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const value = useMemo<Store>(
     () => ({
       content,
+      hydrated,
       saveContent,
       resetContent,
       leads,
       addLead,
       clearLeads,
     }),
-    [content, saveContent, resetContent, leads, addLead, clearLeads]
+    [content, hydrated, saveContent, resetContent, leads, addLead, clearLeads]
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

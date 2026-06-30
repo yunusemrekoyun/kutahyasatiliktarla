@@ -1,3 +1,5 @@
+'use client';
+
 import {
   useEffect,
   useState,
@@ -40,12 +42,15 @@ import {
   Home,
   type LucideIcon,
 } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import BoomerangVideoBg from './BoomerangVideoBg';
 import FieldScene from './FieldScene';
-import LeafletMap, { type MapMarker } from './LeafletMap';
-import Admin from './Admin';
+import { type MapMarker } from './LeafletMap';
 import { useStore, parsePrice, formatTRY, waLink, telLink } from './store';
 import { LAND_TYPES, type Listing } from './content';
+
+// Leaflet touches window/document at import time, so load it client-only.
+const LeafletMap = dynamic(() => import('./LeafletMap'), { ssr: false });
 
 const BG_VIDEO =
   'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260511_131941_d136af49-e243-493a-be14-6ff3f24e09e6.mp4';
@@ -126,23 +131,6 @@ function matchListing(l: Listing, f: Filters) {
 
 function scrollToId(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-}
-
-function useIsAdminRoute() {
-  const check = () =>
-    window.location.pathname.replace(/\/+$/, '').toLowerCase() === '/admin' ||
-    window.location.hash === '#admin';
-  const [isAdmin, setIsAdmin] = useState(check);
-  useEffect(() => {
-    const on = () => setIsAdmin(check());
-    window.addEventListener('hashchange', on);
-    window.addEventListener('popstate', on);
-    return () => {
-      window.removeEventListener('hashchange', on);
-      window.removeEventListener('popstate', on);
-    };
-  }, []);
-  return isAdmin;
 }
 
 function Eyebrow({ children, dark }: { children: ReactNode; dark?: boolean }) {
@@ -1577,13 +1565,8 @@ function BottomNav() {
 }
 
 export default function App() {
-  const isAdmin = useIsAdminRoute();
   const [selected, setSelected] = useState<Listing | null>(null);
   const [filters, setFilters] = useState<Filters>(emptyFilters);
-
-  if (isAdmin) {
-    return <Admin />;
-  }
 
   function pickDistrict(district: string) {
     setFilters({ ...emptyFilters, district });
