@@ -1,80 +1,91 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-* {
-  box-sizing: border-box;
-}
+@layer base {
+  :root {
+    /* Doğal Güven — yeşil / toprak / hasat altını */
+    --background: 48 33% 98%;
+    --foreground: 150 14% 13%;
 
-html {
-  scroll-behavior: smooth;
-}
+    --card: 0 0% 100%;
+    --card-foreground: 150 14% 13%;
 
-html,
-body,
-#root {
-  height: 100%;
-  margin: 0;
-  font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
+    --popover: 0 0% 100%;
+    --popover-foreground: 150 14% 13%;
 
-body {
-  background: linear-gradient(180deg, #f7f2e8 0%, #ece2d2 100%);
-  color: #1f2a1d;
-}
+    --primary: 142 72% 29%; /* #15803D — toprak yeşili */
+    --primary-foreground: 0 0% 100%;
 
-button,
-a,
-input,
-select,
-textarea {
-  transition: all 180ms ease;
-}
+    --secondary: 42 30% 92%; /* yumuşak kum */
+    --secondary-foreground: 150 22% 16%;
 
-button:hover,
-a:hover {
-  opacity: 0.96;
-}
+    --muted: 48 22% 94%;
+    --muted-foreground: 150 8% 40%;
 
-::selection {
-  background: rgba(133, 171, 139, 0.28);
-  color: #1f2a1d;
-}
+    --accent: 42 46% 90%; /* hafif sıcak vurgu (hover) */
+    --accent-foreground: 150 22% 16%;
 
-/* Anchored sections clear the sticky desktop header. */
-section[id] {
-  scroll-margin-top: 84px;
-}
+    --destructive: 0 72% 48%;
+    --destructive-foreground: 0 0% 100%;
 
-/* Keyboard accessibility: visible, on-brand focus ring. */
-a:focus-visible,
-button:focus-visible,
-select:focus-visible,
-input:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid #3d5638;
-  outline-offset: 2px;
-  border-radius: 6px;
-}
+    --harvest: 41 96% 40%; /* #CA8A04 — hasat altını */
+    --harvest-foreground: 40 55% 12%;
 
-/* Respect reduced-motion preferences. */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
+    --border: 44 20% 87%;
+    --input: 44 20% 87%;
+    --ring: 142 72% 29%;
+
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    /* Orta-yaşlı/yaşlı kitle için rahat okunur taban */
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-heading;
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: hsl(142 72% 29% / 0.18);
+    color: hsl(150 14% 13%);
+  }
+
+  /* Sabit başlığın altında kalan çıpalı bölümler için pay */
+  section[id] {
+    scroll-margin-top: 88px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
-/* ---- Leaflet map theming (brand pins + premium popups) ---- */
+/* ---- Leaflet harita teması (marka pinleri + sade tooltip) ---- */
 .kst-pin-wrap {
   background: transparent;
   border: 0;
@@ -84,58 +95,55 @@ textarea:focus-visible {
   width: 30px;
   height: 30px;
   border-radius: 50% 50% 50% 0;
-  background: #3d5638;
-  border: 2px solid #faf7ef;
+  background: #15803d;
+  border: 2px solid #ffffff;
   transform: rotate(-45deg);
-  box-shadow: 0 4px 10px rgba(31, 42, 29, 0.45);
+  box-shadow: 0 4px 10px rgba(20, 83, 45, 0.45);
   display: grid;
   place-items: center;
   transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .kst-pin-wrap:hover .kst-pin {
-  background: #2d4228;
+  background: #166534;
 }
 
 .kst-pin-inner {
   width: 9px;
   height: 9px;
   border-radius: 9999px;
-  background: #faf7ef;
+  background: #ffffff;
   transform: rotate(45deg);
 }
 
 .leaflet-container {
-  font-family: 'Plus Jakarta Sans', 'Inter', 'Helvetica Neue', Arial, sans-serif;
-  background: #e7e0d2;
-  /* Contain Leaflet's internal z-indexes (panes/controls up to 1000) so they
-     never punch through modals, the bottom nav, or other UI layers. */
+  font-family: var(--font-inter), 'Helvetica Neue', Arial, sans-serif;
+  background: #e9e6dc;
   isolation: isolate;
   z-index: 0;
 }
 
-/* Keep map zoom controls modest and inside the map's own stacking context. */
 .leaflet-top,
 .leaflet-bottom {
   z-index: 2 !important;
 }
 
 .leaflet-tooltip {
-  background: #1f2a1d;
-  color: #faf7ef;
+  background: #14532d;
+  color: #ffffff;
   border: 0;
   border-radius: 9999px;
   padding: 5px 12px;
   font-size: 12px;
-  font-weight: 500;
-  box-shadow: 0 6px 18px rgba(31, 42, 29, 0.35);
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(20, 83, 45, 0.35);
 }
 
 .leaflet-tooltip-top::before {
-  border-top-color: #1f2a1d;
+  border-top-color: #14532d;
 }
 
 .leaflet-control-zoom a {
-  color: #1f2a1d;
-  border-color: #d9e3d5 !important;
+  color: #14532d;
+  border-color: #d8e0d2 !important;
 }

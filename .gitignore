@@ -49,4 +49,13 @@ next-env.d.ts
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# Dahili geliştirme & planlama dokümanları — repoya sızmasın (yalnızca kod paylaşılır)
 PDD.md
+*.pdd.md
+/_dev/
+/.notes/
+NOTES.md
+NOTES.local.md
+DECISIONS.md
+TODO.local.md
