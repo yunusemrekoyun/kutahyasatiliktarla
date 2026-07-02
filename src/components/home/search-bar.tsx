@@ -1,7 +1,7 @@
 'use client';
 
 import { type FormEvent, useState } from 'react';
-import { MapPin, Search, Sprout } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -15,8 +15,8 @@ import { scrollToId } from '@/lib/scroll';
 
 export type HomeFilters = { district: string; type: string };
 
-const triggerClass =
-  'h-14 rounded-xl border-0 bg-muted/70 px-4 text-base font-medium shadow-none transition-colors hover:bg-muted focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[placeholder]:text-muted-foreground [&>span]:flex [&>span]:items-center [&>span]:gap-2.5';
+const fieldTrigger =
+  'h-auto w-full justify-between rounded-lg border-0 bg-transparent p-0 text-left text-[17px] font-semibold text-foreground shadow-none focus:ring-2 focus:ring-ring focus:ring-offset-2 data-[placeholder]:text-muted-foreground';
 
 export function SearchBar({
   districts,
@@ -38,43 +38,60 @@ export function SearchBar({
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-2 sm:flex-row">
-      <div className="grid flex-1 gap-2 sm:grid-cols-2">
-        <Select value={district} onValueChange={setDistrict}>
-          <SelectTrigger className={triggerClass} aria-label="İlçe seçin">
-            <MapPin className="h-5 w-5 shrink-0 text-primary" />
-            <SelectValue placeholder="İlçe seçin" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tüm İlçeler</SelectItem>
-            {districts.map((d) => (
-              <SelectItem key={d} value={d}>
-                {d}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+    <form
+      onSubmit={submit}
+      className="flex max-w-2xl flex-col gap-2 rounded-2xl border border-border bg-card p-2 shadow-soft-lg sm:flex-row sm:items-stretch sm:gap-0 sm:p-0"
+    >
+      <div className="flex flex-1 flex-col gap-2 sm:flex-row sm:gap-0 sm:divide-x sm:divide-border">
+        <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 rounded-xl bg-muted/60 px-4 py-3 sm:rounded-none sm:bg-transparent sm:px-6 sm:py-4">
+          <span className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">
+            İlçe
+          </span>
+          <Select value={district} onValueChange={setDistrict}>
+            <SelectTrigger className={fieldTrigger} aria-label="İlçe seçin">
+              <SelectValue placeholder="Tüm ilçeler" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tüm İlçeler</SelectItem>
+              {districts.map((d) => (
+                <SelectItem key={d} value={d}>
+                  {d}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-        <Select value={type} onValueChange={setType}>
-          <SelectTrigger className={triggerClass} aria-label="Arazi türü seçin">
-            <Sprout className="h-5 w-5 shrink-0 text-primary" />
-            <SelectValue placeholder="Arazi türü" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tüm Türler</SelectItem>
-            {LAND_TYPES.map((t) => (
-              <SelectItem key={t} value={t}>
-                {t}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 rounded-xl bg-muted/60 px-4 py-3 sm:rounded-none sm:bg-transparent sm:px-6 sm:py-4">
+          <span className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">
+            Arazi türü
+          </span>
+          <Select value={type} onValueChange={setType}>
+            <SelectTrigger className={fieldTrigger} aria-label="Arazi türü seçin">
+              <SelectValue placeholder="Tüm türler" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tüm Türler</SelectItem>
+              {LAND_TYPES.map((t) => (
+                <SelectItem key={t} value={t}>
+                  {t}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      <Button type="submit" size="lg" className="h-14 gap-2 rounded-xl px-8 text-base">
-        <Search className="size-5" />
-        İlan Ara
-      </Button>
+      <div className="flex sm:p-2">
+        <Button
+          type="submit"
+          size="lg"
+          className="h-14 w-full gap-2 rounded-xl px-8 text-base sm:h-full"
+        >
+          <Search className="size-5" />
+          İlan Ara
+        </Button>
+      </div>
     </form>
   );
 }

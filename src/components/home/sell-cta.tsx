@@ -3,6 +3,7 @@
 import { ArrowRight, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/motion/reveal';
+import { ParcelFrame } from '@/components/site/parcel-frame';
 import { useStore, telLink, waLink } from '@/store';
 
 export function SellCta() {
@@ -13,6 +14,7 @@ export function SellCta() {
         <Reveal>
           <div className="texture-grain relative isolate overflow-hidden rounded-[1.75rem] bg-brand-deep px-6 py-16 shadow-soft-lg sm:px-14 sm:py-20">
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(55%_100%_at_12%_0%,hsl(38_76%_44%/0.20),transparent_58%)]" />
+            <ParcelFrame frameClass="border-white/10" tickClass="text-harvest/60" />
             <div className="relative grid gap-10 lg:grid-cols-[1.5fr_1fr] lg:items-center">
               <div>
                 <h2 className="font-heading text-3xl font-semibold leading-[1.1] text-white sm:text-[2.6rem]">

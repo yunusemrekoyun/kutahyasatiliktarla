@@ -51,19 +51,20 @@ export function HowItWorks() {
           </div>
         </Reveal>
 
+        {/* Harita rotası gibi: kesikli güzergâh üzerinde üç durak */}
         <Reveal delay={80}>
-          <ol className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-soft-sm">
-            {steps.map((s, i) => (
-              <li key={s.title} className="flex gap-6 p-7 sm:p-9">
-                <span
-                  aria-hidden="true"
-                  className="font-heading text-[2.6rem] font-medium italic leading-none text-primary/30"
-                >
-                  {i + 1}
+          <ol className="relative space-y-12">
+            <span
+              aria-hidden="true"
+              className="absolute bottom-10 left-7 top-10 w-0.5 bg-[repeating-linear-gradient(to_bottom,hsl(var(--primary)/0.3)_0_6px,transparent_6px_14px)]"
+            />
+            {steps.map((s) => (
+              <li key={s.title} className="relative flex gap-6">
+                <span className="relative z-10 grid h-14 w-14 shrink-0 place-items-center rounded-full border border-primary/25 bg-background shadow-soft-sm">
+                  <s.icon className="h-6 w-6 text-primary" />
                 </span>
-                <div className="pt-1">
-                  <h3 className="flex items-center gap-2.5 font-heading text-[1.4rem] font-semibold text-foreground">
-                    <s.icon className="h-5 w-5 text-primary" />
+                <div className="pt-1.5">
+                  <h3 className="font-heading text-[1.45rem] font-semibold text-foreground">
                     {s.title}
                   </h3>
                   <p className="mt-2 max-w-md leading-relaxed text-muted-foreground">

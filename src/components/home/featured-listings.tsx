@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/motion/reveal';
+import { cn } from '@/lib/utils';
 import { ListingCard } from '@/components/listings/listing-card';
 import { ListingDetailDialog } from '@/components/listings/listing-detail-dialog';
 import { useStore, waLink } from '@/store';
@@ -94,8 +95,17 @@ export function FeaturedListings({
         ) : (
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {visible.map((l, i) => (
-              <Reveal key={l.id} delay={(i % 3) * 70} className="h-full">
-                <ListingCard listing={l} onOpen={setSelected} className="h-full" />
+              <Reveal
+                key={l.id}
+                delay={(i % 3) * 70}
+                className={cn('h-full', i === 0 && 'sm:col-span-2')}
+              >
+                <ListingCard
+                  listing={l}
+                  onOpen={setSelected}
+                  featured={i === 0}
+                  className="h-full"
+                />
               </Reveal>
             ))}
           </div>

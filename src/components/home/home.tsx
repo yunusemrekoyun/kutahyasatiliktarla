@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useStore } from '@/store';
 import { scrollToId } from '@/lib/scroll';
 import { Hero } from './hero';
+import { DistrictTicker } from './district-ticker';
 import { CategoryTiles } from './category-tiles';
 import { FeaturedListings } from './featured-listings';
 import { HowItWorks } from './how-it-works';
@@ -39,6 +40,7 @@ export function Home() {
   return (
     <>
       <Hero districts={districtNames} onApply={setFilters} />
+      <DistrictTicker items={districtsWithCounts} />
       <FeaturedListings filters={filters} onClear={() => setFilters(EMPTY)} />
       <CategoryTiles districts={districtsWithCounts} onPick={pickDistrict} />
       <HowItWorks />

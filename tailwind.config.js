@@ -87,6 +87,9 @@ export default {
           from: { opacity: '0', transform: 'translateY(16px)' },
           to: { opacity: '1', transform: 'translateY(0)' },
         },
+        marquee: {
+          to: { transform: 'translateX(-100%)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -94,6 +97,7 @@ export default {
         'fade-up': 'fade-up 0.6s var(--ease-out-expo) both',
         // Sonsuz nabız yerine: 1sn gecikmeyle 3 kez atar, sonra durur
         'ping-few': 'ping 1.2s cubic-bezier(0, 0, 0.2, 1) 1s 3 both',
+        marquee: 'marquee 36s linear infinite',
       },
     },
   },
