@@ -76,7 +76,7 @@ function DetailBody({
 
   return (
     <div>
-      <div className="relative aspect-video w-full overflow-hidden bg-ink">
+      <div className="relative aspect-video w-full overflow-hidden bg-cobalt">
         {listing.droneVideo ? (
           <video
             src={listing.droneVideo}
@@ -106,7 +106,7 @@ function DetailBody({
               {listing.title}
             </DialogTitle>
             <p className="mt-1.5 flex items-center gap-1.5 text-muted-foreground">
-              <MapPin className="h-4 w-4 text-ink-soft" />
+              <MapPin className="h-4 w-4 text-muted-foreground" />
               {listing.location}
             </p>
           </div>
@@ -128,7 +128,7 @@ function DetailBody({
             <ul className="mt-3 grid gap-2 sm:grid-cols-2">
               {listing.highlights.map((h) => (
                 <li key={h} className="flex items-start gap-2 text-[15px] text-foreground/85">
-                  <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-ink" />
+                  <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                   {h}
                 </li>
               ))}
@@ -142,7 +142,7 @@ function DetailBody({
             <dl className="mt-3 grid gap-2 sm:grid-cols-2">
               <div className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-2.5">
                 <dt className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Maximize className="h-4 w-4 text-ink-soft" />
+                  <Maximize className="h-4 w-4 text-muted-foreground" />
                   Alan
                 </dt>
                 <dd className="text-sm font-semibold text-foreground">{listing.area}</dd>
@@ -167,7 +167,7 @@ function DetailBody({
               href={`https://www.google.com/maps?q=${listing.lat},${listing.lng}`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink hover:underline"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
             >
               Google Haritalar
               <ExternalLink className="h-4 w-4" />

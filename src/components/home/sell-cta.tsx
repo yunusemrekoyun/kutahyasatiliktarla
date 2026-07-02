@@ -10,21 +10,17 @@ export function SellCta() {
     <section id="ilan-ver" aria-label="İlan verin" className="bg-primary">
       <div className="container flex flex-col items-start justify-between gap-8 py-14 sm:py-16 lg:flex-row lg:items-center">
         <div className="max-w-2xl">
-          <h2 className="font-heading text-3xl font-light leading-[1.15] text-primary-foreground sm:text-4xl">
+          <span className="mb-4 block h-1.5 w-14 bg-gold" aria-hidden="true" />
+          <h2 className="font-heading text-3xl font-semibold leading-[1.15] text-white sm:text-4xl">
             Arazinizi mi satmak istiyorsunuz?
           </h2>
-          <p className="mt-3 text-[17px] leading-relaxed text-primary-foreground/80">
+          <p className="mt-3 text-[17px] leading-relaxed text-white/90">
             İlanınızı ücretsiz verin. Ekibimiz fotoğraf ve drone çekimini yapar,
             arazinizi doğru alıcıyla buluşturur; siz yalnızca görüşmeleri yaparsınız.
           </p>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button
-            asChild
-            variant="ink"
-            size="lg"
-            className="h-[52px] px-8 text-[15px] uppercase tracking-wide"
-          >
+          <Button asChild size="lg" className="h-[52px] px-8 text-[15px] uppercase tracking-wide">
             <a
               href={waLink(content.contact.whatsapp, 'Merhaba, arazimi ilana vermek istiyorum.')}
               target="_blank"
@@ -36,9 +32,9 @@ export function SellCta() {
           </Button>
           <Button
             asChild
-            variant="outline"
             size="lg"
-            className="h-[52px] border-2 border-ink/60 bg-transparent px-8 text-[15px] font-bold text-ink hover:bg-ink/10 hover:text-ink"
+            variant="outline"
+            className="h-[52px] border-2 border-white/50 bg-transparent px-8 text-[15px] font-bold text-white hover:bg-white/10 hover:text-white"
           >
             <a href={telLink(content.contact.phone)}>
               <Phone className="size-5" />

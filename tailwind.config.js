@@ -45,11 +45,16 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        // Kurumsal mürekkep tonu — koyu antrasit yüzeyler (footer, utility bar, CTA)
-        ink: {
-          DEFAULT: 'hsl(var(--ink))',
-          soft: 'hsl(var(--ink-soft))',
+        // Marka: altın (enerji/CTA), kobalt (derinlik), taş (sıcak zemin)
+        gold: {
+          DEFAULT: 'hsl(var(--gold))',
+          foreground: 'hsl(var(--gold-foreground))',
         },
+        cobalt: {
+          DEFAULT: 'hsl(var(--cobalt))',
+          foreground: 'hsl(var(--cobalt-foreground))',
+        },
+        stone: 'hsl(var(--stone))',
         whatsapp: 'hsl(var(--whatsapp) / <alpha-value>)',
       },
       borderRadius: {
@@ -62,10 +67,9 @@ export default {
         heading: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        // Flat sistem: kartlar gölgesiz; yalnızca overlay katmanları hafif ayrışır
-        'soft-sm': '0 1px 2px rgba(0, 0, 0, 0.07)',
-        soft: '0 4px 14px rgba(0, 0, 0, 0.10)',
-        'soft-lg': '0 10px 28px rgba(0, 0, 0, 0.16)',
+        'soft-sm': '0 1px 2px rgba(20, 40, 45, 0.08)',
+        soft: '0 6px 20px -6px rgba(20, 40, 45, 0.16)',
+        'soft-lg': '0 16px 40px -12px rgba(15, 35, 40, 0.24)',
       },
       transitionTimingFunction: {
         'out-quart': 'var(--ease-out-quart)',
