@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef } from 'react';
 import dynamic from 'next/dynamic';
 import {
   CircleCheck,
@@ -9,9 +10,13 @@ import {
   MessageCircle,
   Phone,
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useStore, telLink, waLink } from '@/store';
 import type { Listing } from '@/content';
 import type { MapMarker } from '@/LeafletMap';
@@ -26,15 +31,25 @@ export function ListingDetailDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const { content } = useStore();
+  // Kapanış animasyonu sürerken içerik anında kaybolmasın diye son ilan tutulur.
+  const lastListing = useRef<Listing | null>(listing);
+  if (listing) lastListing.current = listing;
+  const shown = listing ?? lastListing.current;
+
   return (
     <Dialog open={!!listing} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92vh] max-w-3xl gap-0 overflow-y-auto p-0">
-        {listing && (
-          <DetailBody
-            listing={listing}
-            whatsapp={content.contact.whatsapp}
-            phone={content.contact.phone}
-          />
+        {shown && (
+          <>
+            <DialogDescription className="sr-only">
+              {shown.location} · {shown.area} · {shown.price}
+            </DialogDescription>
+            <DetailBody
+              listing={shown}
+              whatsapp={content.contact.whatsapp}
+              phone={content.contact.phone}
+            />
+          </>
         )}
       </DialogContent>
     </Dialog>
@@ -61,7 +76,7 @@ function DetailBody({
 
   return (
     <div>
-      <div className="relative aspect-video w-full overflow-hidden bg-[#14311f]">
+      <div className="relative aspect-video w-full overflow-hidden bg-brand-deep">
         {listing.droneVideo ? (
           <video
             src={listing.droneVideo}
@@ -84,9 +99,9 @@ function DetailBody({
       <div className="p-6 sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <Badge className="bg-harvest text-harvest-foreground hover:bg-harvest">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-[13px] font-semibold text-primary">
               {listing.badge}
-            </Badge>
+            </span>
             <DialogTitle className="mt-3 font-heading text-2xl font-bold leading-tight text-foreground sm:text-3xl">
               {listing.title}
             </DialogTitle>
@@ -172,13 +187,13 @@ function DetailBody({
         <div className="mt-7 flex flex-col gap-3 sm:flex-row">
           <Button asChild size="lg" className="h-12 flex-1 gap-2 text-base">
             <a href={wa} target="_blank" rel="noreferrer">
-              <MessageCircle className="h-5 w-5" />
+              <MessageCircle className="size-5" />
               WhatsApp’tan Bilgi Al
             </a>
           </Button>
           <Button asChild size="lg" variant="outline" className="h-12 flex-1 gap-2 text-base">
             <a href={telLink(phone)}>
-              <Phone className="h-5 w-5" />
+              <Phone className="size-5" />
               Ara: {phone}
             </a>
           </Button>

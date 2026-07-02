@@ -1,4 +1,7 @@
-import { Camera, ShieldCheck, Sprout, Users } from 'lucide-react';
+'use client';
+
+import { Reveal } from '@/components/motion/reveal';
+import { useStore } from '@/store';
 import { SearchBar, type HomeFilters } from './search-bar';
 
 export function Hero({
@@ -8,49 +11,65 @@ export function Hero({
   districts: string[];
   onApply: (f: HomeFilters) => void;
 }) {
+  const { content } = useStore();
+
   return (
-    <section id="top" className="relative isolate overflow-hidden">
+    <section
+      id="top"
+      className="texture-grain relative isolate overflow-hidden bg-brand-deep text-white"
+    >
       <div className="absolute inset-0 -z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2000&q=80"
           alt=""
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover opacity-40"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#14311f]/85 via-[#14311f]/55 to-[#14311f]/90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-brand-deep/75 via-brand-deep/70 to-brand-deep/95" />
+        <div className="absolute inset-0 bg-[radial-gradient(125%_85%_at_50%_-10%,transparent_10%,hsl(158_44%_10%/0.65)_85%)]" />
       </div>
 
-      <div className="container flex min-h-[580px] flex-col justify-center py-16 sm:min-h-[660px]">
-        <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white/15 px-3.5 py-1.5 text-sm font-medium text-white backdrop-blur">
-          <Sprout className="h-4 w-4 text-harvest" />
-          Kütahya’nın yerel arazi platformu
-        </span>
+      <div className="container flex min-h-[86dvh] flex-col justify-center py-24 sm:py-28">
+        <div className="max-w-3xl">
+          <Reveal>
+            <span className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.06] px-4 py-1.5 text-[13px] font-medium text-white/85 backdrop-blur-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-harvest" />
+              {content.hero.badge}
+            </span>
+          </Reveal>
 
-        <h1 className="mt-5 max-w-3xl font-heading text-4xl font-bold leading-[1.08] text-white sm:text-5xl md:text-6xl">
-          Kütahya’da tarla, arsa ve arazi
-          <span className="text-harvest"> güvenle</span> alınır, satılır
-        </h1>
+          <Reveal delay={70}>
+            <h1 className="mt-6 font-heading text-[2.7rem] font-semibold leading-[1.03] tracking-[-0.02em] text-white sm:text-6xl md:text-[4.5rem]">
+              {content.hero.titleLine1}
+              <br className="hidden sm:block" />{' '}
+              <span className="italic font-medium text-harvest">
+                {content.hero.titleAccent}
+              </span>
+            </h1>
+          </Reveal>
 
-        <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/85">
-          Gerçek fotoğraflar, net tapu ve künye bilgisi, yerel ekip. Aradığınız
-          araziyi kolayca bulun ya da kendi arazinizi ücretsiz ilana verin.
-        </p>
-
-        <div className="mt-8 max-w-3xl rounded-2xl border border-white/25 bg-white/95 p-4 shadow-2xl sm:p-5">
-          <SearchBar districts={districts} onApply={onApply} />
+          <Reveal delay={140}>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/80 sm:text-xl">
+              {content.hero.subtitle}
+            </p>
+          </Reveal>
         </div>
 
-        <div className="mt-6 flex flex-wrap gap-x-7 gap-y-2 text-[15px] text-white/90">
-          <span className="flex items-center gap-2">
-            <Camera className="h-4 w-4 text-harvest" /> Gerçek drone &amp; fotoğraf
-          </span>
-          <span className="flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-harvest" /> Net tapu &amp; künye
-          </span>
-          <span className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-harvest" /> Yerel ekip
-          </span>
-        </div>
+        <Reveal delay={210} className="mt-10 w-full max-w-3xl">
+          <div className="rounded-2xl bg-background p-2.5 text-foreground shadow-soft-lg ring-1 ring-black/5">
+            <SearchBar districts={districts} onApply={onApply} />
+          </div>
+        </Reveal>
+
+        <Reveal delay={280}>
+          <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-white/70">
+            <span>Gerçek drone ve fotoğraf</span>
+            <span className="h-1 w-1 rounded-full bg-white/35" />
+            <span>Net tapu ve künye bilgisi</span>
+            <span className="h-1 w-1 rounded-full bg-white/35" />
+            <span>Yerel ekip, kolay iletişim</span>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

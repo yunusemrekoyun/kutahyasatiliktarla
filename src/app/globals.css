@@ -4,39 +4,49 @@
 
 @layer base {
   :root {
-    /* Doğal Güven — yeşil / toprak / hasat altını */
-    --background: 48 33% 98%;
-    --foreground: 150 14% 13%;
+    /* Grounded Premium — committed derin yeşil + hasat altını (krem YOK) */
+    --background: 150 24% 99%;
+    --foreground: 155 32% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 150 14% 13%;
+    --card-foreground: 155 32% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 150 14% 13%;
+    --popover-foreground: 155 32% 12%;
 
-    --primary: 142 72% 29%; /* #15803D — toprak yeşili */
-    --primary-foreground: 0 0% 100%;
+    --primary: 151 56% 31%; /* güvenli, doygun yeşil */
+    --primary-foreground: 150 40% 98%;
 
-    --secondary: 42 30% 92%; /* yumuşak kum */
-    --secondary-foreground: 150 22% 16%;
+    --secondary: 150 20% 95%;
+    --secondary-foreground: 155 30% 15%;
 
-    --muted: 48 22% 94%;
-    --muted-foreground: 150 8% 40%;
+    --muted: 150 16% 96%;
+    --muted-foreground: 155 9% 37%;
 
-    --accent: 42 46% 90%; /* hafif sıcak vurgu (hover) */
-    --accent-foreground: 150 22% 16%;
+    --accent: 150 24% 93%;
+    --accent-foreground: 155 30% 15%;
 
-    --destructive: 0 72% 48%;
+    --destructive: 8 68% 46%;
     --destructive-foreground: 0 0% 100%;
 
-    --harvest: 41 96% 40%; /* #CA8A04 — hasat altını */
-    --harvest-foreground: 40 55% 12%;
+    /* Drenched hero/CTA/footer için derin yeşil */
+    --brand-deep: 158 44% 12%;
+    /* Hasat altını — az ve bilinçli kullanılır */
+    --harvest: 38 76% 44%;
+    --harvest-foreground: 40 60% 11%;
+    /* WhatsApp koyu teal (#128C7E) — beyaz ikonla ≥4:1 kontrast */
+    --whatsapp: 173 77% 31%;
 
-    --border: 44 20% 87%;
-    --input: 44 20% 87%;
-    --ring: 142 72% 29%;
+    --border: 150 14% 90%;
+    --input: 150 14% 90%;
+    --ring: 151 56% 31%;
 
-    --radius: 0.75rem;
+    --radius: 0.875rem;
+
+    /* Emil'in güçlü easing eğrileri */
+    --ease-out-quart: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out-quint: cubic-bezier(0.77, 0, 0.175, 1);
   }
 
   * {
@@ -50,26 +60,32 @@
 
   body {
     @apply bg-background text-foreground;
-    /* Orta-yaşlı/yaşlı kitle için rahat okunur taban */
-    font-size: 1.0625rem;
+    font-size: 1.0625rem; /* 17px — orta-yaşlı kitle için rahat okuma */
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    font-feature-settings: 'ss01', 'cv01';
   }
 
   h1, h2, h3, h4 {
     @apply font-heading;
+    font-weight: 600;
+    letter-spacing: -0.011em;
     text-wrap: balance;
   }
 
-  ::selection {
-    background: hsl(142 72% 29% / 0.18);
-    color: hsl(150 14% 13%);
+  p {
+    text-wrap: pretty;
   }
 
-  /* Sabit başlığın altında kalan çıpalı bölümler için pay */
-  section[id] {
+  ::selection {
+    background: hsl(151 56% 31% / 0.2);
+    color: hsl(155 32% 12%);
+  }
+
+  /* Sticky header'ın altında kalmasın diye tüm çıpa hedeflerine pay */
+  :where([id]) {
     scroll-margin-top: 88px;
   }
 
@@ -85,29 +101,59 @@
   }
 }
 
-/* ---- Leaflet harita teması (marka pinleri + sade tooltip) ---- */
+@layer utilities {
+  /* İnce film-grain — koyu bölümlerde "pahalı kağıt" hissi (fixed değil, section'a özel) */
+  .texture-grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Girişte yumuşak yükselme — sadece görünürlükle tetiklenir (IntersectionObserver) */
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.7s var(--ease-out-expo),
+      transform 0.7s var(--ease-out-expo);
+    will-change: opacity, transform;
+  }
+  .reveal[data-shown='true'] {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+/* ---- Leaflet harita teması ---- */
 .kst-pin-wrap {
   background: transparent;
   border: 0;
 }
-
 .kst-pin {
   width: 30px;
   height: 30px;
   border-radius: 50% 50% 50% 0;
-  background: #15803d;
+  background: hsl(151 56% 31%);
   border: 2px solid #ffffff;
   transform: rotate(-45deg);
-  box-shadow: 0 4px 10px rgba(20, 83, 45, 0.45);
+  box-shadow: 0 4px 12px hsl(158 44% 12% / 0.45);
   display: grid;
   place-items: center;
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition: transform 0.2s var(--ease-out-quart), background 0.2s ease;
 }
-
 .kst-pin-wrap:hover .kst-pin {
-  background: #166534;
+  background: hsl(151 60% 26%);
 }
-
 .kst-pin-inner {
   width: 9px;
   height: 9px;
@@ -115,35 +161,30 @@
   background: #ffffff;
   transform: rotate(45deg);
 }
-
 .leaflet-container {
-  font-family: var(--font-inter), 'Helvetica Neue', Arial, sans-serif;
-  background: #e9e6dc;
+  font-family: var(--font-sans), 'Helvetica Neue', Arial, sans-serif;
+  background: hsl(150 18% 92%);
   isolation: isolate;
   z-index: 0;
 }
-
 .leaflet-top,
 .leaflet-bottom {
   z-index: 2 !important;
 }
-
 .leaflet-tooltip {
-  background: #14532d;
+  background: hsl(158 44% 12%);
   color: #ffffff;
   border: 0;
   border-radius: 9999px;
   padding: 5px 12px;
   font-size: 12px;
   font-weight: 600;
-  box-shadow: 0 6px 18px rgba(20, 83, 45, 0.35);
+  box-shadow: 0 6px 18px hsl(158 44% 12% / 0.35);
 }
-
 .leaflet-tooltip-top::before {
-  border-top-color: #14532d;
+  border-top-color: hsl(158 44% 12%);
 }
-
 .leaflet-control-zoom a {
-  color: #14532d;
-  border-color: #d8e0d2 !important;
+  color: hsl(158 44% 12%);
+  border-color: hsl(150 14% 85%) !important;
 }

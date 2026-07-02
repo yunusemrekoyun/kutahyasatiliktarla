@@ -73,11 +73,11 @@ const BG_VIDEO =
 export const defaultContent: SiteContent = {
   brand: 'Kütahya Satılık Tarla',
   hero: {
-    badge: 'Kurumsal Drone Destekli Arazi Portföyü',
-    titleLine1: 'Kütahya’da Seçkin Tarla ve Arazi Fırsatları',
-    titleAccent: 'Güvenilir yatırım, doğru uzmanlık',
+    badge: 'Kütahya ve ilçeleri · yerel arazi platformu',
+    titleLine1: 'Kütahya’da toprağın',
+    titleAccent: 'güvenilir adresi',
     subtitle:
-      'Kurumsal sunuma uygun tarla, arsa ve arazi ilanlarını drone verisi, bölge analizi ve yatırım odaklı içerikle keşfedin.',
+      'Gerçek fotoğraflar, net tapu ve künye bilgisiyle; ilçe ilçe tarla, arsa ve arazi. Aradığınızı bulun ya da arazinizi ücretsiz ilana verin.',
   },
   stats: [
     { value: '120+', label: 'Aktif arazi ilanı' },
@@ -86,14 +86,15 @@ export const defaultContent: SiteContent = {
     { value: '7/24', label: 'Danışman erişimi' },
   ],
   sections: {
-    listingsTitle: 'Öne Çıkan Arazi İlanları',
+    listingsTitle: 'Öne çıkan ilanlar',
     listingsSubtitle:
-      'Her ilan; drone görüntüleri, tapu ve imar bilgileriyle tek tek hazırlanır. Detaya tıklayın, arazinin havadan görüntüsünü ve tam künyesini inceleyin.',
+      'Her ilan gerçek fotoğraf, konum ve doğrulanmış künye bilgisiyle hazırlanır.',
     mapTitle: 'Arazileri Haritada Keşfedin',
     mapSubtitle:
       'Tüm ilanlar Kütahya haritası üzerinde işaretli. Bir pine tıklayın, arazinin drone görüntüsünü ve detaylarını anında açın.',
-    districtsTitle: 'Kütahya’nın Popüler Bölgeleri',
-    districtsSubtitle: 'İlçelere göre öne çıkan tarla ve arazi fırsatlarını keşfedin.',
+    districtsTitle: 'İlçe ilçe Kütahya',
+    districtsSubtitle:
+      'Merkez ve ilçelerdeki tarla, arsa ve arazi fırsatlarını ilçelere göre inceleyin.',
     aboutTitle: 'Neden Kütahya Satılık Tarla?',
     aboutSubtitle:
       'Yerel bilgi, drone çekimleri ve doğrulanmış detaylarla doğru araziyi bulmanıza yardımcı oluyoruz.',
@@ -324,7 +325,7 @@ export const defaultContent: SiteContent = {
       images: [
         'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80',
         'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=80',
-        'https://images.unsplash.com/photo-1493810329807-5ea9f28f6cf1?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=1200&q=80',
       ],
       description:
         'Emet ilçesinde, uygun bütçeyle köy içi konum arayanlar için ideal arsa. Altyapıya yakın, müstakil ev veya yazlık için elverişli.',
