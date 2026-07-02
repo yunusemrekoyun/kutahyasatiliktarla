@@ -1,13 +1,13 @@
 {
   "name": "Kütahya Satılık Tarla",
   "short_name": "KS Tarla",
-  "description": "Kütahya ve ilçelerinde satılık tarla, arsa ve arazi ilanları.",
+  "description": "Kütahya'da drone destekli, detaylı satılık tarla ve arazi ilanları.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#FFFFFF",
-  "theme_color": "#117571",
+  "background_color": "#F4EFE6",
+  "theme_color": "#1f2a1d",
   "lang": "tr",
   "icons": [
     {

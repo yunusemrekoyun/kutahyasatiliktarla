@@ -59,21 +59,21 @@ function Input({
 }) {
   return (
     <label className="block">
-      <span className="block text-xs font-medium text-[#55606a] mb-1">{label}</span>
+      <span className="block text-xs font-medium text-[#4b5b47] mb-1">{label}</span>
       {textarea ? (
         <textarea
           value={value}
           rows={rows}
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full rounded-sm border border-[#e4e0d6] bg-white px-3 py-2 text-sm text-[#1c2a2e] outline-none focus:border-[#117571]"
+          className="w-full rounded-xl border border-[#D9E3D5] bg-white px-3 py-2 text-sm text-[#1f2a1d] outline-none focus:border-[#3d5638]"
         />
       ) : (
         <input
           value={value}
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full rounded-sm border border-[#e4e0d6] bg-white px-3 py-2 text-sm text-[#1c2a2e] outline-none focus:border-[#117571]"
+          className="w-full rounded-xl border border-[#D9E3D5] bg-white px-3 py-2 text-sm text-[#1f2a1d] outline-none focus:border-[#3d5638]"
         />
       )}
     </label>
@@ -177,18 +177,18 @@ export default function Admin() {
 
   if (!authed) {
     return (
-      <div className="min-h-screen grid place-items-center bg-[#1c2a2e] px-4">
+      <div className="min-h-screen grid place-items-center bg-[#1f2a1d] px-4">
         <form
           onSubmit={login}
-          className="w-full max-w-sm rounded-sm bg-[#ffffff] p-8 shadow-2xl"
+          className="w-full max-w-sm rounded-[2rem] bg-[#FAF7EF] p-8 shadow-2xl"
         >
-          <div className="flex items-center gap-2 text-[#1c2a2e]">
-            <span className="grid place-items-center w-10 h-10 rounded-full bg-[#117571] text-[#ffffff]">
+          <div className="flex items-center gap-2 text-[#1f2a1d]">
+            <span className="grid place-items-center w-10 h-10 rounded-full bg-[#3d5638] text-[#FAF7EF]">
               <Leaf size={20} />
             </span>
             <span className="font-semibold text-lg">Yönetim Girişi</span>
           </div>
-          <p className="mt-3 text-sm text-[#55606a]">
+          <p className="mt-3 text-sm text-[#4b5b47]">
             İçeriği düzenlemek için şifrenizi girin.
           </p>
           <input
@@ -200,14 +200,14 @@ export default function Admin() {
               setPwErr(false);
             }}
             placeholder="Şifre"
-            className="mt-5 w-full rounded-sm border border-[#e4e0d6] bg-white px-4 py-3 text-[#1c2a2e] outline-none focus:border-[#117571]"
+            className="mt-5 w-full rounded-xl border border-[#D9E3D5] bg-white px-4 py-3 text-[#1f2a1d] outline-none focus:border-[#3d5638]"
           />
           {pwErr && (
             <p className="mt-2 text-sm text-red-600">Şifre hatalı, tekrar deneyin.</p>
           )}
           <button
             type="submit"
-            className="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-sm bg-[#117571] hover:bg-[#0e5f5b] text-[#ffffff] px-4 py-3 transition-colors"
+            className="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#3d5638] hover:bg-[#2d4228] text-[#FAF7EF] px-4 py-3 transition-colors"
           >
             <LogIn size={18} />
             Giriş Yap
@@ -215,11 +215,11 @@ export default function Admin() {
           <button
             type="button"
             onClick={goSite}
-            className="mt-3 w-full text-center text-sm text-[#55606a] hover:text-[#1c2a2e]"
+            className="mt-3 w-full text-center text-sm text-[#4b5b47] hover:text-[#1f2a1d]"
           >
             ← Siteye dön
           </button>
-          <p className="mt-5 text-[11px] leading-relaxed text-[#173a5e]">
+          <p className="mt-5 text-[11px] leading-relaxed text-[#8A6A43]">
             Demo şifre: <b>changeme</b> · Yayına alırken bunu değiştirip gerçek giriş
             sistemi ekleyeceğiz.
           </p>
@@ -229,12 +229,12 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f1e9]">
+    <div className="min-h-screen bg-[#F4EFE6]">
       {/* Top bar */}
-      <div className="sticky top-0 z-20 bg-[#1c2a2e] text-[#ffffff] px-4 sm:px-6 py-3">
+      <div className="sticky top-0 z-20 bg-[#1f2a1d] text-[#FAF7EF] px-4 sm:px-6 py-3">
         <div className="mx-auto max-w-5xl flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="grid place-items-center w-8 h-8 rounded-full bg-[#117571]">
+            <span className="grid place-items-center w-8 h-8 rounded-full bg-[#3d5638]">
               <Leaf size={16} />
             </span>
             <span className="font-medium">Yönetim Paneli</span>
@@ -242,14 +242,14 @@ export default function Admin() {
           <div className="flex items-center gap-2">
             <button
               onClick={goSite}
-              className="inline-flex items-center gap-1.5 rounded-full border border-[#ffffff]/30 px-3 py-1.5 text-sm hover:bg-[#ffffff]/10 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#FAF7EF]/30 px-3 py-1.5 text-sm hover:bg-[#FAF7EF]/10 transition-colors"
             >
               <ArrowLeft size={15} />
               <span className="hidden sm:inline">Siteye Dön</span>
             </button>
             <button
               onClick={save}
-              className="inline-flex items-center gap-1.5 rounded-full bg-[#eca61f] text-[#1c2a2e] px-4 py-1.5 text-sm font-medium hover:bg-[#cf9410] transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#85AB8B] text-[#1f2a1d] px-4 py-1.5 text-sm font-medium hover:bg-[#9bbfa0] transition-colors"
             >
               <Save size={15} />
               {saved ? 'Kaydedildi ✓' : 'Kaydet'}
@@ -259,7 +259,7 @@ export default function Admin() {
       </div>
 
       {/* Tabs */}
-      <div className="bg-[#ffffff] border-b border-[#e4e0d6] px-4 sm:px-6">
+      <div className="bg-[#FAF7EF] border-b border-[#D9E3D5] px-4 sm:px-6">
         <div className="mx-auto max-w-5xl flex gap-1 overflow-x-auto py-2">
           {TABS.map((t) => (
             <button
@@ -267,13 +267,13 @@ export default function Admin() {
               onClick={() => setTab(t.key)}
               className={`whitespace-nowrap rounded-full px-4 py-2 text-sm transition-colors ${
                 tab === t.key
-                  ? 'bg-[#117571] text-[#ffffff]'
-                  : 'text-[#24343a] hover:bg-[#1c2a2e]/5'
+                  ? 'bg-[#3d5638] text-[#FAF7EF]'
+                  : 'text-[#2d3a2a] hover:bg-[#1f2a1d]/5'
               }`}
             >
               {t.label}
               {t.key === 'talepler' && leads.length > 0 && (
-                <span className="ml-1.5 inline-grid place-items-center min-w-5 h-5 px-1 rounded-full bg-[#173a5e] text-[#ffffff] text-[11px]">
+                <span className="ml-1.5 inline-grid place-items-center min-w-5 h-5 px-1 rounded-full bg-[#8A6A43] text-[#FAF7EF] text-[11px]">
                   {leads.length}
                 </span>
               )}
@@ -305,7 +305,7 @@ export default function Admin() {
                   onChange={(v) => patch((d) => (d.hero.titleLine1 = v))}
                 />
                 <Input
-                  label="Vurgu satırı (turkuaz)"
+                  label="Vurgu satırı (yeşil)"
                   value={draft.hero.titleAccent}
                   onChange={(v) => patch((d) => (d.hero.titleAccent = v))}
                 />
@@ -327,14 +327,14 @@ export default function Admin() {
                       onChange={(e) =>
                         patch((d) => (d.stats[i].value = e.target.value))
                       }
-                      className="w-24 rounded-sm border border-[#e4e0d6] bg-white px-3 py-2 text-sm"
+                      className="w-24 rounded-xl border border-[#D9E3D5] bg-white px-3 py-2 text-sm"
                     />
                     <input
                       value={s.label}
                       onChange={(e) =>
                         patch((d) => (d.stats[i].label = e.target.value))
                       }
-                      className="flex-1 rounded-sm border border-[#e4e0d6] bg-white px-3 py-2 text-sm"
+                      className="flex-1 rounded-xl border border-[#D9E3D5] bg-white px-3 py-2 text-sm"
                     />
                   </div>
                 ))}
@@ -359,7 +359,7 @@ export default function Admin() {
                   onChange={(v) => patch((d) => (d.contact.email = v))}
                 />
               </div>
-              <p className="mt-3 text-xs text-[#173a5e]">
+              <p className="mt-3 text-xs text-[#8A6A43]">
                 Telefon/WhatsApp tüm butonlarda otomatik kullanılır (ör. +90 555 123 45
                 67).
               </p>
@@ -412,7 +412,7 @@ export default function Admin() {
                   })
                 )
               }
-              className="inline-flex items-center gap-2 rounded-full bg-[#117571] text-[#ffffff] px-4 py-2 text-sm hover:bg-[#0e5f5b] transition-colors"
+              className="inline-flex items-center gap-2 rounded-full bg-[#3d5638] text-[#FAF7EF] px-4 py-2 text-sm hover:bg-[#2d4228] transition-colors"
             >
               <Plus size={16} />
               Yeni İlan Ekle
@@ -421,18 +421,18 @@ export default function Admin() {
             {draft.listings.map((l, i) => (
               <div
                 key={l.id}
-                className="rounded-sm border border-[#e4e0d6] bg-[#ffffff] overflow-hidden"
+                className="rounded-2xl border border-[#D9E3D5] bg-[#FAF7EF] overflow-hidden"
               >
                 <button
                   onClick={() => setOpenListing(openListing === l.id ? null : l.id)}
                   className="w-full flex items-center justify-between px-5 py-4 text-left"
                 >
-                  <span className="font-medium text-[#1c2a2e]">
+                  <span className="font-medium text-[#1f2a1d]">
                     {l.title || 'İsimsiz ilan'}
                   </span>
                   <ChevronDown
                     size={18}
-                    className={`text-[#117571] transition-transform ${
+                    className={`text-[#3d5638] transition-transform ${
                       openListing === l.id ? 'rotate-180' : ''
                     }`}
                   />
@@ -457,7 +457,7 @@ export default function Admin() {
                         onChange={(v) => patch((d) => (d.listings[i].district = v))}
                       />
                       <label className="block">
-                        <span className="block text-xs font-medium text-[#55606a] mb-1">
+                        <span className="block text-xs font-medium text-[#4b5b47] mb-1">
                           Arazi Tipi (filtre için)
                         </span>
                         <select
@@ -465,7 +465,7 @@ export default function Admin() {
                           onChange={(e) =>
                             patch((d) => (d.listings[i].type = e.target.value as LandType))
                           }
-                          className="w-full rounded-sm border border-[#e4e0d6] bg-white px-3 py-2 text-sm text-[#1c2a2e] outline-none focus:border-[#117571]"
+                          className="w-full rounded-xl border border-[#D9E3D5] bg-white px-3 py-2 text-sm text-[#1f2a1d] outline-none focus:border-[#3d5638]"
                         >
                           {LAND_TYPES.map((t) => (
                             <option key={t}>{t}</option>
@@ -581,7 +581,7 @@ export default function Admin() {
                     onChange={(e) =>
                       patch((d) => (d.districts[i].name = e.target.value))
                     }
-                    className="rounded-sm border border-[#e4e0d6] bg-white px-3 py-2 text-sm"
+                    className="rounded-xl border border-[#D9E3D5] bg-white px-3 py-2 text-sm"
                     placeholder="İlçe"
                   />
                   <input
@@ -589,7 +589,7 @@ export default function Admin() {
                     onChange={(e) =>
                       patch((d) => (d.districts[i].count = e.target.value))
                     }
-                    className="rounded-sm border border-[#e4e0d6] bg-white px-3 py-2 text-sm"
+                    className="rounded-xl border border-[#D9E3D5] bg-white px-3 py-2 text-sm"
                     placeholder="24 ilan"
                   />
                   <div className="flex gap-2">
@@ -598,12 +598,12 @@ export default function Admin() {
                       onChange={(e) =>
                         patch((d) => (d.districts[i].text = e.target.value))
                       }
-                      className="flex-1 rounded-sm border border-[#e4e0d6] bg-white px-3 py-2 text-sm"
+                      className="flex-1 rounded-xl border border-[#D9E3D5] bg-white px-3 py-2 text-sm"
                       placeholder="Açıklama"
                     />
                     <button
                       onClick={() => patch((d) => d.districts.splice(i, 1))}
-                      className="grid place-items-center w-9 rounded-sm border border-red-200 text-red-600 hover:bg-red-50"
+                      className="grid place-items-center w-9 rounded-xl border border-red-200 text-red-600 hover:bg-red-50"
                     >
                       <Trash2 size={15} />
                     </button>
@@ -616,7 +616,7 @@ export default function Admin() {
                     d.districts.push({ name: '', count: '', text: '' })
                   )
                 }
-                className="inline-flex items-center gap-1.5 self-start rounded-full bg-[#117571] text-[#ffffff] px-4 py-2 text-sm hover:bg-[#0e5f5b]"
+                className="inline-flex items-center gap-1.5 self-start rounded-full bg-[#3d5638] text-[#FAF7EF] px-4 py-2 text-sm hover:bg-[#2d4228]"
               >
                 <Plus size={15} />
                 Bölge Ekle
@@ -650,7 +650,7 @@ export default function Admin() {
           <Card title="Rehber Yazıları">
             <div className="grid gap-5">
               {draft.articles.map((a, i) => (
-                <div key={i} className="grid gap-3 border-b border-[#e4e0d6] pb-4 last:border-0">
+                <div key={i} className="grid gap-3 border-b border-[#D9E3D5] pb-4 last:border-0">
                   <Input
                     label="Kategori"
                     value={a.category}
@@ -676,8 +676,8 @@ export default function Admin() {
         {tab === 'talepler' && (
           <Card title={`Gelen Talepler (${leads.length})`}>
             {leads.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center text-[#55606a]">
-                <Inbox size={40} className="text-[#eca61f]" />
+              <div className="flex flex-col items-center justify-center py-12 text-center text-[#4b5b47]">
+                <Inbox size={40} className="text-[#85AB8B]" />
                 <p className="mt-3 text-sm">Henüz talep yok.</p>
               </div>
             ) : (
@@ -685,23 +685,23 @@ export default function Admin() {
                 {leads.map((l) => (
                   <div
                     key={l.id}
-                    className="rounded-sm border border-[#e4e0d6] bg-white p-4 text-sm"
+                    className="rounded-2xl border border-[#D9E3D5] bg-white p-4 text-sm"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-medium text-[#1c2a2e]">{l.name}</span>
+                      <span className="font-medium text-[#1f2a1d]">{l.name}</span>
                       <a
                         href={`tel:${l.phone.replace(/[^\d+]/g, '')}`}
-                        className="text-[#117571] font-medium"
+                        className="text-[#3d5638] font-medium"
                       >
                         {l.phone}
                       </a>
                     </div>
-                    <div className="mt-2 grid sm:grid-cols-3 gap-2 text-[#55606a]">
+                    <div className="mt-2 grid sm:grid-cols-3 gap-2 text-[#4b5b47]">
                       <span>Bütçe: {l.budget || '—'}</span>
                       <span>Bölge: {l.district || '—'}</span>
                       <span>Amaç: {l.purpose || '—'}</span>
                     </div>
-                    {l.note && <p className="mt-2 text-[#55606a]">Not: {l.note}</p>}
+                    {l.note && <p className="mt-2 text-[#4b5b47]">Not: {l.note}</p>}
                   </div>
                 ))}
                 <button
@@ -721,21 +721,21 @@ export default function Admin() {
 
         {tab === 'yedek' && (
           <Card title="Yedekleme ve Sıfırlama">
-            <p className="text-sm text-[#55606a]">
+            <p className="text-sm text-[#4b5b47]">
               İçeriği bilgisayarınıza yedekleyin, başka cihaza taşıyın veya varsayılana
               dönün.
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
               <button
                 onClick={exportJSON}
-                className="inline-flex items-center gap-2 rounded-full bg-[#117571] text-[#ffffff] px-4 py-2 text-sm hover:bg-[#0e5f5b]"
+                className="inline-flex items-center gap-2 rounded-full bg-[#3d5638] text-[#FAF7EF] px-4 py-2 text-sm hover:bg-[#2d4228]"
               >
                 <Download size={16} />
                 JSON İndir
               </button>
               <button
                 onClick={() => fileRef.current?.click()}
-                className="inline-flex items-center gap-2 rounded-full border border-[#e4e0d6] text-[#1c2a2e] px-4 py-2 text-sm hover:bg-[#f5f1e9]"
+                className="inline-flex items-center gap-2 rounded-full border border-[#D9E3D5] text-[#1f2a1d] px-4 py-2 text-sm hover:bg-[#F4EFE6]"
               >
                 <Upload size={16} />
                 JSON Yükle
@@ -761,7 +761,7 @@ export default function Admin() {
                     setDraft(structuredClone(defaultContent));
                   }
                 }}
-                className="inline-flex items-center gap-2 rounded-full border border-[#173a5e]/40 text-[#173a5e] px-4 py-2 text-sm hover:bg-[#173a5e]/10"
+                className="inline-flex items-center gap-2 rounded-full border border-[#8A6A43]/40 text-[#8A6A43] px-4 py-2 text-sm hover:bg-[#8A6A43]/10"
               >
                 <RotateCcw size={16} />
                 Varsayılana Dön
@@ -783,7 +783,7 @@ export default function Admin() {
                 Kayıtlıyı Sil
               </button>
             </div>
-            <p className="mt-4 text-xs text-[#173a5e] leading-relaxed">
+            <p className="mt-4 text-xs text-[#8A6A43] leading-relaxed">
               Not: Değişiklikler şu an bu tarayıcıya kaydedilir. Sitedeki herkesin görmesi
               için, “JSON İndir” ile yedeği alıp yayınladığımız sürüme gömeriz ya da ileride
               bir sunucu/veritabanı bağlarız.
@@ -797,8 +797,8 @@ export default function Admin() {
 
 function Card({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="rounded-sm border border-[#e4e0d6] bg-[#ffffff] p-5 sm:p-6">
-      <h2 className="text-[#1c2a2e] font-medium mb-4">{title}</h2>
+    <section className="rounded-2xl border border-[#D9E3D5] bg-[#FAF7EF] p-5 sm:p-6">
+      <h2 className="text-[#1f2a1d] font-medium mb-4">{title}</h2>
       {children}
     </section>
   );

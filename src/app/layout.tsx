@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#117571' /* çini turkuazı = hsl(var(--primary)) */,
+  themeColor: '#FFC510' /* = hsl(var(--primary)) marka sarısı */,
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',

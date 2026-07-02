@@ -4,50 +4,42 @@
 
 @layer base {
   :root {
-    /* Kütahya Çini Mirası — turkuaz kimlik + kobalt derinlik + altın enerji */
+    /* Kurumsal sistem: marka sarısı + antrasit + gri disiplini.
+       Yeşil yalnızca logoda yaşar. */
     --background: 0 0% 100%;
-    --foreground: 195 24% 14%;
+    --foreground: 0 0% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 195 24% 14%;
+    --card-foreground: 0 0% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 195 24% 14%;
+    --popover-foreground: 0 0% 15%;
 
-    /* Çini turkuazı — marka bantları, yapı, bağlantılar */
-    --primary: 178 74% 26%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 45 100% 53%; /* #FFC510 — marka sarısı */
+    --primary-foreground: 0 0% 15%;
 
-    /* Altın — birincil CTA, fiyat, vurgu (sevilen sarı enerjisi) */
-    --gold: 40 88% 47%;
-    --gold-foreground: 40 60% 12%;
+    --secondary: 0 0% 88%; /* #E0E0E0 — ikincil buton */
+    --secondary-foreground: 0 0% 24%;
 
-    /* Kobalt — hero/footer/koyu bantlar */
-    --cobalt: 212 56% 20%;
-    --cobalt-foreground: 195 30% 96%;
+    --muted: 0 0% 96%; /* #F5F5F5 — bölüm/başlık bandı zemini */
+    --muted-foreground: 0 0% 36%;
 
-    /* Sıcak taş — bölüm zemin ritmi (krem-default değil, markaya özel) */
-    --stone: 40 26% 95%;
+    --accent: 0 0% 94%;
+    --accent-foreground: 0 0% 15%;
 
-    --secondary: 178 24% 92%;
-    --secondary-foreground: 178 40% 18%;
-
-    --muted: 40 20% 95%;
-    --muted-foreground: 195 10% 38%;
-
-    --accent: 178 30% 94%;
-    --accent-foreground: 178 40% 18%;
-
-    --destructive: 0 70% 48%;
+    --destructive: 0 70% 50%; /* #D82828 ailesi — yalnızca hata */
     --destructive-foreground: 0 0% 100%;
 
-    --whatsapp: 173 77% 27%;
+    --ink: 0 0% 24%; /* #3C3C3C — footer, utility bar, koyu bantlar */
+    --ink-soft: 0 0% 38%; /* #616161 */
 
-    --border: 40 14% 88%;
-    --input: 40 14% 84%;
-    --ring: 178 74% 26%;
+    --whatsapp: 173 77% 27%; /* koyu teal — beyaz metin/ikonla ≥5:1 (AA) */
 
-    --radius: 3px;
+    --border: 0 0% 87%;
+    --input: 0 0% 80%;
+    --ring: 0 0% 24%; /* odak halkası: mürekkep — sarı zeminde de görünür */
+
+    --radius: 2px; /* keskin köşe disiplini */
 
     --ease-out-quart: cubic-bezier(0.23, 1, 0.32, 1);
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -65,7 +57,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-size: 1.0625rem;
+    font-size: 1.0625rem; /* 17px — orta yaş üstü kitle için rahat okuma */
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -74,8 +66,8 @@
 
   h1, h2, h3, h4 {
     @apply font-heading;
-    font-weight: 600;
-    letter-spacing: -0.015em;
+    font-weight: 500;
+    letter-spacing: -0.01em;
     text-wrap: balance;
   }
 
@@ -84,10 +76,11 @@
   }
 
   ::selection {
-    background: hsl(178 74% 26%);
-    color: #ffffff;
+    background: hsl(45 100% 53%);
+    color: hsl(0 0% 10%);
   }
 
+  /* Sticky header'ın altında kalmasın diye tüm çıpa hedeflerine pay */
   :where([id]) {
     scroll-margin-top: 96px;
   }
@@ -105,37 +98,27 @@
 }
 
 @layer utilities {
-  /* İmza: başlık altındaki kısa altın çizgi */
+  /* İmza detay: başlık altındaki kısa sarı çizgi */
   .title-rule::after {
     content: '';
     display: block;
-    width: 52px;
+    width: 56px;
     height: 4px;
     margin-top: 14px;
-    background: hsl(var(--gold));
+    background: hsl(var(--primary));
   }
   .title-rule-center::after {
     margin-left: auto;
     margin-right: auto;
   }
   .title-rule-sm::after {
-    width: 34px;
+    width: 36px;
     height: 3px;
     margin-top: 10px;
   }
-
-  /* Çini kobalt zemin — hero/footer/CTA */
-  .bg-cini {
-    background-color: hsl(var(--cobalt));
-    background-image:
-      radial-gradient(hsl(178 60% 45% / 0.09) 1.4px, transparent 1.4px),
-      radial-gradient(hsl(40 85% 55% / 0.06) 1.4px, transparent 1.4px);
-    background-position: 0 0, 21px 21px;
-    background-size: 42px 42px;
-  }
 }
 
-/* ---- Leaflet harita teması ---- */
+/* ---- Leaflet harita teması (marka pinleri) ---- */
 .kst-pin-wrap {
   background: transparent;
   border: 0;
@@ -144,8 +127,8 @@
   width: 30px;
   height: 30px;
   border-radius: 50% 50% 50% 0;
-  background: hsl(178 74% 26%);
-  border: 2px solid #ffffff;
+  background: hsl(45 100% 53%);
+  border: 2px solid hsl(0 0% 24%);
   transform: rotate(-45deg);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
   display: grid;
@@ -153,18 +136,18 @@
   transition: transform 0.2s var(--ease-out-quart), background 0.2s ease;
 }
 .kst-pin-wrap:hover .kst-pin {
-  background: hsl(178 74% 21%);
+  background: hsl(45 100% 47%);
 }
 .kst-pin-inner {
   width: 9px;
   height: 9px;
   border-radius: 9999px;
-  background: hsl(40 88% 47%);
+  background: hsl(0 0% 24%);
   transform: rotate(45deg);
 }
 .leaflet-container {
   font-family: var(--font-sans), 'Helvetica Neue', Arial, sans-serif;
-  background: hsl(40 20% 92%);
+  background: hsl(0 0% 92%);
   isolation: isolate;
   z-index: 0;
 }
@@ -173,19 +156,19 @@
   z-index: 2 !important;
 }
 .leaflet-tooltip {
-  background: hsl(212 56% 20%);
+  background: hsl(0 0% 15%);
   color: #ffffff;
   border: 0;
-  border-radius: 3px;
+  border-radius: 2px;
   padding: 5px 12px;
   font-size: 12px;
   font-weight: 600;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
 }
 .leaflet-tooltip-top::before {
-  border-top-color: hsl(212 56% 20%);
+  border-top-color: hsl(0 0% 15%);
 }
 .leaflet-control-zoom a {
-  color: hsl(212 56% 20%);
-  border-color: hsl(40 14% 84%) !important;
+  color: hsl(0 0% 15%);
+  border-color: hsl(0 0% 85%) !important;
 }

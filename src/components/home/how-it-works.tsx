@@ -73,7 +73,7 @@ export function HowItWorks() {
             const Icon = FEATURE_ICONS[f.iconKey] ?? BadgeCheck;
             return (
               <div key={f.title} className="flex items-start gap-3.5">
-                <Icon className="mt-0.5 h-6 w-6 shrink-0 text-primary" />
+                <Icon className="mt-0.5 h-6 w-6 shrink-0 text-ink" />
                 <div>
                   <h3 className="text-[16px] font-semibold text-foreground">{f.title}</h3>
                   <p className="mt-1 text-[14px] leading-relaxed text-muted-foreground">

@@ -9,21 +9,17 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Birincil CTA: altın (enerji) — koyu metin
         default:
-          "bg-gold text-gold-foreground hover:bg-[hsl(40_88%_42%)]",
-        // Marka: çini turkuazı
-        brand:
-          "bg-primary text-primary-foreground hover:bg-[hsl(178_74%_21%)]",
+          "bg-primary text-primary-foreground hover:bg-[hsl(45_100%_47%)]",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
           "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-[hsl(178_24%_86%)]",
-        cobalt: "bg-cobalt text-white hover:bg-[hsl(212_56%_16%)]",
+          "bg-secondary text-secondary-foreground hover:bg-[hsl(0_0%_82%)]",
+        ink: "bg-ink text-white hover:bg-[hsl(0_0%_18%)]",
         ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+        link: "text-foreground underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-5 py-2",

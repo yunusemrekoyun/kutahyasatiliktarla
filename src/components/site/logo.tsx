@@ -1,23 +1,9 @@
 import { cn } from '@/lib/utils';
 
 /**
- * Marka amblemi: Kütahya çini geleneğinin 8 köşeli yıldız (mühr) motifi.
- * Turkuaz tile + altın çini yıldızı + kobalt göbek — yerel, sahiplenilebilir.
+ * Marka işareti: yeşil yalnızca burada yaşar (kurumsal renk disiplini).
+ * Filiz, keskin köşeli koyu yeşil karede; yazı markası tek satır, güçlü.
  */
-export function BrandMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 40 40" className={className} role="img" aria-hidden="true">
-      <rect width="40" height="40" rx="7" fill="hsl(178 74% 26%)" />
-      <g fill="hsl(40 88% 47%)">
-        <rect x="11" y="11" width="18" height="18" rx="1.5" />
-        <path d="M20 5.5 L34.5 20 L20 34.5 L5.5 20 Z" />
-      </g>
-      <circle cx="20" cy="20" r="5.6" fill="hsl(212 56% 20%)" />
-      <circle cx="20" cy="20" r="2" fill="hsl(40 88% 47%)" />
-    </svg>
-  );
-}
-
 export function Logo({
   brand = 'Kütahya Satılık Tarla',
   className,
@@ -29,24 +15,30 @@ export function Logo({
 }) {
   return (
     <span className={cn('flex items-center gap-3', className)}>
-      <BrandMark className="h-10 w-10 shrink-0" />
-      <span className="flex flex-col leading-none">
-        <span
-          className={cn(
-            'font-heading text-[19px] font-bold tracking-tight',
-            tone === 'light' ? 'text-white' : 'text-foreground',
-          )}
+      <span className="grid h-10 w-10 shrink-0 place-items-center bg-[#2F7A44]">
+        <svg
+          viewBox="0 0 24 24"
+          className="h-6 w-6 text-white"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
         >
-          {brand}
-        </span>
-        <span
-          className={cn(
-            'mt-1 text-[10.5px] font-semibold uppercase tracking-[0.2em]',
-            tone === 'light' ? 'text-white/90' : 'text-primary',
-          )}
-        >
-          Kütahya · Arazi
-        </span>
+          <path d="M12 21v-8.5" />
+          <path d="M12 12.5c0-3.3 2.2-5.5 5.5-5.5 0 3.3-2.2 5.5-5.5 5.5Z" />
+          <path d="M12 14.5c0-2.6-2-4.2-4.7-4.2 0 2.6 2 4.2 4.7 4.2Z" />
+          <path d="M4.5 21h15" />
+        </svg>
+      </span>
+      <span
+        className={cn(
+          'font-heading text-[19px] font-semibold leading-none tracking-tight',
+          tone === 'light' ? 'text-white' : 'text-foreground',
+        )}
+      >
+        {brand}
       </span>
     </span>
   );

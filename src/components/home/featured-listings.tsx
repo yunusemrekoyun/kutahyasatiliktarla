@@ -67,7 +67,7 @@ export function FeaturedListings({
 
         {visible.length === 0 ? (
           <div className="mt-6 border border-dashed border-input bg-muted/50 py-16 text-center">
-            <div className="mx-auto grid h-14 w-14 place-items-center border border-border bg-background text-muted-foreground">
+            <div className="mx-auto grid h-14 w-14 place-items-center border border-border bg-background text-ink-soft">
               <Search className="h-7 w-7" />
             </div>
             <h3 className="mt-5 font-heading text-xl font-medium text-foreground">

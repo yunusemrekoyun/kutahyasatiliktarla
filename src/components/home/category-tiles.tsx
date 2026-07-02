@@ -13,7 +13,7 @@ export function CategoryTiles({
 }) {
   const { content } = useStore();
   return (
-    <section id="bolgeler" className="bg-stone py-16 sm:py-24">
+    <section id="bolgeler" className="bg-muted py-16 sm:py-24">
       <div className="container">
         <h2 className="title-rule title-rule-center text-center font-heading text-3xl font-light text-foreground sm:text-4xl">
           {content.sections.districtsTitle}
@@ -28,7 +28,7 @@ export function CategoryTiles({
               key={d.name}
               type="button"
               onClick={() => onPick(d.name)}
-              className="group flex h-full flex-col border border-border bg-card p-6 text-left transition-colors duration-200 hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="group flex h-full flex-col border border-border bg-card p-6 text-left transition-colors duration-200 hover:border-ink/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               <span className="title-rule title-rule-sm font-heading text-[1.35rem] font-medium text-foreground">
                 {d.name}
@@ -37,7 +37,7 @@ export function CategoryTiles({
                 {d.text}
               </span>
               <span className="mt-5 flex items-center justify-between border-t border-border pt-4">
-                <span className="text-[14px] font-medium text-muted-foreground">{d.count}</span>
+                <span className="text-[14px] font-medium text-ink-soft">{d.count}</span>
                 <span className="flex items-center gap-1.5 text-[15px] font-semibold text-foreground">
                   İlanları Gör
                   <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />

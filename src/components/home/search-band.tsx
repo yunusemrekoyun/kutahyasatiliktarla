@@ -1,6 +1,6 @@
 'use client';
 
-import { type FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useState } from 'react';
 import { MapPin, Sprout } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,29 +12,23 @@ import {
 } from '@/components/ui/select';
 import { LAND_TYPES } from '@/content';
 import { scrollToId } from '@/lib/scroll';
+import { useStore } from '@/store';
 
 export type HomeFilters = { district: string; type: string; q: string };
 
 const fieldTrigger =
-  'h-14 w-full rounded-sm border-0 bg-white px-4 text-left text-[16px] font-medium text-foreground shadow-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-cobalt data-[placeholder]:text-muted-foreground [&>span]:flex [&>span]:items-center [&>span]:gap-2.5';
+  'h-14 w-full rounded-sm border-0 bg-white px-4 text-left text-[16px] font-medium text-foreground shadow-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-primary data-[placeholder]:text-muted-foreground [&>span]:flex [&>span]:items-center [&>span]:gap-2.5';
 
 export function SearchBand({
   districts,
-  filters,
   onApply,
 }: {
   districts: string[];
-  filters: HomeFilters;
   onApply: (f: HomeFilters) => void;
 }) {
+  const { content } = useStore();
   const [district, setDistrict] = useState('all');
   const [type, setType] = useState('all');
-
-  // Footer/kart/header'dan gelen filtre değişimlerini seçicilerde yansıt.
-  useEffect(() => {
-    setDistrict(filters.district || 'all');
-    setType(filters.type || 'all');
-  }, [filters.district, filters.type]);
 
   function submit(e: FormEvent) {
     e.preventDefault();
@@ -47,13 +41,13 @@ export function SearchBand({
   }
 
   return (
-    <section aria-label="İlan arama" className="bg-cini py-12 sm:py-16">
+    <section aria-label="İlan arama" className="bg-primary py-12 sm:py-16">
       <div className="container">
-        <h2 className="text-center font-heading text-3xl font-semibold text-white sm:text-4xl">
+        <h2 className="text-center font-heading text-3xl font-light text-primary-foreground sm:text-4xl">
           Size nasıl yardımcı olabiliriz?
         </h2>
-        <p className="mx-auto mt-3 max-w-xl text-center text-[17px] text-white/85">
-          İlçe ve arazi türünü seçin; size uygun ilanları anında listeleyelim.
+        <p className="mx-auto mt-3 max-w-xl text-center text-[17px] text-primary-foreground/80">
+          {content.hero.subtitle}
         </p>
 
         <form
@@ -63,7 +57,7 @@ export function SearchBand({
           <div className="flex-1">
             <Select value={district} onValueChange={setDistrict}>
               <SelectTrigger className={fieldTrigger} aria-label="İlçe seçin">
-                <MapPin className="h-5 w-5 shrink-0 text-primary" />
+                <MapPin className="h-5 w-5 shrink-0 text-ink-soft" />
                 <SelectValue placeholder="Tüm ilçeler" />
               </SelectTrigger>
               <SelectContent>
@@ -80,7 +74,7 @@ export function SearchBand({
           <div className="flex-1">
             <Select value={type} onValueChange={setType}>
               <SelectTrigger className={fieldTrigger} aria-label="Arazi türü seçin">
-                <Sprout className="h-5 w-5 shrink-0 text-primary" />
+                <Sprout className="h-5 w-5 shrink-0 text-ink-soft" />
                 <SelectValue placeholder="Tüm türler" />
               </SelectTrigger>
               <SelectContent>
@@ -96,8 +90,9 @@ export function SearchBand({
 
           <Button
             type="submit"
+            variant="ink"
             size="lg"
-            className="h-14 px-10 text-[15px] font-bold uppercase tracking-wide"
+            className="h-14 px-10 text-[15px] uppercase tracking-wide"
           >
             İlanları Göster
           </Button>
