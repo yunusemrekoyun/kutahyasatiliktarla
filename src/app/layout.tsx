@@ -1,21 +1,14 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
-import { Hanken_Grotesk, Spectral } from 'next/font/google';
+import { Barlow } from 'next/font/google';
 import 'leaflet/dist/leaflet.css';
 import './globals.css';
 import { Providers } from './providers';
 
-const sans = Hanken_Grotesk({
+const sans = Barlow({
   subsets: ['latin', 'latin-ext'],
+  weight: ['300', '400', '500', '600', '700'],
   variable: '--font-sans',
-  display: 'swap',
-});
-
-const display = Spectral({
-  subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-display',
   display: 'swap',
 });
 
@@ -33,7 +26,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#112C22' /* = hsl(var(--brand-deep)) 158 44% 12% */,
+  themeColor: '#FFC510' /* = hsl(var(--primary)) marka sarısı */,
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
@@ -41,7 +34,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="tr" className={`${sans.variable} ${display.variable}`}>
+    <html lang="tr" className={sans.variable}>
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         <Providers>{children}</Providers>
       </body>

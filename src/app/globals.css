@@ -4,46 +4,43 @@
 
 @layer base {
   :root {
-    /* Grounded Premium — committed derin yeşil + hasat altını (krem YOK) */
-    --background: 150 24% 99%;
-    --foreground: 155 32% 12%;
+    /* Kurumsal sistem: marka sarısı + antrasit + gri disiplini.
+       Yeşil yalnızca logoda yaşar. */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 155 32% 12%;
+    --card-foreground: 0 0% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 155 32% 12%;
+    --popover-foreground: 0 0% 15%;
 
-    --primary: 151 56% 31%; /* güvenli, doygun yeşil */
-    --primary-foreground: 150 40% 98%;
+    --primary: 45 100% 53%; /* #FFC510 — marka sarısı */
+    --primary-foreground: 0 0% 15%;
 
-    --secondary: 150 20% 95%;
-    --secondary-foreground: 155 30% 15%;
+    --secondary: 0 0% 88%; /* #E0E0E0 — ikincil buton */
+    --secondary-foreground: 0 0% 24%;
 
-    --muted: 150 16% 96%;
-    --muted-foreground: 155 9% 37%;
+    --muted: 0 0% 96%; /* #F5F5F5 — bölüm/başlık bandı zemini */
+    --muted-foreground: 0 0% 36%;
 
-    --accent: 150 24% 93%;
-    --accent-foreground: 155 30% 15%;
+    --accent: 0 0% 94%;
+    --accent-foreground: 0 0% 15%;
 
-    --destructive: 8 68% 46%;
+    --destructive: 0 70% 50%; /* #D82828 ailesi — yalnızca hata */
     --destructive-foreground: 0 0% 100%;
 
-    /* Drenched hero/CTA/footer için derin yeşil */
-    --brand-deep: 158 44% 12%;
-    /* Hasat altını — az ve bilinçli kullanılır */
-    --harvest: 38 76% 44%;
-    --harvest-foreground: 40 60% 11%;
-    /* WhatsApp koyu teal (#128C7E) — beyaz ikonla ≥4:1 kontrast */
-    --whatsapp: 173 77% 31%;
+    --ink: 0 0% 24%; /* #3C3C3C — footer, utility bar, koyu bantlar */
+    --ink-soft: 0 0% 38%; /* #616161 */
 
-    --border: 150 14% 90%;
-    --input: 150 14% 90%;
-    --ring: 151 56% 31%;
+    --whatsapp: 173 77% 27%; /* koyu teal — beyaz metin/ikonla ≥5:1 (AA) */
 
-    --radius: 0.875rem;
+    --border: 0 0% 87%;
+    --input: 0 0% 80%;
+    --ring: 0 0% 24%; /* odak halkası: mürekkep — sarı zeminde de görünür */
 
-    /* Emil'in güçlü easing eğrileri */
+    --radius: 2px; /* keskin köşe disiplini */
+
     --ease-out-quart: cubic-bezier(0.23, 1, 0.32, 1);
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-in-out-quint: cubic-bezier(0.77, 0, 0.175, 1);
@@ -60,18 +57,17 @@
 
   body {
     @apply bg-background text-foreground;
-    font-size: 1.0625rem; /* 17px — orta-yaşlı kitle için rahat okuma */
-    line-height: 1.65;
+    font-size: 1.0625rem; /* 17px — orta yaş üstü kitle için rahat okuma */
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    font-feature-settings: 'ss01', 'cv01';
   }
 
   h1, h2, h3, h4 {
     @apply font-heading;
-    font-weight: 600;
-    letter-spacing: -0.011em;
+    font-weight: 500;
+    letter-spacing: -0.01em;
     text-wrap: balance;
   }
 
@@ -80,13 +76,13 @@
   }
 
   ::selection {
-    background: hsl(151 56% 31% / 0.2);
-    color: hsl(155 32% 12%);
+    background: hsl(45 100% 53%);
+    color: hsl(0 0% 10%);
   }
 
   /* Sticky header'ın altında kalmasın diye tüm çıpa hedeflerine pay */
   :where([id]) {
-    scroll-margin-top: 88px;
+    scroll-margin-top: 96px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -102,44 +98,27 @@
 }
 
 @layer utilities {
-  /* İnce film-grain — koyu bölümlerde "pahalı kağıt" hissi (fixed değil, section'a özel) */
-  .texture-grain::after {
+  /* İmza detay: başlık altındaki kısa sarı çizgi */
+  .title-rule::after {
     content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.06;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    display: block;
+    width: 56px;
+    height: 4px;
+    margin-top: 14px;
+    background: hsl(var(--primary));
   }
-
-  /* İlçe ticker'ı: üzerine gelince akış durur (okunabilirlik) */
-  .ticker:hover .ticker-track {
-    animation-play-state: paused;
+  .title-rule-center::after {
+    margin-left: auto;
+    margin-right: auto;
   }
-
-  /* Girişte yumuşak yükselme — sadece görünürlükle tetiklenir (IntersectionObserver) */
-  .reveal {
-    opacity: 0;
-    transform: translateY(18px);
-    transition:
-      opacity 0.7s var(--ease-out-expo),
-      transform 0.7s var(--ease-out-expo);
-    will-change: opacity, transform;
-  }
-  .reveal[data-shown='true'] {
-    opacity: 1;
-    transform: none;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .reveal {
-      opacity: 1;
-      transform: none;
-    }
+  .title-rule-sm::after {
+    width: 36px;
+    height: 3px;
+    margin-top: 10px;
   }
 }
 
-/* ---- Leaflet harita teması ---- */
+/* ---- Leaflet harita teması (marka pinleri) ---- */
 .kst-pin-wrap {
   background: transparent;
   border: 0;
@@ -148,27 +127,27 @@
   width: 30px;
   height: 30px;
   border-radius: 50% 50% 50% 0;
-  background: hsl(151 56% 31%);
-  border: 2px solid #ffffff;
+  background: hsl(45 100% 53%);
+  border: 2px solid hsl(0 0% 24%);
   transform: rotate(-45deg);
-  box-shadow: 0 4px 12px hsl(158 44% 12% / 0.45);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
   display: grid;
   place-items: center;
   transition: transform 0.2s var(--ease-out-quart), background 0.2s ease;
 }
 .kst-pin-wrap:hover .kst-pin {
-  background: hsl(151 60% 26%);
+  background: hsl(45 100% 47%);
 }
 .kst-pin-inner {
   width: 9px;
   height: 9px;
   border-radius: 9999px;
-  background: #ffffff;
+  background: hsl(0 0% 24%);
   transform: rotate(45deg);
 }
 .leaflet-container {
   font-family: var(--font-sans), 'Helvetica Neue', Arial, sans-serif;
-  background: hsl(150 18% 92%);
+  background: hsl(0 0% 92%);
   isolation: isolate;
   z-index: 0;
 }
@@ -177,19 +156,19 @@
   z-index: 2 !important;
 }
 .leaflet-tooltip {
-  background: hsl(158 44% 12%);
+  background: hsl(0 0% 15%);
   color: #ffffff;
   border: 0;
-  border-radius: 9999px;
+  border-radius: 2px;
   padding: 5px 12px;
   font-size: 12px;
   font-weight: 600;
-  box-shadow: 0 6px 18px hsl(158 44% 12% / 0.35);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
 }
 .leaflet-tooltip-top::before {
-  border-top-color: hsl(158 44% 12%);
+  border-top-color: hsl(0 0% 15%);
 }
 .leaflet-control-zoom a {
-  color: hsl(158 44% 12%);
-  border-color: hsl(150 14% 85%) !important;
+  color: hsl(0 0% 15%);
+  border-color: hsl(0 0% 85%) !important;
 }

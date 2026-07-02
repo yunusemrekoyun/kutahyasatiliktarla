@@ -1,5 +1,17 @@
-import { CircleCheck, Maximize, MessageCircle, Search } from 'lucide-react';
-import { Reveal } from '@/components/motion/reveal';
+'use client';
+
+import {
+  BadgeCheck,
+  Camera,
+  MapPinned,
+  Maximize,
+  MessageCircle,
+  Search,
+  ShieldCheck,
+  TrendingUp,
+  type LucideIcon,
+} from 'lucide-react';
+import { useStore } from '@/store';
 
 const steps = [
   {
@@ -19,62 +31,59 @@ const steps = [
   },
 ];
 
-const trust = [
-  'Her ilanda gerçek fotoğraf ve drone görüntüsü',
-  'Tapu, ada/parsel ve imar bilgisi tek tek kontrol edilir',
-  'Kütahyalı yerel ekip, ücretsiz danışmanlık',
-];
+const FEATURE_ICONS: Record<string, LucideIcon> = {
+  local: MapPinned,
+  drone: Camera,
+  verified: ShieldCheck,
+  invest: TrendingUp,
+};
 
 export function HowItWorks() {
+  const { content } = useStore();
   return (
-    <section id="nasil-calisir" className="py-20 sm:py-28">
-      <div className="container grid gap-12 lg:grid-cols-[1fr_1.25fr] lg:gap-16">
-        <Reveal>
-          <div className="lg:sticky lg:top-28">
-            <h2 className="font-heading text-3xl font-semibold leading-[1.12] text-foreground sm:text-[2.6rem]">
-              Tanıdık güven,
-              <br />
-              <span className="italic font-medium text-primary">yeni nesil</span> kolaylık
-            </h2>
-            <p className="mt-4 max-w-md text-lg leading-relaxed text-muted-foreground">
-              Arazi almak köyde komşuya sormak kadar güven ister. Biz o güveni
-              internete taşıdık: her bilgi yerinde doğrulanır, her ilan şeffaftır.
-            </p>
-            <ul className="mt-7 space-y-3">
-              {trust.map((t) => (
-                <li key={t} className="flex items-start gap-3 text-[16px] text-foreground/85">
-                  <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                  {t}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Reveal>
+    <section id="nasil-calisir" className="bg-background py-16 sm:py-24">
+      <div className="container">
+        <h2 className="title-rule title-rule-center text-center font-heading text-3xl font-light text-foreground sm:text-4xl">
+          Nasıl çalışır?
+        </h2>
+        <p className="mx-auto mt-5 max-w-2xl text-center text-[17px] text-muted-foreground">
+          Arazi almak güven ister. Süreci üç basit adıma indirdik; her adımda
+          yanınızdayız.
+        </p>
 
-        {/* Harita rotası gibi: kesikli güzergâh üzerinde üç durak */}
-        <Reveal delay={80}>
-          <ol className="relative space-y-12">
-            <span
-              aria-hidden="true"
-              className="absolute bottom-10 left-7 top-10 w-0.5 bg-[repeating-linear-gradient(to_bottom,hsl(var(--primary)/0.3)_0_6px,transparent_6px_14px)]"
-            />
-            {steps.map((s) => (
-              <li key={s.title} className="relative flex gap-6">
-                <span className="relative z-10 grid h-14 w-14 shrink-0 place-items-center rounded-full border border-primary/25 bg-background shadow-soft-sm">
-                  <s.icon className="h-6 w-6 text-primary" />
-                </span>
-                <div className="pt-1.5">
-                  <h3 className="font-heading text-[1.45rem] font-semibold text-foreground">
-                    {s.title}
-                  </h3>
-                  <p className="mt-2 max-w-md leading-relaxed text-muted-foreground">
-                    {s.text}
+        <ol className="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
+          {steps.map((s) => (
+            <li key={s.title}>
+              <span className="grid h-12 w-12 place-items-center bg-primary">
+                <s.icon className="h-6 w-6 text-primary-foreground" />
+              </span>
+              <h3 className="mt-5 font-heading text-[1.35rem] font-medium text-foreground">
+                {s.title}
+              </h3>
+              <p className="mt-2 max-w-sm leading-relaxed text-muted-foreground">
+                {s.text}
+              </p>
+            </li>
+          ))}
+        </ol>
+
+        {/* Neden biz: kurumsal güven şeridi */}
+        <div className="mt-14 grid gap-x-8 gap-y-6 border-t border-border pt-10 sm:grid-cols-2 lg:grid-cols-4">
+          {content.features.map((f) => {
+            const Icon = FEATURE_ICONS[f.iconKey] ?? BadgeCheck;
+            return (
+              <div key={f.title} className="flex items-start gap-3.5">
+                <Icon className="mt-0.5 h-6 w-6 shrink-0 text-ink" />
+                <div>
+                  <h3 className="text-[16px] font-semibold text-foreground">{f.title}</h3>
+                  <p className="mt-1 text-[14px] leading-relaxed text-muted-foreground">
+                    {f.text}
                   </p>
                 </div>
-              </li>
-            ))}
-          </ol>
-        </Reveal>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

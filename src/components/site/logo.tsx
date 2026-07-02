@@ -1,5 +1,9 @@
 import { cn } from '@/lib/utils';
 
+/**
+ * Marka işareti: yeşil yalnızca burada yaşar (kurumsal renk disiplini).
+ * Filiz, keskin köşeli koyu yeşil karede; yazı markası tek satır, güçlü.
+ */
 export function Logo({
   brand = 'Kütahya Satılık Tarla',
   className,
@@ -10,14 +14,14 @@ export function Logo({
   tone?: 'dark' | 'light';
 }) {
   return (
-    <span className={cn('flex items-center gap-2.5', className)}>
-      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-primary text-primary-foreground shadow-soft-sm">
+    <span className={cn('flex items-center gap-3', className)}>
+      <span className="grid h-10 w-10 shrink-0 place-items-center bg-[#2F7A44]">
         <svg
           viewBox="0 0 24 24"
-          className="h-[22px] w-[22px]"
+          className="h-6 w-6 text-white"
           fill="none"
           stroke="currentColor"
-          strokeWidth="1.7"
+          strokeWidth="1.8"
           strokeLinecap="round"
           strokeLinejoin="round"
           aria-hidden="true"
@@ -30,7 +34,7 @@ export function Logo({
       </span>
       <span
         className={cn(
-          'font-heading text-[18px] font-semibold leading-none tracking-[-0.01em]',
+          'font-heading text-[19px] font-semibold leading-none tracking-tight',
           tone === 'light' ? 'text-white' : 'text-foreground',
         )}
       >

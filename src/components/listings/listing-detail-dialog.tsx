@@ -76,7 +76,7 @@ function DetailBody({
 
   return (
     <div>
-      <div className="relative aspect-video w-full overflow-hidden bg-brand-deep">
+      <div className="relative aspect-video w-full overflow-hidden bg-ink">
         {listing.droneVideo ? (
           <video
             src={listing.droneVideo}
@@ -99,19 +99,19 @@ function DetailBody({
       <div className="p-6 sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-[13px] font-semibold text-primary">
+            <span className="inline-flex items-center gap-1.5 bg-primary px-3 py-1 text-[13px] font-semibold text-primary-foreground">
               {listing.badge}
             </span>
-            <DialogTitle className="mt-3 font-heading text-2xl font-bold leading-tight text-foreground sm:text-3xl">
+            <DialogTitle className="mt-3 font-heading text-2xl font-medium leading-tight text-foreground sm:text-3xl">
               {listing.title}
             </DialogTitle>
             <p className="mt-1.5 flex items-center gap-1.5 text-muted-foreground">
-              <MapPin className="h-4 w-4 text-primary" />
+              <MapPin className="h-4 w-4 text-ink-soft" />
               {listing.location}
             </p>
           </div>
           <div className="text-right">
-            <div className="font-heading text-2xl font-bold text-primary sm:text-3xl">
+            <div className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
               {listing.price}
             </div>
             <div className="text-sm text-muted-foreground">{listing.pricePerM2}</div>
@@ -128,7 +128,7 @@ function DetailBody({
             <ul className="mt-3 grid gap-2 sm:grid-cols-2">
               {listing.highlights.map((h) => (
                 <li key={h} className="flex items-start gap-2 text-[15px] text-foreground/85">
-                  <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                  <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-ink" />
                   {h}
                 </li>
               ))}
@@ -142,7 +142,7 @@ function DetailBody({
             <dl className="mt-3 grid gap-2 sm:grid-cols-2">
               <div className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-2.5">
                 <dt className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Maximize className="h-4 w-4 text-primary" />
+                  <Maximize className="h-4 w-4 text-ink-soft" />
                   Alan
                 </dt>
                 <dd className="text-sm font-semibold text-foreground">{listing.area}</dd>
@@ -167,13 +167,13 @@ function DetailBody({
               href={`https://www.google.com/maps?q=${listing.lat},${listing.lng}`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink hover:underline"
             >
               Google Haritalar
               <ExternalLink className="h-4 w-4" />
             </a>
           </div>
-          <div className="overflow-hidden rounded-xl border border-border">
+          <div className="overflow-hidden rounded-lg border border-border">
             <LeafletMap
               markers={marker}
               center={[listing.lat, listing.lng]}
