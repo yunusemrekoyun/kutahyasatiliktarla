@@ -8,7 +8,7 @@ export default {
     container: {
       center: true,
       padding: { DEFAULT: '1.25rem', lg: '2rem' },
-      screens: { '2xl': '1280px' },
+      screens: { '2xl': '1200px' },
     },
     extend: {
       colors: {
@@ -45,27 +45,35 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        // Kurumsal mürekkep tonu — koyu antrasit yüzeyler (footer, utility bar, CTA)
-        ink: {
-          DEFAULT: 'hsl(var(--ink))',
-          soft: 'hsl(var(--ink-soft))',
+        // Pirinç/bronz — sıcak aksan: birincil CTA, fiyat, imza çizgileri
+        brass: {
+          DEFAULT: 'hsl(var(--brass))',
+          foreground: 'hsl(var(--brass-foreground))',
+          strong: 'hsl(var(--brass-strong))',
+          ondark: 'hsl(var(--brass-on-dark))',
         },
         whatsapp: 'hsl(var(--whatsapp) / <alpha-value>)',
       },
       borderRadius: {
         lg: 'var(--radius)',
-        md: 'var(--radius)',
-        sm: 'var(--radius)',
+        md: 'calc(var(--radius) - 1px)',
+        sm: 'calc(var(--radius) - 2px)',
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        heading: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        heading: [
+          'var(--font-display)',
+          'var(--font-sans)',
+          'ui-sans-serif',
+          'system-ui',
+          'sans-serif',
+        ],
       },
       boxShadow: {
-        // Flat sistem: kartlar gölgesiz; yalnızca overlay katmanları hafif ayrışır
-        'soft-sm': '0 1px 2px rgba(0, 0, 0, 0.07)',
-        soft: '0 4px 14px rgba(0, 0, 0, 0.10)',
-        'soft-lg': '0 10px 28px rgba(0, 0, 0, 0.16)',
+        // Sıcak tonlu, yumuşak yükseltiler — kartlar hover'da hafifçe kalkar
+        'soft-sm': '0 1px 2px hsl(40 24% 18% / 0.06)',
+        soft: '0 10px 30px -14px hsl(40 26% 16% / 0.18)',
+        'soft-lg': '0 26px 60px -22px hsl(154 32% 12% / 0.30)',
       },
       transitionTimingFunction: {
         'out-quart': 'var(--ease-out-quart)',

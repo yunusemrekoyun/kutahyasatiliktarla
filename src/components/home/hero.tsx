@@ -1,32 +1,93 @@
 'use client';
 
-import { useStore } from '@/store';
+import { ArrowRight, Phone } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Reveal } from '@/components/motion/reveal';
+import { scrollToId } from '@/lib/scroll';
+import { useStore, telLink } from '@/store';
 
 export function Hero() {
   const { content } = useStore();
+  const stats = content.stats.slice(0, 4);
 
   return (
-    <section aria-label="Tanıtım" className="relative">
-      <div className="relative h-[56vh] min-h-[400px] w-full overflow-hidden lg:h-[64vh] lg:max-h-[680px]">
+    <section
+      aria-label="Tanıtım"
+      className="relative isolate flex min-h-[38rem] items-center overflow-hidden bg-primary lg:min-h-[44rem]"
+    >
+      {/* Sinematik arka plan */}
+      <div className="absolute inset-0 -z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2200&q=80"
+          src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2400&q=80"
           alt="Kütahya kırsalında gün batımında tarlalar"
-          className="h-full w-full object-cover"
+          className="kenburns h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/10" aria-hidden="true" />
-        <div className="absolute inset-0 flex items-center">
-          <div className="container">
-            <div className="max-w-2xl bg-white/80 p-7 sm:p-10">
-              <h1 className="font-heading text-[1.9rem] font-light uppercase leading-[1.15] tracking-wide text-foreground sm:text-4xl lg:text-5xl">
-                {content.hero.titleLine1} {content.hero.titleAccent}
-              </h1>
-            </div>
-          </div>
-        </div>
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-[hsl(154_46%_8%)]/92 via-[hsl(154_46%_9%)]/75 to-[hsl(154_46%_10%)]/30"
+          aria-hidden="true"
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-t from-[hsl(154_46%_8%)]/80 via-transparent to-transparent"
+          aria-hidden="true"
+        />
       </div>
-      {/* İnce sarı marka şeridi */}
-      <div className="h-2 w-full bg-primary" aria-hidden="true" />
+
+      <div className="container py-24 lg:py-28">
+        <Reveal immediate className="max-w-2xl">
+          <p className="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-ondark">
+            <span className="h-0.5 w-8 bg-brass-ondark" aria-hidden="true" />
+            {content.hero.badge}
+          </p>
+
+          <h1 className="mt-6 font-heading text-4xl font-bold leading-[1.05] tracking-[-0.02em] text-white sm:text-5xl lg:text-[3.75rem]">
+            {content.hero.titleLine1}{' '}
+            <span className="text-brass-ondark">{content.hero.titleAccent}</span>
+          </h1>
+
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/90">
+            {content.hero.subtitle}
+          </p>
+
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <Button
+              variant="brass"
+              size="lg"
+              className="h-[52px] px-8 text-base"
+              onClick={() => scrollToId('ilanlar')}
+            >
+              İlanları Görün
+              <ArrowRight className="size-5" />
+            </Button>
+            <Button
+              asChild
+              variant="outlineOnDark"
+              size="lg"
+              className="h-[52px] px-8 text-base"
+            >
+              <a href={telLink(content.contact.phone)}>
+                <Phone className="size-5" />
+                {content.contact.phone}
+              </a>
+            </Button>
+          </div>
+        </Reveal>
+
+        {/* İstatistik şeridi */}
+        <Reveal
+          immediate
+          className="mt-14 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-6 border-t border-white/15 pt-8 sm:grid-cols-4"
+        >
+          {stats.map((s) => (
+            <div key={s.label}>
+              <div className="nums font-heading text-3xl font-bold leading-none text-white">
+                {s.value}
+              </div>
+              <div className="mt-2 text-[13px] leading-snug text-white/65">{s.label}</div>
+            </div>
+          ))}
+        </Reveal>
+      </div>
     </section>
   );
 }

@@ -9,11 +9,14 @@ export function SiteFooter() {
   const { phone, whatsapp, email } = content.contact;
 
   return (
-    <footer id="iletisim" className="relative overflow-hidden bg-ink text-white/70">
-      {/* Filigran: soluk marka izi */}
+    <footer
+      id="iletisim"
+      className="relative overflow-hidden bg-primary text-primary-foreground/70"
+    >
+      {/* Filigran: soluk amblem izi */}
       <svg
         viewBox="0 0 24 24"
-        className="pointer-events-none absolute -bottom-16 -right-10 h-72 w-72 text-white/[0.045]"
+        className="pointer-events-none absolute -bottom-16 -right-10 h-72 w-72 text-white/[0.05]"
         fill="none"
         stroke="currentColor"
         strokeWidth="1.4"
@@ -30,17 +33,17 @@ export function SiteFooter() {
       <div className="container relative grid gap-12 py-16 sm:py-20 lg:grid-cols-[1.4fr_1fr_1fr_1.3fr]">
         <div>
           <Logo brand={content.brand} tone="light" />
-          <p className="mt-5 max-w-xs text-[15px] leading-relaxed text-white/60">
+          <p className="mt-5 max-w-xs text-[15px] leading-relaxed text-primary-foreground/60">
             Kütahya ve ilçelerinde tarla, arsa ve arazi alıp satmak isteyenleri
             buluşturan yerel platform. Gerçek fotoğraf, net bilgi, kolay iletişim.
           </p>
         </div>
 
         <div>
-          <h3 className="title-rule title-rule-sm font-heading text-[16px] font-semibold text-white">
+          <h3 className="rule-brass rule-brass-sm font-heading text-[16px] font-semibold text-white">
             Kurumsal
           </h3>
-          <ul className="mt-5 space-y-2.5 text-[15px]">
+          <ul className="mt-6 space-y-2.5 text-[15px]">
             {[
               { href: '#ilanlar', label: 'İlanlar' },
               { href: '#nasil-calisir', label: 'Nasıl Çalışır' },
@@ -48,7 +51,10 @@ export function SiteFooter() {
               { href: '#top', label: 'Ana Sayfa' },
             ].map((l) => (
               <li key={l.href + l.label}>
-                <a href={l.href} className="text-white/65 transition-colors hover:text-white">
+                <a
+                  href={l.href}
+                  className="text-primary-foreground/65 transition-colors hover:text-white"
+                >
                   {l.label}
                 </a>
               </li>
@@ -57,16 +63,16 @@ export function SiteFooter() {
         </div>
 
         <div>
-          <h3 className="title-rule title-rule-sm font-heading text-[16px] font-semibold text-white">
+          <h3 className="rule-brass rule-brass-sm font-heading text-[16px] font-semibold text-white">
             Bölgeler
           </h3>
-          <ul className="mt-5 space-y-2.5 text-[15px]">
+          <ul className="mt-6 space-y-2.5 text-[15px]">
             {content.districts.slice(0, 6).map((d) => (
               <li key={d.name}>
                 <button
                   type="button"
                   onClick={() => requestDistrict(d.name)}
-                  className="text-white/65 transition-colors hover:text-white"
+                  className="text-primary-foreground/65 transition-colors hover:text-white"
                 >
                   {d.name}
                 </button>
@@ -76,12 +82,12 @@ export function SiteFooter() {
         </div>
 
         <div>
-          <h3 className="title-rule title-rule-sm font-heading text-[16px] font-semibold text-white">
+          <h3 className="rule-brass rule-brass-sm font-heading text-[16px] font-semibold text-white">
             İletişim
           </h3>
           <a
             href={telLink(phone)}
-            className="mt-5 inline-flex items-center gap-2.5 font-heading text-[26px] font-semibold leading-none text-white transition-colors hover:text-primary"
+            className="nums mt-6 inline-flex items-center gap-2.5 font-heading text-[26px] font-bold leading-none text-white transition-colors hover:text-brass-ondark"
           >
             {phone}
           </a>
@@ -90,19 +96,19 @@ export function SiteFooter() {
               href={waLink(whatsapp, 'Merhaba, bilgi almak istiyorum.')}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2.5 text-white/65 transition-colors hover:text-white"
+              className="flex items-center gap-2.5 text-primary-foreground/65 transition-colors hover:text-white"
             >
               <MessageCircle className="h-4 w-4" />
               WhatsApp’tan yazın
             </a>
             <a
               href={`mailto:${email}`}
-              className="flex items-center gap-2.5 text-white/65 transition-colors hover:text-white"
+              className="flex items-center gap-2.5 text-primary-foreground/65 transition-colors hover:text-white"
             >
               <Mail className="h-4 w-4" />
               {email}
             </a>
-            <span className="mt-2 flex items-center gap-2.5 text-white/60">
+            <span className="mt-2 flex items-center gap-2.5 text-primary-foreground/60">
               <Phone className="h-4 w-4" />
               Hafta içi ve hafta sonu 09.00–19.00
             </span>
@@ -111,7 +117,7 @@ export function SiteFooter() {
       </div>
 
       <div className="relative border-t border-white/10">
-        <div className="container flex items-center justify-center py-6 text-sm text-white/55">
+        <div className="container flex items-center justify-center py-6 text-sm text-primary-foreground/55">
           <p>© 2026 {content.brand}. Tüm hakları saklıdır.</p>
         </div>
       </div>

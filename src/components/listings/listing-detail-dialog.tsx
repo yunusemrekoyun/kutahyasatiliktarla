@@ -76,7 +76,7 @@ function DetailBody({
 
   return (
     <div>
-      <div className="relative aspect-video w-full overflow-hidden bg-ink">
+      <div className="relative aspect-video w-full overflow-hidden bg-primary">
         {listing.droneVideo ? (
           <video
             src={listing.droneVideo}
@@ -90,31 +90,36 @@ function DetailBody({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={cover} alt={listing.title} className="h-full w-full object-cover" />
         ) : (
-          <div className="grid h-full place-items-center text-white/70">
+          <div className="grid h-full place-items-center text-primary-foreground/70">
             <MapPin className="h-10 w-10" />
           </div>
         )}
+        {listing.price ? (
+          <span className="absolute left-5 top-5 rounded-sm bg-brass px-4 py-2 font-heading text-[17px] font-bold leading-none text-brass-foreground shadow-soft">
+            {listing.price}
+          </span>
+        ) : null}
       </div>
 
       <div className="p-6 sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <span className="inline-flex items-center gap-1.5 bg-primary px-3 py-1 text-[13px] font-semibold text-primary-foreground">
+            <span className="inline-flex items-center gap-1.5 rounded-sm bg-secondary px-3 py-1 text-[13px] font-semibold text-secondary-foreground">
               {listing.badge}
             </span>
-            <DialogTitle className="mt-3 font-heading text-2xl font-medium leading-tight text-foreground sm:text-3xl">
+            <DialogTitle className="mt-3 font-heading text-2xl font-bold leading-tight tracking-[-0.01em] text-foreground sm:text-3xl">
               {listing.title}
             </DialogTitle>
             <p className="mt-1.5 flex items-center gap-1.5 text-muted-foreground">
-              <MapPin className="h-4 w-4 text-ink-soft" />
+              <MapPin className="h-4 w-4 text-brass" />
               {listing.location}
             </p>
           </div>
           <div className="text-right">
-            <div className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
+            <div className="nums font-heading text-2xl font-bold text-foreground sm:text-3xl">
               {listing.price}
             </div>
-            <div className="text-sm text-muted-foreground">{listing.pricePerM2}</div>
+            <div className="nums text-sm text-muted-foreground">{listing.pricePerM2}</div>
           </div>
         </div>
 
@@ -128,7 +133,7 @@ function DetailBody({
             <ul className="mt-3 grid gap-2 sm:grid-cols-2">
               {listing.highlights.map((h) => (
                 <li key={h} className="flex items-start gap-2 text-[15px] text-foreground/85">
-                  <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-ink" />
+                  <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-brass" />
                   {h}
                 </li>
               ))}
@@ -140,17 +145,17 @@ function DetailBody({
           <div className="mt-6">
             <h3 className="font-heading text-lg font-semibold text-foreground">Arazi künyesi</h3>
             <dl className="mt-3 grid gap-2 sm:grid-cols-2">
-              <div className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-2.5">
+              <div className="flex items-center justify-between rounded-lg border border-border bg-muted/40 px-4 py-2.5">
                 <dt className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Maximize className="h-4 w-4 text-ink-soft" />
+                  <Maximize className="h-4 w-4 text-brass" />
                   Alan
                 </dt>
-                <dd className="text-sm font-semibold text-foreground">{listing.area}</dd>
+                <dd className="nums text-sm font-semibold text-foreground">{listing.area}</dd>
               </div>
               {listing.specs.map((s) => (
                 <div
                   key={s.label}
-                  className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-2.5"
+                  className="flex items-center justify-between rounded-lg border border-border bg-muted/40 px-4 py-2.5"
                 >
                   <dt className="text-sm text-muted-foreground">{s.label}</dt>
                   <dd className="text-right text-sm font-semibold text-foreground">{s.value}</dd>
@@ -167,7 +172,7 @@ function DetailBody({
               href={`https://www.google.com/maps?q=${listing.lat},${listing.lng}`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink hover:underline"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
             >
               Google Haritalar
               <ExternalLink className="h-4 w-4" />
@@ -185,7 +190,11 @@ function DetailBody({
         </div>
 
         <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-          <Button asChild size="lg" className="h-12 flex-1 gap-2 text-base">
+          <Button
+            asChild
+            size="lg"
+            className="h-12 flex-1 gap-2 bg-whatsapp text-base text-white hover:bg-whatsapp/90"
+          >
             <a href={wa} target="_blank" rel="noreferrer">
               <MessageCircle className="size-5" />
               WhatsApp’tan Bilgi Al

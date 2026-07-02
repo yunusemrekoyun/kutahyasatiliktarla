@@ -29,7 +29,7 @@ export function SiteHeader() {
   const phone = content.contact.phone;
 
   useEffect(() => {
-    const onScroll = () => setStuck(window.scrollY > 340);
+    const onScroll = () => setStuck(window.scrollY > 8);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -44,173 +44,130 @@ export function SiteHeader() {
   }
 
   return (
-    <>
-      <header id="top">
-        {/* Katman 1 — koyu utility bar */}
-        <div className="hidden bg-ink text-[13px] text-white/75 lg:block">
-          <div className="container flex h-9 items-stretch justify-between">
-            <span className="flex items-center">
-              Kütahya’nın yerel arazi platformu
-            </span>
-            <div className="flex items-stretch">
-              <a
-                href={telLink(phone)}
-                className="flex items-center gap-2 px-4 font-semibold text-white transition-colors hover:bg-white/10"
-              >
-                <Phone className="h-3.5 w-3.5" />
-                {phone}
-              </a>
-              <a
-                href={waLink(content.contact.whatsapp, 'Merhaba, bilgi almak istiyorum.')}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-2 px-4 transition-colors hover:bg-white/10 hover:text-white"
-              >
-                <MessageCircle className="h-3.5 w-3.5" />
-                WhatsApp
-              </a>
-              <a
-                href="#ilan-ver"
-                className="flex items-center bg-primary px-5 font-semibold text-primary-foreground transition-colors hover:bg-[hsl(45_100%_47%)]"
-              >
-                İlan Ver
-              </a>
-            </div>
+    <header id="top">
+      {/* Katman 1 — ince yeşil utility şeridi */}
+      <div className="hidden bg-primary text-[13px] text-primary-foreground/70 lg:block">
+        <div className="container flex h-9 items-stretch justify-between">
+          <span className="flex items-center tracking-wide">
+            Kütahya ve ilçelerinde yerel arazi platformu
+          </span>
+          <div className="flex items-stretch">
+            <a
+              href={telLink(phone)}
+              className="flex items-center gap-2 px-4 font-semibold text-primary-foreground transition-colors hover:bg-white/10"
+            >
+              <Phone className="h-3.5 w-3.5" />
+              {phone}
+            </a>
+            <a
+              href={waLink(content.contact.whatsapp, 'Merhaba, bilgi almak istiyorum.')}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-2 px-4 transition-colors hover:bg-white/10 hover:text-primary-foreground"
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+              WhatsApp
+            </a>
           </div>
         </div>
+      </div>
 
-        {/* Katman 2 — sarı marka bandı */}
-        <div className="bg-primary">
-          <div className="container flex h-[72px] items-center justify-between gap-4 lg:h-[92px]">
-            <a href="#top" aria-label={content.brand}>
-              <Logo brand={content.brand} />
-            </a>
+      {/* Katman 2 — sticky ana bar (fildişi, cam efekti) */}
+      <div
+        className={cn(
+          'sticky top-0 z-50 border-b transition-[background-color,box-shadow,border-color] duration-300 ease-out-quart',
+          stuck
+            ? 'border-border bg-background/85 shadow-soft backdrop-blur-md'
+            : 'border-transparent bg-background',
+        )}
+      >
+        <div className="container flex h-16 items-center justify-between gap-4 lg:h-20">
+          <a href="#top" aria-label={content.brand} className="shrink-0">
+            <Logo brand={content.brand} />
+          </a>
 
+          {/* Masaüstü nav — pirinç altı-çizgi animasyonu */}
+          <nav className="hidden items-center gap-1 lg:flex">
+            {navLinks.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                className="group relative px-3 py-2 text-[15px] font-medium text-foreground/75 transition-colors hover:text-foreground"
+              >
+                {l.label}
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-x-3 -bottom-0.5 h-[2px] origin-left scale-x-0 bg-brass transition-transform duration-300 ease-out-quart group-hover:scale-x-100"
+                />
+              </a>
+            ))}
+          </nav>
+
+          <div className="hidden items-center gap-3 lg:flex">
             <form
               onSubmit={submitSearch}
-              className="hidden w-72 items-center gap-2 border-b-2 border-ink/60 pb-1.5 transition-colors focus-within:border-ink lg:flex"
+              className="hidden h-10 w-52 items-center gap-2 rounded-sm border border-input bg-card px-3 transition-colors focus-within:border-primary xl:flex xl:w-60"
             >
+              <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="İlan ara"
                 aria-label="İlanlarda arayın"
-                className="w-full bg-transparent text-[15px] font-medium text-ink outline-none placeholder:text-ink/80"
+                className="w-full bg-transparent text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground"
               />
-              <button
-                type="submit"
-                aria-label="İlanlarda arayın"
-                className="grid h-8 w-8 place-items-center text-ink transition-colors hover:bg-ink/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <Search className="h-5 w-5" />
-              </button>
             </form>
-
-            {/* Mobil: menü */}
-            <div className="lg:hidden">
-              <Sheet open={open} onOpenChange={setOpen}>
-                <SheetTrigger asChild>
-                  <button
-                    aria-label="Menüyü açın"
-                    className="grid h-11 w-11 place-items-center border-2 border-ink/70 text-ink transition-colors hover:bg-ink/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    <Menu className="h-6 w-6" />
-                  </button>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-[86%] max-w-sm p-0">
-                  <SheetTitle className="sr-only">Menü</SheetTitle>
-                  <div className="bg-primary px-6 py-5">
-                    <Logo brand={content.brand} />
-                  </div>
-                  <div className="flex flex-col px-6 py-4">
-                    {navLinks.map((l) => (
-                      <SheetClose asChild key={l.href}>
-                        <a
-                          href={l.href}
-                          className="border-b border-border py-4 text-lg font-medium text-foreground transition-colors hover:text-ink"
-                        >
-                          {l.label}
-                        </a>
-                      </SheetClose>
-                    ))}
-                  </div>
-                  <div className="flex flex-col gap-3 px-6 pt-2">
-                    <SheetClose asChild>
-                      <Button asChild size="lg" className="h-12 text-base">
-                        <a href="#ilan-ver">İlan Ver</a>
-                      </Button>
-                    </SheetClose>
-                    <Button asChild variant="outline" size="lg" className="h-12 text-base">
-                      <a href={telLink(phone)}>
-                        <Phone className="size-5" />
-                        {phone}
-                      </a>
-                    </Button>
-                  </div>
-                </SheetContent>
-              </Sheet>
-            </div>
+            <Button asChild variant="brass" size="sm" className="h-10 px-5">
+              <a href="#ilan-ver">İlan Ver</a>
+            </Button>
           </div>
-        </div>
 
-        {/* Katman 3 — sarı banda bindirilmiş beyaz nav şeridi */}
-        <div className="relative hidden lg:block">
-          <div className="absolute inset-x-0 top-0 h-6 bg-primary" aria-hidden="true" />
-          <div className="container relative">
-            <nav className="inline-flex border border-border bg-background shadow-soft-sm">
-              {navLinks.map((l, i) => (
-                <a
-                  key={l.href}
-                  href={l.href}
-                  className={cn(
-                    'relative px-6 py-3.5 text-[15px] font-medium text-foreground transition-colors hover:bg-muted',
-                    i > 0 &&
-                      'before:absolute before:left-0 before:top-1/2 before:h-5 before:w-px before:-translate-y-1/2 before:bg-border',
-                  )}
+          {/* Mobil menü */}
+          <div className="lg:hidden">
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetTrigger asChild>
+                <button
+                  aria-label="Menüyü açın"
+                  className="grid h-11 w-11 place-items-center rounded-sm border border-border text-foreground transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  {l.label}
-                </a>
-              ))}
-            </nav>
+                  <Menu className="h-6 w-6" />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[86%] max-w-sm p-0">
+                <SheetTitle className="sr-only">Menü</SheetTitle>
+                <div className="bg-primary px-6 py-6">
+                  <Logo brand={content.brand} tone="light" />
+                </div>
+                <div className="flex flex-col px-6 py-4">
+                  {navLinks.map((l) => (
+                    <SheetClose asChild key={l.href}>
+                      <a
+                        href={l.href}
+                        className="border-b border-border py-4 text-lg font-medium text-foreground transition-colors hover:text-primary"
+                      >
+                        {l.label}
+                      </a>
+                    </SheetClose>
+                  ))}
+                </div>
+                <div className="flex flex-col gap-3 px-6 pt-2">
+                  <SheetClose asChild>
+                    <Button asChild variant="brass" size="lg" className="h-12 text-base">
+                      <a href="#ilan-ver">İlan Ver</a>
+                    </Button>
+                  </SheetClose>
+                  <Button asChild variant="outline" size="lg" className="h-12 text-base">
+                    <a href={telLink(phone)}>
+                      <Phone className="size-5" />
+                      {phone}
+                    </a>
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
-        </div>
-      </header>
-
-      {/* Sticky kompakt bar (masaüstü) */}
-      <div
-        className={cn(
-          'fixed inset-x-0 top-0 z-50 hidden -translate-y-full bg-primary transition-transform duration-300 ease-out-quart lg:block',
-          stuck && 'translate-y-0 shadow-soft',
-        )}
-      >
-        <div className="container flex h-14 items-center justify-between gap-6">
-          <a href="#top" aria-label={content.brand}>
-            <Logo brand={content.brand} />
-          </a>
-          <nav className="flex items-center">
-            {navLinks.map((l, i) => (
-              <a
-                key={l.href}
-                href={l.href}
-                className={cn(
-                  'relative px-4 py-2 text-[15px] font-medium text-ink transition-colors hover:bg-ink/10',
-                  i > 0 &&
-                    'before:absolute before:left-0 before:top-1/2 before:h-4 before:w-px before:-translate-y-1/2 before:bg-ink/25',
-                )}
-              >
-                {l.label}
-              </a>
-            ))}
-          </nav>
-          <a
-            href={telLink(phone)}
-            className="flex items-center gap-2 text-[15px] font-bold text-ink transition-colors hover:opacity-80"
-          >
-            <Phone className="h-4 w-4" />
-            {phone}
-          </a>
         </div>
       </div>
-    </>
+    </header>
   );
 }

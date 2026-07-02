@@ -2,50 +2,56 @@
 
 import { ArrowRight, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Reveal } from '@/components/motion/reveal';
 import { useStore, telLink, waLink } from '@/store';
 
 export function SellCta() {
   const { content } = useStore();
   return (
     <section id="ilan-ver" aria-label="İlan verin" className="bg-primary">
-      <div className="container flex flex-col items-start justify-between gap-8 py-14 sm:py-16 lg:flex-row lg:items-center">
-        <div className="max-w-2xl">
-          <h2 className="font-heading text-3xl font-light leading-[1.15] text-primary-foreground sm:text-4xl">
+      <div className="container flex flex-col items-start justify-between gap-8 py-16 sm:py-20 lg:flex-row lg:items-center">
+        <Reveal className="max-w-2xl">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-ondark">
+            Satıcılar için
+          </p>
+          <h2 className="mt-4 font-heading text-3xl font-bold leading-[1.1] tracking-tight text-primary-foreground sm:text-4xl">
             Arazinizi mi satmak istiyorsunuz?
           </h2>
-          <p className="mt-3 text-[17px] leading-relaxed text-primary-foreground/80">
+          <p className="mt-4 text-[17px] leading-relaxed text-primary-foreground/75">
             İlanınızı ücretsiz verin. Ekibimiz fotoğraf ve drone çekimini yapar,
             arazinizi doğru alıcıyla buluşturur; siz yalnızca görüşmeleri yaparsınız.
           </p>
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button
-            asChild
-            variant="ink"
-            size="lg"
-            className="h-[52px] px-8 text-[15px] uppercase tracking-wide"
-          >
-            <a
-              href={waLink(content.contact.whatsapp, 'Merhaba, arazimi ilana vermek istiyorum.')}
-              target="_blank"
-              rel="noreferrer"
+        </Reveal>
+        <Reveal delay={120} className="w-full lg:w-auto">
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Button
+              asChild
+              variant="brass"
+              size="lg"
+              className="h-[52px] px-8 text-[15px]"
             >
-              İlanımı Ücretsiz Ver
-              <ArrowRight className="size-5" />
-            </a>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            size="lg"
-            className="h-[52px] border-2 border-ink/60 bg-transparent px-8 text-[15px] font-bold text-ink hover:bg-ink/10 hover:text-ink"
-          >
-            <a href={telLink(content.contact.phone)}>
-              <Phone className="size-5" />
-              {content.contact.phone}
-            </a>
-          </Button>
-        </div>
+              <a
+                href={waLink(content.contact.whatsapp, 'Merhaba, arazimi ilana vermek istiyorum.')}
+                target="_blank"
+                rel="noreferrer"
+              >
+                İlanımı Ücretsiz Ver
+                <ArrowRight className="size-5" />
+              </a>
+            </Button>
+            <Button
+              asChild
+              variant="outlineOnDark"
+              size="lg"
+              className="h-[52px] px-8 text-[15px]"
+            >
+              <a href={telLink(content.contact.phone)}>
+                <Phone className="size-5" />
+                {content.contact.phone}
+              </a>
+            </Button>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

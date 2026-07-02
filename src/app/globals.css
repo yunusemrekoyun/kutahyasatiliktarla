@@ -4,42 +4,47 @@
 
 @layer base {
   :root {
-    /* Kurumsal sistem: marka sarısı + antrasit + gri disiplini.
-       Yeşil yalnızca logoda yaşar. */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 15%;
+    /* Editorial Estate — sıcak fildişi kanvas, derin çam yeşili, pirinç aksan */
+    --background: 43 33% 95%;
+    --foreground: 40 14% 13%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 15%;
+    --card-foreground: 40 14% 13%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 15%;
+    --popover-foreground: 40 14% 13%;
 
-    --primary: 45 100% 53%; /* #FFC510 — marka sarısı */
-    --primary-foreground: 0 0% 15%;
+    /* Derin çam yeşili — marka, koyu bantlar, başlık/link */
+    --primary: 154 42% 15%;
+    --primary-foreground: 43 33% 96%;
 
-    --secondary: 0 0% 88%; /* #E0E0E0 — ikincil buton */
-    --secondary-foreground: 0 0% 24%;
+    /* Pirinç/bronz — birincil CTA, fiyat, aksan (sıcak enerji, rafine) */
+    --brass: 34 54% 45%;
+    --brass-foreground: 36 50% 10%;
+    /* Açık zeminde küçük metin için koyultulmuş pirinç (WCAG AA ≥4.5:1) */
+    --brass-strong: 34 60% 36%;
+    /* Koyu/yeşil zeminde okunur açık pirinç (eyebrow, başlık aksanı) */
+    --brass-on-dark: 36 72% 64%;
 
-    --muted: 0 0% 96%; /* #F5F5F5 — bölüm/başlık bandı zemini */
-    --muted-foreground: 0 0% 36%;
+    --secondary: 150 16% 90%;
+    --secondary-foreground: 154 42% 16%;
 
-    --accent: 0 0% 94%;
-    --accent-foreground: 0 0% 15%;
+    --muted: 43 26% 92%;
+    --muted-foreground: 40 8% 38%;
 
-    --destructive: 0 70% 50%; /* #D82828 ailesi — yalnızca hata */
+    --accent: 150 20% 92%;
+    --accent-foreground: 154 42% 16%;
+
+    --destructive: 4 64% 46%;
     --destructive-foreground: 0 0% 100%;
 
-    --ink: 0 0% 24%; /* #3C3C3C — footer, utility bar, koyu bantlar */
-    --ink-soft: 0 0% 38%; /* #616161 */
+    --whatsapp: 173 77% 27%;
 
-    --whatsapp: 173 77% 27%; /* koyu teal — beyaz metin/ikonla ≥5:1 (AA) */
+    --border: 40 20% 86%;
+    --input: 40 20% 82%;
+    --ring: 154 42% 22%;
 
-    --border: 0 0% 87%;
-    --input: 0 0% 80%;
-    --ring: 0 0% 24%; /* odak halkası: mürekkep — sarı zeminde de görünür */
-
-    --radius: 2px; /* keskin köşe disiplini */
+    --radius: 4px;
 
     --ease-out-quart: cubic-bezier(0.23, 1, 0.32, 1);
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -57,7 +62,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-size: 1.0625rem; /* 17px — orta yaş üstü kitle için rahat okuma */
+    font-size: 1.0625rem; /* 17px */
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -66,23 +71,33 @@
 
   h1, h2, h3, h4 {
     @apply font-heading;
-    font-weight: 500;
-    letter-spacing: -0.01em;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  /* balance yalnızca bölüm başlıklarında; hero H1'de kırılımı biz kontrol ederiz */
+  h2, h3, h4 {
     text-wrap: balance;
   }
 
+  h1,
   p {
     text-wrap: pretty;
   }
 
   ::selection {
-    background: hsl(45 100% 53%);
-    color: hsl(0 0% 10%);
+    background: hsl(154 42% 15%);
+    color: hsl(43 33% 96%);
   }
 
-  /* Sticky header'ın altında kalmasın diye tüm çıpa hedeflerine pay */
+  /* Sabit üst bar yüksekliğine göre çapa boşluğu (mobil h-16, masaüstü h-20) */
   :where([id]) {
-    scroll-margin-top: 96px;
+    scroll-margin-top: 80px;
+  }
+  @media (min-width: 1024px) {
+    :where([id]) {
+      scroll-margin-top: 96px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -98,27 +113,76 @@
 }
 
 @layer utilities {
-  /* İmza detay: başlık altındaki kısa sarı çizgi */
-  .title-rule::after {
+  /* İmza: başlık altındaki kısa pirinç çizgi — tek spesifikasyon */
+  .rule-brass::after {
     content: '';
     display: block;
-    width: 56px;
-    height: 4px;
+    width: 40px;
+    height: 2px;
     margin-top: 14px;
-    background: hsl(var(--primary));
+    background: hsl(var(--brass));
   }
-  .title-rule-center::after {
+  .rule-brass-center::after {
     margin-left: auto;
     margin-right: auto;
   }
-  .title-rule-sm::after {
-    width: 36px;
-    height: 3px;
+  /* Küçük başlıklar (footer) için daralan varyant */
+  .rule-brass-sm::after {
+    width: 28px;
     margin-top: 10px;
+  }
+
+  /* Tabular figures — fiyat/rakam hizası */
+  .nums {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+
+  /* Scroll-reveal — içerik varsayılan görünür (SSR/JS-yok güvenli); yalnızca
+     ilk render'da ekran altındaki bloklar gizlenip animasyonlanır. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition:
+      opacity 0.8s var(--ease-out-expo),
+      transform 0.8s var(--ease-out-expo);
+  }
+  /* will-change yalnızca animasyon beklerken; görününce compositor katmanı bırakılır */
+  .reveal:not([data-shown='true']) {
+    will-change: opacity, transform;
+  }
+  .reveal[data-shown='true'] {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Ken-burns — hero görselinde yavaş sinematik yakınlaşma */
+  .kenburns {
+    animation: kenburns 22s var(--ease-in-out-quint) infinite alternate both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .kenburns {
+      animation: none;
+    }
   }
 }
 
-/* ---- Leaflet harita teması (marka pinleri) ---- */
+@keyframes kenburns {
+  from {
+    transform: scale(1.02) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.12) translate3d(-1.5%, -1.5%, 0);
+  }
+}
+
+/* ---- Leaflet harita teması ---- */
 .kst-pin-wrap {
   background: transparent;
   border: 0;
@@ -127,27 +191,27 @@
   width: 30px;
   height: 30px;
   border-radius: 50% 50% 50% 0;
-  background: hsl(45 100% 53%);
-  border: 2px solid hsl(0 0% 24%);
+  background: hsl(154 42% 15%);
+  border: 2px solid hsl(43 33% 96%);
   transform: rotate(-45deg);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 12px hsl(154 42% 10% / 0.4);
   display: grid;
   place-items: center;
   transition: transform 0.2s var(--ease-out-quart), background 0.2s ease;
 }
 .kst-pin-wrap:hover .kst-pin {
-  background: hsl(45 100% 47%);
+  background: hsl(154 44% 11%);
 }
 .kst-pin-inner {
   width: 9px;
   height: 9px;
   border-radius: 9999px;
-  background: hsl(0 0% 24%);
+  background: hsl(34 54% 50%);
   transform: rotate(45deg);
 }
 .leaflet-container {
   font-family: var(--font-sans), 'Helvetica Neue', Arial, sans-serif;
-  background: hsl(0 0% 92%);
+  background: hsl(43 20% 90%);
   isolation: isolate;
   z-index: 0;
 }
@@ -156,19 +220,19 @@
   z-index: 2 !important;
 }
 .leaflet-tooltip {
-  background: hsl(0 0% 15%);
-  color: #ffffff;
+  background: hsl(154 42% 15%);
+  color: hsl(43 33% 96%);
   border: 0;
-  border-radius: 2px;
+  border-radius: 3px;
   padding: 5px 12px;
   font-size: 12px;
   font-weight: 600;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 18px hsl(154 30% 12% / 0.3);
 }
 .leaflet-tooltip-top::before {
-  border-top-color: hsl(0 0% 15%);
+  border-top-color: hsl(154 42% 15%);
 }
 .leaflet-control-zoom a {
-  color: hsl(0 0% 15%);
-  border-color: hsl(0 0% 85%) !important;
+  color: hsl(154 42% 15%);
+  border-color: hsl(40 20% 82%) !important;
 }

@@ -10,14 +10,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { SectionHeading } from '@/components/site/section-heading';
+import { Reveal } from '@/components/motion/reveal';
 import { LAND_TYPES } from '@/content';
 import { scrollToId } from '@/lib/scroll';
-import { useStore } from '@/store';
 
 export type HomeFilters = { district: string; type: string; q: string };
 
 const fieldTrigger =
-  'h-14 w-full rounded-sm border-0 bg-white px-4 text-left text-[16px] font-medium text-foreground shadow-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-primary data-[placeholder]:text-muted-foreground [&>span]:flex [&>span]:items-center [&>span]:gap-2.5';
+  'h-14 w-full rounded-sm border border-input bg-background px-4 text-left text-[16px] font-medium text-foreground shadow-none transition-colors hover:border-primary/30 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background data-[placeholder]:text-muted-foreground [&>span]:flex [&>span]:items-center [&>span]:gap-2.5';
 
 export function SearchBand({
   districts,
@@ -26,7 +27,6 @@ export function SearchBand({
   districts: string[];
   onApply: (f: HomeFilters) => void;
 }) {
-  const { content } = useStore();
   const [district, setDistrict] = useState('all');
   const [type, setType] = useState('all');
 
@@ -41,62 +41,58 @@ export function SearchBand({
   }
 
   return (
-    <section aria-label="İlan arama" className="bg-primary py-12 sm:py-16">
+    <section aria-label="İlan arama" className="bg-background py-16 sm:py-20">
       <div className="container">
-        <h2 className="text-center font-heading text-3xl font-light text-primary-foreground sm:text-4xl">
-          Size nasıl yardımcı olabiliriz?
-        </h2>
-        <p className="mx-auto mt-3 max-w-xl text-center text-[17px] text-primary-foreground/80">
-          {content.hero.subtitle}
-        </p>
+        <SectionHeading
+          eyebrow="Aramaya başlayın"
+          title="Size uygun araziyi bulalım"
+          subtitle="İlçe ve arazi türünü seçin; aradığınız kriterlere uyan ilanları hemen listeleyelim."
+        />
 
-        <form
-          onSubmit={submit}
-          className="mx-auto mt-8 flex max-w-3xl flex-col gap-3 sm:flex-row sm:items-stretch"
-        >
-          <div className="flex-1">
-            <Select value={district} onValueChange={setDistrict}>
-              <SelectTrigger className={fieldTrigger} aria-label="İlçe seçin">
-                <MapPin className="h-5 w-5 shrink-0 text-ink-soft" />
-                <SelectValue placeholder="Tüm ilçeler" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tüm İlçeler</SelectItem>
-                {districts.map((d) => (
-                  <SelectItem key={d} value={d}>
-                    {d}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex-1">
-            <Select value={type} onValueChange={setType}>
-              <SelectTrigger className={fieldTrigger} aria-label="Arazi türü seçin">
-                <Sprout className="h-5 w-5 shrink-0 text-ink-soft" />
-                <SelectValue placeholder="Tüm türler" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tüm Türler</SelectItem>
-                {LAND_TYPES.map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {t}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <Button
-            type="submit"
-            variant="ink"
-            size="lg"
-            className="h-14 px-10 text-[15px] uppercase tracking-wide"
+        <Reveal delay={120}>
+          <form
+            onSubmit={submit}
+            className="mx-auto mt-9 flex max-w-3xl flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-soft sm:flex-row sm:items-stretch sm:p-5"
           >
-            İlanları Göster
-          </Button>
-        </form>
+            <div className="flex-1">
+              <Select value={district} onValueChange={setDistrict}>
+                <SelectTrigger className={fieldTrigger} aria-label="İlçe seçin">
+                  <MapPin className="h-5 w-5 shrink-0 text-brass-strong" />
+                  <SelectValue placeholder="Tüm ilçeler" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tüm İlçeler</SelectItem>
+                  {districts.map((d) => (
+                    <SelectItem key={d} value={d}>
+                      {d}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex-1">
+              <Select value={type} onValueChange={setType}>
+                <SelectTrigger className={fieldTrigger} aria-label="Arazi türü seçin">
+                  <Sprout className="h-5 w-5 shrink-0 text-brass-strong" />
+                  <SelectValue placeholder="Tüm türler" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tüm Türler</SelectItem>
+                  {LAND_TYPES.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {t}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button type="submit" variant="brass" size="lg" className="h-14 px-10 text-[15px]">
+              İlanları Göster
+            </Button>
+          </form>
+        </Reveal>
       </div>
     </section>
   );

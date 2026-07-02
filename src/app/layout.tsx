@@ -1,13 +1,20 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
-import { Barlow } from 'next/font/google';
+import { Bricolage_Grotesque, Hanken_Grotesk } from 'next/font/google';
 import 'leaflet/dist/leaflet.css';
 import './globals.css';
 import { Providers } from './providers';
 
-const sans = Barlow({
+const display = Bricolage_Grotesque({
   subsets: ['latin', 'latin-ext'],
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['500', '600', '700'],
+  variable: '--font-display',
+  display: 'swap',
+});
+
+const sans = Hanken_Grotesk({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-sans',
   display: 'swap',
 });
@@ -26,7 +33,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#FFC510' /* = hsl(var(--primary)) marka sarısı */,
+  themeColor: '#163a2c' /* derin çam yeşili — marka rengi */,
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
@@ -34,7 +41,13 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="tr" className={sans.variable}>
+    <html lang="tr" className={`${display.variable} ${sans.variable}`}>
+      <head>
+        {/* JS kapalıysa scroll-reveal içerikleri gizli kalmasın */}
+        <noscript>
+          <style>{`.reveal{opacity:1 !important;transform:none !important}`}</style>
+        </noscript>
+      </head>
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
         <Providers>{children}</Providers>
       </body>

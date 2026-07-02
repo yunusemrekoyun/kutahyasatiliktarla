@@ -5,6 +5,8 @@ import { Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ListingCard } from '@/components/listings/listing-card';
 import { ListingDetailDialog } from '@/components/listings/listing-detail-dialog';
+import { SectionHeading } from '@/components/site/section-heading';
+import { Reveal } from '@/components/motion/reveal';
 import { useStore, waLink } from '@/store';
 import type { Listing } from '@/content';
 import type { HomeFilters } from './search-band';
@@ -37,16 +39,15 @@ export function FeaturedListings({
   );
 
   return (
-    <section id="ilanlar" className="bg-background py-16 sm:py-24">
+    <section id="ilanlar" className="bg-background py-20 sm:py-28">
       <div className="container">
-        <h2 className="title-rule title-rule-center text-center font-heading text-3xl font-light text-foreground sm:text-4xl">
-          {content.sections.listingsTitle}
-        </h2>
-        <p className="mx-auto mt-5 max-w-2xl text-center text-[17px] text-muted-foreground">
-          {content.sections.listingsSubtitle}
-        </p>
+        <SectionHeading
+          eyebrow="Vitrin"
+          title={content.sections.listingsTitle}
+          subtitle={content.sections.listingsSubtitle}
+        />
 
-        <div className="mt-10 flex items-center justify-between gap-4">
+        <div className="mt-12 flex items-center justify-between gap-4 border-b border-border pb-5">
           <span className="text-[15px] text-muted-foreground">
             <b className="font-semibold text-foreground">{visible.length}</b> ilan
             listeleniyor
@@ -66,11 +67,11 @@ export function FeaturedListings({
         </div>
 
         {visible.length === 0 ? (
-          <div className="mt-6 border border-dashed border-input bg-muted/50 py-16 text-center">
-            <div className="mx-auto grid h-14 w-14 place-items-center border border-border bg-background text-ink-soft">
+          <div className="mt-6 rounded-lg border border-dashed border-input bg-muted/50 py-16 text-center">
+            <div className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-border bg-background text-brass">
               <Search className="h-7 w-7" />
             </div>
-            <h3 className="mt-5 font-heading text-xl font-medium text-foreground">
+            <h3 className="mt-5 font-heading text-xl font-semibold text-foreground">
               Bu kriterlere uygun ilan bulunamadı
             </h3>
             <p className="mx-auto mt-2 max-w-sm leading-relaxed text-muted-foreground">
@@ -97,9 +98,11 @@ export function FeaturedListings({
             </div>
           </div>
         ) : (
-          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {visible.map((l) => (
-              <ListingCard key={l.id} listing={l} onOpen={setSelected} className="h-full" />
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {visible.map((l, i) => (
+              <Reveal key={l.id} delay={(i % 3) * 90} className="h-full">
+                <ListingCard listing={l} onOpen={setSelected} className="h-full" />
+              </Reveal>
             ))}
           </div>
         )}

@@ -24,14 +24,14 @@ export function ListingCard({
   return (
     <article
       className={cn(
-        'group flex h-full flex-col border border-border bg-card transition-colors duration-200 hover:border-ink/35',
+        'group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card transition-[transform,box-shadow,border-color] duration-300 ease-out-quart hover:-translate-y-1 hover:border-primary/25 hover:shadow-soft',
         className,
       )}
     >
       <button
         type="button"
         onClick={() => onOpen?.(listing)}
-        className="relative block aspect-[4/3] w-full overflow-hidden bg-muted text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        className="relative block aspect-[4/3] w-full overflow-hidden bg-muted text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
         aria-label={`${listing.title} detaylarını açın`}
       >
         {cover ? (
@@ -40,64 +40,63 @@ export function ListingCard({
             src={cover}
             alt={listing.title}
             loading="lazy"
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover transition-transform duration-[900ms] ease-out-expo group-hover:scale-[1.06]"
           />
         ) : (
-          <div className="grid h-full w-full place-items-center bg-muted text-ink-soft">
+          <div className="grid h-full w-full place-items-center bg-muted text-muted-foreground">
             <MapPin className="h-8 w-8" />
           </div>
         )}
-        {/* Hover: kurumsal koyulaşma */}
-        <div
-          className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/15"
-          aria-hidden="true"
-        />
-        {/* Sarı fiyat etiketi — sola yaslı, keskin */}
-        <span className="absolute left-0 top-5 bg-primary px-4 py-2 font-heading text-[17px] font-bold leading-none text-primary-foreground">
+        {/* Fiyat etiketi — marka yeşili: her fotoğrafta yüksek kontrast, sakin */}
+        <span className="nums absolute left-4 top-4 rounded-sm bg-primary px-3.5 py-2 font-heading text-[16px] font-bold leading-none text-primary-foreground shadow-soft">
           {listing.price}
         </span>
-        {/* Alt degrade + künye */}
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent pt-14">
-          <div className="px-5 pb-4">
-            <h3 className="font-heading text-xl font-medium leading-snug text-white">
-              {listing.title}
-            </h3>
-            <p className="mt-1.5 flex items-center gap-1.5 text-[14px] text-white/85">
-              <MapPin className="h-4 w-4" />
-              {listing.location}
-              <span aria-hidden="true">·</span>
-              {listing.area}
-            </p>
-          </div>
-        </div>
+        {/* Tür rozeti */}
+        {listing.badge ? (
+          <span className="absolute right-4 top-4 rounded-sm bg-background/90 px-3 py-1.5 text-[12px] font-semibold text-foreground backdrop-blur-sm">
+            {listing.badge}
+          </span>
+        ) : null}
       </button>
 
-      <div className="flex items-center justify-between gap-3 px-5 py-3.5">
-        <button
-          type="button"
-          onClick={() => onOpen?.(listing)}
-          className="flex items-center gap-1.5 text-[15px] font-semibold text-foreground transition-colors hover:text-ink-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          Detayları Gör
-          <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-        </button>
-        <div className="flex items-center gap-2">
-          <a
-            href={telLink(content.contact.phone)}
-            aria-label="Telefonla arayın"
-            className="grid h-11 w-11 place-items-center border border-border text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      <div className="flex flex-1 flex-col p-6">
+        <h3 className="font-heading text-[19px] font-semibold leading-snug tracking-[-0.01em] text-foreground">
+          {listing.title}
+        </h3>
+        <p className="mt-2 flex items-center gap-1.5 text-[14px] text-muted-foreground">
+          <MapPin className="h-4 w-4 shrink-0 text-brass" />
+          {listing.location}
+          <span aria-hidden="true" className="text-border">·</span>
+          <span className="nums">{listing.area}</span>
+        </p>
+
+        <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
+          <button
+            type="button"
+            onClick={() => onOpen?.(listing)}
+            className="group/link flex items-center gap-1.5 text-[15px] font-semibold text-primary transition-colors hover:text-[hsl(154_46%_11%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <Phone className="h-5 w-5" />
-          </a>
-          <a
-            href={wa}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="WhatsApp’tan yazın"
-            className="grid h-11 w-11 place-items-center border border-border text-whatsapp transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <MessageCircle className="h-5 w-5" />
-          </a>
+            Detayları Gör
+            <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover/link:translate-x-0.5" />
+          </button>
+          <div className="flex items-center gap-2">
+            <a
+              href={telLink(content.contact.phone)}
+              aria-label="Telefonla arayın"
+              className="grid h-11 w-11 place-items-center rounded-sm border border-border text-foreground transition-colors hover:border-primary/30 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <Phone className="h-5 w-5" />
+            </a>
+            <a
+              href={wa}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="WhatsApp’tan yazın"
+              className="grid h-11 w-11 place-items-center rounded-sm border border-border text-whatsapp transition-colors hover:border-whatsapp/40 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <MessageCircle className="h-5 w-5" />
+            </a>
+          </div>
         </div>
       </div>
     </article>
