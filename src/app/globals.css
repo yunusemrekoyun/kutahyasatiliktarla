@@ -207,21 +207,20 @@
   /* İlan duvarı (hero arka planı) — kaydırınca hafifçe geri çekilir/bulanır */
   .op-wall {
     transform: scale(calc(1 - clamp(0, var(--p, 0) / 0.3, 1) * 0.06));
-    filter: blur(calc(clamp(0, var(--p, 0) / 0.3, 1) * 4px));
-    will-change: transform, filter;
+    will-change: transform;
   }
   /* Fildişi veil: karo büyürken belirir, duvarı kapatıp sayfa zemini olur. */
   .op-veil {
     opacity: clamp(0, (var(--p, 0) - 0.2) / 0.26, 1);
   }
-  /* Seçili karo: duvardaki bir konumdan öne YAKLAŞIP doğrudan kart boyutuna
-     yumuşakça büyür (tam ekranı kaplamaz); hafif bir taşma ile oturur.
-     --g büyüme, --s oturma. Matte yok; zemin veil. */
-  .op-window {
+  /* Kart gölgesi: pencereyle birebir aynı ölçekte hareket eden ayrı katman.
+     Gölge STATİK (bir kez rasterlenir, sadece transform'la ölçeklenir);
+     yalnızca opacity --g ile belirir → her kaydırma karesinde repaint yok. */
+  .op-frame {
     --g: clamp(0, (var(--p, 0) - 0.06) / 0.4, 1);
     --s: clamp(0, (var(--p, 0) - 0.36) / 0.16, 1);
-    opacity: clamp(0, (var(--p, 0) - 0.02) / 0.05, 1);
-    border-radius: calc(8px + var(--g) * 8px);
+    opacity: clamp(0, (var(--p, 0) - 0.12) / 0.22, 1);
+    border-radius: 12px;
     transform:
       translate3d(
         calc((1 - var(--g)) * 21%),
@@ -229,8 +228,25 @@
         0
       )
       scale(calc(0.2 + var(--g) * 0.4 - var(--s) * 0.1));
-    box-shadow: 0 calc(var(--g) * 26px) calc(var(--g) * 64px + 1px)
-      calc(var(--g) * -22px) hsl(154 30% 12% / 0.32);
+    box-shadow: 0 52px 120px -40px hsl(154 30% 12% / 0.34);
+    will-change: transform, opacity;
+  }
+  /* Seçili karo: duvardaki bir konumdan öne YAKLAŞIP doğrudan kart boyutuna
+     yumuşakça büyür (tam ekranı kaplamaz); hafif bir taşma ile oturur.
+     --g büyüme, --s oturma. Matte yok; zemin veil. Yalnızca transform/opacity
+     animasyonu — gölge/köşe sabit, böylece her karede repaint olmaz. */
+  .op-window {
+    --g: clamp(0, (var(--p, 0) - 0.06) / 0.4, 1);
+    --s: clamp(0, (var(--p, 0) - 0.36) / 0.16, 1);
+    opacity: clamp(0, (var(--p, 0) - 0.02) / 0.05, 1);
+    border-radius: 12px;
+    transform:
+      translate3d(
+        calc((1 - var(--g)) * 21%),
+        calc((1 - var(--g)) * 8% - var(--g) * 6%),
+        0
+      )
+      scale(calc(0.2 + var(--g) * 0.4 - var(--s) * 0.1));
     will-change: transform, opacity;
   }
   .op-hero {
@@ -277,7 +293,9 @@
     animation-play-state: paused;
   }
   [data-phase='card'] .op-wall,
-  [data-phase='card'] .op-row {
+  [data-phase='card'] .op-row,
+  [data-phase='card'] .op-window,
+  [data-phase='card'] .op-frame {
     will-change: auto;
   }
   /* İlan görseli yandan kayarak gelir (eski görselin üstüne biner) */

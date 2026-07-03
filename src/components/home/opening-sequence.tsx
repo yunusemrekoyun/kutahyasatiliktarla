@@ -107,11 +107,20 @@ export function OpeningSequence() {
     <section
       ref={sectionRef}
       aria-label="Tanıtım"
-      className={scenic ? 'relative -mt-20 h-[220vh] bg-primary lg:-mt-24' : '-mt-20 lg:-mt-24'}
+      className={cn(
+        scenic
+          ? 'relative -mt-20 h-[220vh] bg-primary lg:-mt-24'
+          : '-mt-20 lg:-mt-24',
+        // SSR/ilk boyamada sahne henüz bilinmezken masaüstünde 220vh yüksekliği
+        // baştan ayır → hydrate olurken alttaki içerik yerinden oynamaz (CLS yok).
+        !mounted && 'bg-primary lg:h-[220vh]',
+      )}
     >
       <div
         ref={rootRef}
-        className={scenic ? 'sticky top-0 h-[100svh] overflow-hidden bg-background' : ''}
+        className={
+          scenic ? 'sticky top-0 h-screen overflow-hidden bg-background' : ''
+        }
       >
         {scenic && active ? (
           <div className="relative h-full w-full">
@@ -160,6 +169,10 @@ export function OpeningSequence() {
 
             {/* Fildişi veil — görsel çerçevelenirken duvarı kapatır (kart zemini) */}
             <div className="op-veil absolute inset-0 bg-background" aria-hidden="true" />
+
+            {/* Kart gölgesi — pencereyle aynı ölçekte ayrı katman (statik gölge,
+                yalnızca opacity animasyonu; overflow-hidden'a takılmaz) */}
+            <div className="op-frame absolute inset-0 z-[5]" aria-hidden="true" />
 
             {/* Seçili karo — duvardan yaklaşıp büyür, çerçevelenir; ok'la değişir */}
             <div className="op-window absolute inset-0 z-[6] overflow-hidden">
@@ -291,13 +304,17 @@ export function OpeningSequence() {
 
             {/* Künye kartı — kap sabit, içerik ilan değişince yumuşak geçer */}
             <div className="op-caption absolute inset-x-0 top-[68.5%] z-20 flex justify-center">
-              <div className="w-[50%] max-w-[52rem] overflow-hidden rounded-lg border border-border bg-card/95 p-5 shadow-soft-lg backdrop-blur-sm sm:p-6">
+              <div
+                className="w-[50%] max-w-[52rem] overflow-hidden rounded-lg border border-border bg-card/95 p-5 shadow-soft-lg backdrop-blur-sm sm:p-6"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                {/* key ile iç sarmalayıcı yeniden binerek fade tetiklenir; canlı
+                    bölge (aria-live) üstteki sabit kapta kalır → okuyucu duyurur */}
                 <div
                   key={idx}
                   className="op-fade"
                   style={{ ['--sdir' as string]: `${dir * 22}px` }}
-                  aria-live="polite"
-                  aria-atomic="true"
                 >
                   <p className="flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-brass-strong">
                     <span className="h-0.5 w-6 bg-brass" aria-hidden="true" />
