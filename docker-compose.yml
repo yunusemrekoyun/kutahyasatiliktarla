@@ -1,0 +1,9 @@
+services:
+  app:
+    build: .
+    image: kutahyasatiliktarla-app
+    container_name: kutahyasatiliktarla-demo
+    restart: unless-stopped
+    # Yalnızca loopback'e açılır; dış dünyaya nginx proxy'ler
+    ports:
+      - '127.0.0.1:3010:3000'
