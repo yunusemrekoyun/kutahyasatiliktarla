@@ -235,11 +235,20 @@
   .op-arrows {
     opacity: clamp(0, (var(--p, 0) - 0.56) / 0.2, 1);
   }
-  /* İlan değişince künye içeriği yumuşak geçer (kart kabı sabit kalır) */
+  /* İlan görseli yandan kayarak gelir (eski görselin üstüne biner) */
+  .op-slide-r {
+    animation: op-slide-r 0.62s var(--ease-out-expo) both;
+  }
+  .op-slide-l {
+    animation: op-slide-l 0.62s var(--ease-out-expo) both;
+  }
+  /* Künye içeriği geliş yönünde kayıp belirir (kart kabı sabit) */
   .op-fade {
-    animation: op-fade-in 0.42s ease both;
+    animation: op-fade-in 0.55s var(--ease-out-quart) both;
   }
   @media (prefers-reduced-motion: reduce) {
+    .op-slide-r,
+    .op-slide-l,
     .op-fade {
       animation: none;
     }
@@ -366,10 +375,28 @@
 
 @keyframes op-fade-in {
   from {
-    opacity: 0.35;
+    opacity: 0.25;
+    transform: translateX(var(--sdir, 22px));
   }
   to {
     opacity: 1;
+    transform: none;
+  }
+}
+@keyframes op-slide-r {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes op-slide-l {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
   }
 }
 

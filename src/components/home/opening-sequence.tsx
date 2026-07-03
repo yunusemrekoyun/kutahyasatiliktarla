@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowRight,
@@ -40,24 +40,30 @@ export function OpeningSequence() {
   const firstCover = first?.images?.[0] ?? HERO_IMG;
 
   const [idx, setIdx] = useState(0);
-  // İki katman: aktif ilan üstte, diğeri arkada; ok'a basınca çapraz geçer.
-  const [front, setFront] = useState(0);
-  const [layers, setLayers] = useState<[string, string]>([firstCover, firstCover]);
+  const [dir, setDir] = useState<1 | -1>(1);
+  // Taban görsel sabit durur; ok'a basınca yeni görsel yandan kayıp üstüne
+  // biner, kayma bitince taban güncellenir → çerçeve hep dolu, temiz kayma.
+  const [baseSrc, setBaseSrc] = useState(firstCover);
+  const [incoming, setIncoming] = useState<{ src: string; dir: 1 | -1; seq: number } | null>(
+    null,
+  );
+  const seq = useRef(0);
 
   const active = listings[idx] ?? first;
 
-  function go(dir: 1 | -1) {
+  function go(d: 1 | -1) {
     if (listings.length < 2) return;
-    const next = (idx + dir + listings.length) % listings.length;
-    const back = front ^ 1;
+    const next = (idx + d + listings.length) % listings.length;
     const cover = listings[next]?.images?.[0] ?? HERO_IMG;
-    setLayers((l) => {
-      const c: [string, string] = [...l];
-      c[back] = cover;
-      return c;
-    });
-    setFront(back);
+    seq.current += 1;
+    setDir(d);
     setIdx(next);
+    setIncoming({ src: cover, dir: d, seq: seq.current });
+  }
+
+  function onIncomingEnd(src: string) {
+    setBaseSrc(src);
+    setIncoming(null);
   }
 
   const wa = active
@@ -86,26 +92,27 @@ export function OpeningSequence() {
           <div className="relative h-full w-full">
             {/* Morph penceresi: tam ekrandan kart-görseline çerçevelenir */}
             <div className="op-window absolute inset-0 overflow-hidden">
-              {/* İlan görseli — iki katman, ok'a basınca çapraz geçer */}
+              {/* İlan görseli — taban + yandan kayan yeni görsel */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={layers[0]}
+                src={baseSrc}
                 alt={active.title}
-                className={cn(
-                  'absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-out',
-                  front === 0 ? 'opacity-100' : 'opacity-0',
-                )}
+                className="absolute inset-0 h-full w-full object-cover"
               />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={layers[1]}
-                alt=""
-                aria-hidden="true"
-                className={cn(
-                  'absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-out',
-                  front === 1 ? 'opacity-100' : 'opacity-0',
-                )}
-              />
+              {incoming ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={incoming.seq}
+                  src={incoming.src}
+                  alt=""
+                  aria-hidden="true"
+                  onAnimationEnd={() => onIncomingEnd(incoming.src)}
+                  className={cn(
+                    'absolute inset-0 h-full w-full object-cover',
+                    incoming.dir === 1 ? 'op-slide-r' : 'op-slide-l',
+                  )}
+                />
+              ) : null}
               {/* Hero görseli — çerçevelenirken çıkar (morph çapraz geçişi) */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -195,32 +202,36 @@ export function OpeningSequence() {
               </div>
             </div>
 
-            {/* Slider okları — görselin yanlarında, kart oluşunca belirir */}
+            {/* Slider okları — ekranın sağ/sol kenarında, kart oluşunca belirir */}
             {listings.length > 1 ? (
               <>
                 <button
                   type="button"
                   onClick={() => go(-1)}
                   aria-label="Önceki ilan"
-                  className="op-arrows absolute left-[25.5%] top-[42%] z-30 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/25 bg-[hsl(154_42%_9%_/_0.5)] text-white backdrop-blur-sm transition hover:bg-[hsl(154_42%_9%_/_0.78)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                  className="op-arrows absolute left-4 top-[42%] z-30 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full border border-border bg-card/85 text-foreground shadow-soft backdrop-blur transition hover:bg-card hover:shadow-soft-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:left-8"
                 >
-                  <ChevronLeft className="h-5 w-5" />
+                  <ChevronLeft className="h-6 w-6" />
                 </button>
                 <button
                   type="button"
                   onClick={() => go(1)}
                   aria-label="Sonraki ilan"
-                  className="op-arrows absolute right-[25.5%] top-[42%] z-30 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/25 bg-[hsl(154_42%_9%_/_0.5)] text-white backdrop-blur-sm transition hover:bg-[hsl(154_42%_9%_/_0.78)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                  className="op-arrows absolute right-4 top-[42%] z-30 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full border border-border bg-card/85 text-foreground shadow-soft backdrop-blur transition hover:bg-card hover:shadow-soft-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:right-8"
                 >
-                  <ChevronRight className="h-5 w-5" />
+                  <ChevronRight className="h-6 w-6" />
                 </button>
               </>
             ) : null}
 
             {/* Künye kartı — kap sabit, içerik ilan değişince yumuşak geçer */}
             <div className="op-caption absolute inset-x-0 top-[68.5%] z-20 flex justify-center">
-              <div className="w-[50%] max-w-[52rem] rounded-lg border border-border bg-card/95 p-5 shadow-soft-lg backdrop-blur-sm sm:p-6">
-                <div key={idx} className="op-fade">
+              <div className="w-[50%] max-w-[52rem] overflow-hidden rounded-lg border border-border bg-card/95 p-5 shadow-soft-lg backdrop-blur-sm sm:p-6">
+                <div
+                  key={idx}
+                  className="op-fade"
+                  style={{ ['--sdir' as string]: `${dir * 22}px` }}
+                >
                   <p className="flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-brass-strong">
                     <span className="h-0.5 w-6 bg-brass" aria-hidden="true" />
                     Öne çıkan parsel
