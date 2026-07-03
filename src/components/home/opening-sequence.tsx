@@ -41,6 +41,10 @@ export function OpeningSequence() {
 
   const [idx, setIdx] = useState(0);
   const [dir, setDir] = useState<1 | -1>(1);
+  // İlk boyamada (SSR) ağır fallback yerine sade hero; showcase kartı yalnızca
+  // mobil/statik kesinleşince eklenir → masaüstünde yük anı sıçraması olmaz.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   // Taban görsel sabit durur; ok'a basınca yeni görsel yandan kayıp üstüne
   // biner, kayma bitince taban güncellenir → çerçeve hep dolu, temiz kayma.
   const [baseSrc, setBaseSrc] = useState(firstCover);
@@ -143,6 +147,7 @@ export function OpeningSequence() {
                             alt=""
                             aria-hidden="true"
                             loading="lazy"
+                            decoding="async"
                             className="h-full w-full object-cover brightness-90 saturate-[.85]"
                           />
                         </div>
@@ -162,6 +167,7 @@ export function OpeningSequence() {
               <img
                 src={baseSrc}
                 alt={active.title}
+                decoding="async"
                 className="absolute inset-0 h-full w-full object-cover"
               />
               {incoming ? (
@@ -398,7 +404,7 @@ export function OpeningSequence() {
                 </div>
               </div>
             </div>
-            {first ? (
+            {mounted && first ? (
               <div className="bg-background py-16 sm:py-20">
                 <div className="container">
                   <Reveal>
