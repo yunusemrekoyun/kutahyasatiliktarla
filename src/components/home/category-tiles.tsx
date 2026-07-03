@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { useStore } from '@/store';
 import { SectionHeading } from '@/components/site/section-heading';
@@ -11,13 +12,7 @@ import type { District } from '@/content';
  * Her satır bir pafta kaydı gibi okunur; büyük Bricolage ilçe adı,
  * hairline ayraçlar, sağda ilan sayısı ve ok.
  */
-export function CategoryTiles({
-  districts,
-  onPick,
-}: {
-  districts: District[];
-  onPick: (district: string) => void;
-}) {
+export function CategoryTiles({ districts }: { districts: District[] }) {
   const { content } = useStore();
   return (
     <section id="bolgeler" className="bg-muted py-20 sm:py-28">
@@ -33,9 +28,8 @@ export function CategoryTiles({
           {districts.map((d, i) => (
             <li key={d.name} className="border-b border-border">
               <Reveal delay={i * 60}>
-                <button
-                  type="button"
-                  onClick={() => onPick(d.name)}
+                <Link
+                  href={`/ilanlar?ilce=${encodeURIComponent(d.name)}`}
                   className="group grid w-full grid-cols-[2.5rem_1fr_auto] items-center gap-x-4 py-6 text-left transition-colors duration-200 hover:bg-card sm:grid-cols-[3.5rem_1fr_auto_auto] sm:gap-x-6 sm:px-4 sm:py-7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                 >
                   <span
@@ -57,7 +51,7 @@ export function CategoryTiles({
                     {d.count}
                   </span>
                   <ArrowRight className="h-5 w-5 justify-self-end text-brass-strong transition-transform duration-300 ease-out-quart group-hover:translate-x-1.5" />
-                </button>
+                </Link>
               </Reveal>
             </li>
           ))}

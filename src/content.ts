@@ -123,7 +123,7 @@ export const defaultContent: SiteContent = {
       droneVideo: BG_VIDEO,
       images: [
         'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1200&q=80',
-        'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=1200&q=80',
         'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80',
       ],
       description:
@@ -163,8 +163,8 @@ export const defaultContent: SiteContent = {
       droneVideo: BG_VIDEO,
       images: [
         'https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=1200&q=80',
-        'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80',
-        'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1200&q=80',
       ],
       description:
         'Gelişim aksına yakın, uzun vadeli değer artışı potansiyeli taşıyan arazi. Ulaşım bağlantıları güçlenen bölgede, hem tarımsal hem yatırımsal kullanıma uygun konum.',
@@ -203,8 +203,8 @@ export const defaultContent: SiteContent = {
       droneVideo: BG_VIDEO,
       images: [
         'https://images.unsplash.com/photo-1517022812141-23620dba5c23?auto=format&fit=crop&w=1200&q=80',
-        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
-        'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=1200&q=80',
       ],
       description:
         'Şehir merkezine kısa mesafede, köy içi konum avantajı sunan arsa. Altyapıya yakın, müstakil ev veya bağ-bahçe kullanımı için ideal, ulaşımı kolay konumda.',
@@ -243,8 +243,8 @@ export const defaultContent: SiteContent = {
       droneVideo: BG_VIDEO,
       images: [
         'https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?auto=format&fit=crop&w=1200&q=80',
-        'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80',
-        'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80',
       ],
       description:
         'Doğayla iç içe, temiz havalı bir konumda bağ-bahçe ve hobi tarımı için ideal arazi. Su kaynağına yakın, manzaralı ve sakin bir çevrede.',
@@ -283,8 +283,8 @@ export const defaultContent: SiteContent = {
       droneVideo: BG_VIDEO,
       images: [
         'https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&w=1200&q=80',
-        'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80',
-        'https://images.unsplash.com/photo-1499346030926-9a72daac6c63?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=1200&q=80',
       ],
       description:
         'Altıntaş Ovası’nın verimli topraklarında, sulu tarıma elverişli geniş tarla. Düz zemini ve geniş cephesiyle modern tarım ve yatırım için güçlü seçenek.',
@@ -323,8 +323,8 @@ export const defaultContent: SiteContent = {
       droneVideo: BG_VIDEO,
       images: [
         'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=1200&q=80',
-        'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=80',
-        'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80',
       ],
       description:
         'Emet ilçesinde, uygun bütçeyle köy içi konum arayanlar için ideal arsa. Altyapıya yakın, müstakil ev veya yazlık için elverişli.',

@@ -1,10 +1,10 @@
 'use client';
 
+import Link from 'next/link';
 import { ArrowRight, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/motion/reveal';
 import { TopoLines } from '@/components/site/topo';
-import { scrollToId } from '@/lib/scroll';
 import { useStore, telLink } from '@/store';
 
 export function Hero() {
@@ -60,14 +60,11 @@ export function Hero() {
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Button
-              variant="brass"
-              size="lg"
-              className="h-[52px] px-8 text-base"
-              onClick={() => scrollToId('ilanlar')}
-            >
-              İlanları Görün
-              <ArrowRight className="size-5" />
+            <Button asChild variant="brass" size="lg" className="h-[52px] px-8 text-base">
+              <Link href="/ilanlar">
+                İlanları Görün
+                <ArrowRight className="size-5" />
+              </Link>
             </Button>
             <Button
               asChild

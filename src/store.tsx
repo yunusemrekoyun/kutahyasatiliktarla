@@ -33,12 +33,6 @@ type Store = {
   leads: Lead[];
   addLead: (lead: Omit<Lead, 'id' | 'createdAt'>) => void;
   clearLeads: () => void;
-  /** Footer gibi uzak bileşenlerden ana sayfa ilan filtresine ilçe isteği. */
-  districtRequest: string | null;
-  requestDistrict: (d: string | null) => void;
-  /** Header aramasından ana sayfa ilan filtresine serbest metin isteği. */
-  searchRequest: string | null;
-  requestSearch: (q: string | null) => void;
 };
 
 const StoreContext = createContext<Store | null>(null);
@@ -83,8 +77,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [content, setContent] = useState<SiteContent>(() => mergeContent(null));
   const [leads, setLeads] = useState<Lead[]>([]);
   const [hydrated, setHydrated] = useState(false);
-  const [districtRequest, requestDistrict] = useState<string | null>(null);
-  const [searchRequest, requestSearch] = useState<string | null>(null);
 
   // Load persisted state on the client after mount. Reading localStorage here
   // (rather than in the useState initializer) keeps the server-rendered HTML
@@ -133,12 +125,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       leads,
       addLead,
       clearLeads,
-      districtRequest,
-      requestDistrict,
-      searchRequest,
-      requestSearch,
     }),
-    [content, hydrated, saveContent, resetContent, leads, addLead, clearLeads, districtRequest, searchRequest]
+    [content, hydrated, saveContent, resetContent, leads, addLead, clearLeads]
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

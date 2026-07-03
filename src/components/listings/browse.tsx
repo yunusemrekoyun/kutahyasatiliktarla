@@ -1,0 +1,304 @@
+'use client';
+
+import { useMemo, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { SlidersHorizontal, Search, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import { ListingCard } from '@/components/listings/listing-card';
+import { Reveal } from '@/components/motion/reveal';
+import { cn } from '@/lib/utils';
+import { LAND_TYPES } from '@/content';
+import { useStore, parsePrice, waLink } from '@/store';
+
+const SORTS = [
+  { value: 'one-cikan', label: 'Öne çıkanlar' },
+  { value: 'fiyat-artan', label: 'Fiyat (önce en düşük)' },
+  { value: 'fiyat-azalan', label: 'Fiyat (önce en yüksek)' },
+  { value: 'alan-buyuk', label: 'Alan (önce en büyük)' },
+] as const;
+
+const norm = (s: string) => s.toLocaleLowerCase('tr-TR');
+const areaNum = (a: string) => Number(String(a).replace(/[^\d]/g, '')) || 0;
+
+/** Sol ray / mobil filtre içeriği: ilçe ve tür listeleri, sayaçlı. */
+function FilterRail({
+  districts,
+  ilce,
+  tur,
+  countBy,
+  onPick,
+}: {
+  districts: string[];
+  ilce: string;
+  tur: string;
+  countBy: (key: 'district' | 'type', value: string) => number;
+  onPick: (key: 'ilce' | 'tur', value: string | null) => void;
+}) {
+  const group = (
+    title: string,
+    items: { label: string; value: string | null; count?: number }[],
+    activeValue: string,
+  ) => (
+    <div>
+      <h3 className="text-[12px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+        {title}
+      </h3>
+      <ul className="mt-3 space-y-0.5">
+        {items.map((it) => {
+          const active = (it.value ?? '') === activeValue;
+          return (
+            <li key={it.label}>
+              <button
+                type="button"
+                onClick={() => onPick(title === 'İlçe' ? 'ilce' : 'tur', it.value)}
+                className={cn(
+                  'flex w-full items-center justify-between gap-3 rounded-sm px-2.5 py-2 text-left text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                  active
+                    ? 'bg-secondary font-semibold text-secondary-foreground'
+                    : 'text-foreground/75 hover:bg-muted hover:text-foreground',
+                )}
+                aria-pressed={active}
+              >
+                {it.label}
+                {typeof it.count === 'number' ? (
+                  <span className="nums text-[13px] text-muted-foreground">{it.count}</span>
+                ) : null}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+
+  return (
+    <div className="space-y-8">
+      {group(
+        'İlçe',
+        [
+          { label: 'Tüm ilçeler', value: null },
+          ...districts.map((d) => ({ label: d, value: d, count: countBy('district', d) })),
+        ],
+        ilce,
+      )}
+      {group(
+        'Arazi Türü',
+        [
+          { label: 'Tüm türler', value: null },
+          ...LAND_TYPES.map((t) => ({ label: t, value: t, count: countBy('type', t) })),
+        ],
+        tur,
+      )}
+    </div>
+  );
+}
+
+export function Browse() {
+  const { content } = useStore();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
+  const ilce = searchParams.get('ilce') ?? '';
+  const tur = searchParams.get('tur') ?? '';
+  const q = searchParams.get('q') ?? '';
+  const sirala = searchParams.get('sirala') ?? 'one-cikan';
+
+  function setParam(key: string, value: string | null) {
+    const p = new URLSearchParams(searchParams.toString());
+    if (value) p.set(key, value);
+    else p.delete(key);
+    router.replace(`${pathname}${p.size ? `?${p.toString()}` : ''}`, { scroll: false });
+  }
+
+  const districts = content.districts.map((d) => d.name);
+  const countBy = (key: 'district' | 'type', value: string) =>
+    content.listings.filter((l) => l[key] === value).length;
+
+  const visible = useMemo(() => {
+    const filtered = content.listings.filter((l) => {
+      if (ilce && l.district !== ilce) return false;
+      if (tur && l.type !== tur) return false;
+      if (q) {
+        const hay = norm(`${l.title} ${l.location} ${l.district} ${l.type}`);
+        if (!hay.includes(norm(q))) return false;
+      }
+      return true;
+    });
+    const sorted = [...filtered];
+    if (sirala === 'fiyat-artan') sorted.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+    if (sirala === 'fiyat-azalan') sorted.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+    if (sirala === 'alan-buyuk') sorted.sort((a, b) => areaNum(b.area) - areaNum(a.area));
+    return sorted;
+  }, [content.listings, ilce, tur, q, sirala]);
+
+  const chips = [
+    ilce ? { key: 'ilce', label: ilce } : null,
+    tur ? { key: 'tur', label: tur } : null,
+    q ? { key: 'q', label: `“${q}”` } : null,
+  ].filter(Boolean) as { key: string; label: string }[];
+
+  const title = tur ? `${tur} İlanları` : ilce ? `${ilce} İlanları` : 'Tüm İlanlar';
+
+  return (
+    <div className="bg-background py-10 sm:py-14">
+      <div className="container">
+        {/* Sayfa başlığı — kadastro dili */}
+        <Reveal immediate>
+          <p className="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-strong">
+            <span className="h-0.5 w-8 bg-brass" aria-hidden="true" />
+            İlan dizini
+          </p>
+          <h1 className="mt-4 font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            {title}
+          </h1>
+        </Reveal>
+
+        <div className="mt-10 grid gap-10 lg:grid-cols-[15rem_1fr] xl:grid-cols-[16rem_1fr]">
+          {/* Sol ray (masaüstü) */}
+          <aside className="hidden lg:block" aria-label="İlan filtreleri">
+            <div className="sticky top-28 border-t border-border pt-6">
+              <FilterRail
+                districts={districts}
+                ilce={ilce}
+                tur={tur}
+                countBy={countBy}
+                onPick={(key, value) => setParam(key, value)}
+              />
+            </div>
+          </aside>
+
+          <div className="min-w-0">
+            {/* Araç çubuğu: sayaç + çipler + sıralama */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <span className="text-[15px] text-muted-foreground">
+                  <b className="font-semibold text-foreground">{visible.length}</b> ilan
+                </span>
+                {chips.map((c) => (
+                  <button
+                    key={c.key}
+                    type="button"
+                    onClick={() => setParam(c.key, null)}
+                    className="flex items-center gap-1.5 rounded-sm bg-secondary px-2.5 py-1 text-[13px] font-semibold text-secondary-foreground transition-colors hover:bg-[hsl(150_16%_85%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    aria-label={`${c.label} filtresini kaldırın`}
+                  >
+                    {c.label}
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2.5">
+                {/* Mobil: filtre paneli */}
+                <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="sm" className="lg:hidden">
+                      <SlidersHorizontal className="h-4 w-4" />
+                      Filtrele
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="w-[86%] max-w-sm overflow-y-auto p-6">
+                    <SheetTitle className="font-heading text-lg font-semibold">
+                      Filtreler
+                    </SheetTitle>
+                    <div className="mt-6">
+                      <FilterRail
+                        districts={districts}
+                        ilce={ilce}
+                        tur={tur}
+                        countBy={countBy}
+                        onPick={(key, value) => setParam(key, value)}
+                      />
+                    </div>
+                    <SheetClose asChild>
+                      <Button className="mt-8 h-12 w-full">
+                        {visible.length} ilanı göster
+                      </Button>
+                    </SheetClose>
+                  </SheetContent>
+                </Sheet>
+
+                <Select value={sirala} onValueChange={(v) => setParam('sirala', v === 'one-cikan' ? null : v)}>
+                  <SelectTrigger
+                    className="h-9 w-auto gap-2 rounded-sm border-input bg-card text-[14px] font-medium"
+                    aria-label="Sıralama"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent align="end">
+                    {SORTS.map((s) => (
+                      <SelectItem key={s.value} value={s.value}>
+                        {s.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Sonuçlar */}
+            {visible.length === 0 ? (
+              <div className="mt-8 rounded-lg border border-dashed border-input bg-muted/50 py-16 text-center">
+                <div className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-border bg-background text-brass-strong">
+                  <Search className="h-7 w-7" />
+                </div>
+                <h2 className="mt-5 font-heading text-xl font-semibold text-foreground">
+                  Bu kriterlere uygun ilan bulunamadı
+                </h2>
+                <p className="mx-auto mt-2 max-w-sm leading-relaxed text-muted-foreground">
+                  Filtreleri değiştirin ya da bize ulaşın; size uygun araziyi
+                  birlikte bulalım.
+                </p>
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => router.replace(pathname, { scroll: false })}
+                  >
+                    <X className="mr-1 h-4 w-4" />
+                    Filtreleri temizle
+                  </Button>
+                  <Button asChild>
+                    <a
+                      href={waLink(
+                        content.contact.whatsapp,
+                        'Merhaba, aradığım kriterlerde ilan bulamadım. Bana uygun bir arazi var mı?',
+                      )}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Bize Ulaşın
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                {visible.map((l, i) => (
+                  <Reveal key={l.id} delay={(i % 3) * 80} className="h-full">
+                    <ListingCard listing={l} className="h-full" />
+                  </Reveal>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

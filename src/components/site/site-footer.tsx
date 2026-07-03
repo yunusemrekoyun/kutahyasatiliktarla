@@ -1,12 +1,13 @@
 'use client';
 
+import Link from 'next/link';
 import { Mail, MessageCircle, Phone } from 'lucide-react';
 import { Logo } from './logo';
 import { TopoLines } from './topo';
 import { useStore, telLink, waLink } from '@/store';
 
 export function SiteFooter() {
-  const { content, requestDistrict } = useStore();
+  const { content } = useStore();
   const { phone, whatsapp, email } = content.contact;
 
   return (
@@ -56,13 +57,12 @@ export function SiteFooter() {
           <ul className="mt-6 space-y-2.5 text-[15px]">
             {content.districts.slice(0, 6).map((d) => (
               <li key={d.name}>
-                <button
-                  type="button"
-                  onClick={() => requestDistrict(d.name)}
+                <Link
+                  href={`/ilanlar?ilce=${encodeURIComponent(d.name)}`}
                   className="text-primary-foreground/65 transition-colors hover:text-white"
                 >
                   {d.name}
-                </button>
+                </Link>
               </li>
             ))}
           </ul>

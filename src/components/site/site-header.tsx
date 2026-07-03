@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState, type FormEvent } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { Menu, MessageCircle, Phone, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,17 +14,22 @@ import {
 } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { Logo } from './logo';
+import { LAND_TYPES } from '@/content';
 import { useStore, telLink, waLink } from '@/store';
 
+/** Kategori-öncelikli gezinme: tıkla ve doğrudan ilanlara gir. */
 const navLinks = [
-  { href: '#ilanlar', label: 'İlanlar' },
-  { href: '#bolgeler', label: 'Bölgeler' },
-  { href: '#nasil-calisir', label: 'Nasıl Çalışır' },
-  { href: '#iletisim', label: 'İletişim' },
+  { href: '/ilanlar', label: 'Tüm İlanlar' },
+  ...LAND_TYPES.map((t) => ({
+    href: `/ilanlar?tur=${encodeURIComponent(t)}`,
+    label: t,
+  })),
 ];
 
 export function SiteHeader() {
-  const { content, requestSearch } = useStore();
+  const { content } = useStore();
+  const router = useRouter();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [stuck, setStuck] = useState(false);
   const [q, setQ] = useState('');
@@ -39,7 +46,7 @@ export function SiteHeader() {
     e.preventDefault();
     const v = q.trim();
     if (!v) return;
-    requestSearch(v);
+    router.push(`/ilanlar?q=${encodeURIComponent(v)}`);
     setQ('');
   }
 
@@ -82,25 +89,34 @@ export function SiteHeader() {
         )}
       >
         <div className="container flex h-16 items-center justify-between gap-4 lg:h-20">
-          <a href="#top" aria-label={content.brand} className="shrink-0">
+          <Link href="/" aria-label={content.brand} className="shrink-0">
             <Logo brand={content.brand} />
-          </a>
+          </Link>
 
-          {/* Masaüstü nav — pirinç altı-çizgi animasyonu */}
+          {/* Masaüstü nav — kategoriler, pirinç altı-çizgi animasyonu */}
           <nav className="hidden items-center gap-1 lg:flex">
-            {navLinks.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                className="group relative px-3 py-2 text-[15px] font-medium text-foreground/75 transition-colors hover:text-foreground"
-              >
-                {l.label}
-                <span
-                  aria-hidden="true"
-                  className="absolute inset-x-3 -bottom-0.5 h-[2px] origin-left scale-x-0 bg-brass transition-transform duration-300 ease-out-quart group-hover:scale-x-100"
-                />
-              </a>
-            ))}
+            {navLinks.map((l) => {
+              const active = l.href === '/ilanlar' && pathname === '/ilanlar';
+              return (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className={cn(
+                    'group relative px-3 py-2 text-[15px] font-medium transition-colors hover:text-foreground',
+                    active ? 'text-foreground' : 'text-foreground/75',
+                  )}
+                >
+                  {l.label}
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'absolute inset-x-3 -bottom-0.5 h-[2px] origin-left bg-brass transition-transform duration-300 ease-out-quart',
+                      active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100',
+                    )}
+                  />
+                </Link>
+              );
+            })}
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
@@ -118,7 +134,7 @@ export function SiteHeader() {
               />
             </form>
             <Button asChild variant="brass" size="sm" className="h-10 px-5">
-              <a href="#ilan-ver">İlan Ver</a>
+              <a href="/#ilan-ver">İlan Ver</a>
             </Button>
           </div>
 
@@ -141,19 +157,19 @@ export function SiteHeader() {
                 <div className="flex flex-col px-6 py-4">
                   {navLinks.map((l) => (
                     <SheetClose asChild key={l.href}>
-                      <a
+                      <Link
                         href={l.href}
                         className="border-b border-border py-4 text-lg font-medium text-foreground transition-colors hover:text-primary"
                       >
                         {l.label}
-                      </a>
+                      </Link>
                     </SheetClose>
                   ))}
                 </div>
                 <div className="flex flex-col gap-3 px-6 pt-2">
                   <SheetClose asChild>
                     <Button asChild variant="brass" size="lg" className="h-12 text-base">
-                      <a href="#ilan-ver">İlan Ver</a>
+                      <a href="/#ilan-ver">İlan Ver</a>
                     </Button>
                   </SheetClose>
                   <Button asChild variant="outline" size="lg" className="h-12 text-base">

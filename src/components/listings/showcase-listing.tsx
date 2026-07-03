@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { ArrowRight, MapPin, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CornerMark } from '@/components/site/topo';
@@ -11,13 +12,7 @@ import type { Listing } from '@/content';
  * işaretleriyle çerçevelenmiş büyük yatay kart olarak sunulur.
  * Sağ sütun tapu künyesi gibi satır satır okunur.
  */
-export function ShowcaseListing({
-  listing,
-  onOpen,
-}: {
-  listing: Listing;
-  onOpen?: (l: Listing) => void;
-}) {
+export function ShowcaseListing({ listing }: { listing: Listing }) {
   const { content } = useStore();
   const cover = listing.images?.[0];
   const wa = waLink(
@@ -49,9 +44,8 @@ export function ShowcaseListing({
       </div>
 
       <article className="group grid overflow-hidden rounded-lg border border-border bg-card lg:grid-cols-[1.55fr_1fr]">
-        <button
-          type="button"
-          onClick={() => onOpen?.(listing)}
+        <Link
+          href={`/ilan/${listing.id}`}
           className="relative block aspect-[16/10] w-full overflow-hidden bg-muted text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset lg:aspect-auto lg:min-h-[26rem]"
           aria-label={`${listing.badge ? `${listing.badge}: ` : ''}${listing.title} detaylarını açın`}
         >
@@ -72,7 +66,7 @@ export function ShowcaseListing({
               {listing.badge}
             </span>
           ) : null}
-        </button>
+        </Link>
 
         <div className="flex flex-col p-6 sm:p-8 lg:border-l lg:border-dashed lg:border-border">
           <p className="flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-brass-strong">
@@ -106,9 +100,11 @@ export function ShowcaseListing({
               {listing.price}
             </div>
             <div className="mt-5 flex items-center gap-3">
-              <Button size="lg" className="h-12 flex-1" onClick={() => onOpen?.(listing)}>
-                Detayları Gör
-                <ArrowRight className="size-5" />
+              <Button asChild size="lg" className="h-12 flex-1">
+                <Link href={`/ilan/${listing.id}`}>
+                  Detayları Gör
+                  <ArrowRight className="size-5" />
+                </Link>
               </Button>
               <a
                 href={wa}

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { ArrowRight, MapPin, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useStore, waLink } from '@/store';
@@ -7,11 +8,9 @@ import type { Listing } from '@/content';
 
 export function ListingCard({
   listing,
-  onOpen,
   className,
 }: {
   listing: Listing;
-  onOpen?: (l: Listing) => void;
   className?: string;
 }) {
   const { content } = useStore();
@@ -28,9 +27,8 @@ export function ListingCard({
         className,
       )}
     >
-      <button
-        type="button"
-        onClick={() => onOpen?.(listing)}
+      <Link
+        href={`/ilan/${listing.id}`}
         className="relative block aspect-[4/3] w-full overflow-hidden bg-muted text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
         aria-label={`${listing.title} detaylarını açın`}
       >
@@ -57,7 +55,7 @@ export function ListingCard({
             {listing.badge}
           </span>
         ) : null}
-      </button>
+      </Link>
 
       <div className="flex flex-1 flex-col p-6">
         <h3 className="font-heading text-[19px] font-semibold leading-snug tracking-[-0.01em] text-foreground">
@@ -71,14 +69,13 @@ export function ListingCard({
         </p>
 
         <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
-          <button
-            type="button"
-            onClick={() => onOpen?.(listing)}
+          <Link
+            href={`/ilan/${listing.id}`}
             className="group/link flex min-h-11 items-center gap-1.5 text-[15px] font-semibold text-primary transition-colors hover:text-[hsl(154_46%_11%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             Detayları Gör
             <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover/link:translate-x-0.5" />
-          </button>
+          </Link>
           <a
             href={wa}
             target="_blank"
