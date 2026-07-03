@@ -199,6 +199,46 @@
     transform: scale(calc(1.04 + var(--p, 0) * 0.16));
     transform-origin: left bottom;
   }
+  /* ---- Açılış sekansı: hero → öne çıkan ilan tek akışta morph ----
+     Tek --p (0→1) ile koreografi: (1) hero, (2) görsel fildişi matte ile
+     çerçevelenip küçülür + ilan fotoğrafına geçer, (3) künye belirir + parsel
+     çizilir. box-shadow 100vmax = fildişi matte; pencere küçüldükçe çerçeveler.
+     Yalnızca transform/opacity; kaydırma kilitlenmez. */
+  /* Çerçeveleme ilk kaydırmada başlar (ölü bekleme yok); görselin alt kenarı
+     ~%74'e oturur, künye kartı oraya bağlanır. */
+  .op-window {
+    border-radius: calc(clamp(0, (var(--p, 0) - 0.06) / 0.34, 1) * 16px);
+    transform:
+      translate3d(0, calc(clamp(0, (var(--p, 0) - 0.06) / 0.34, 1) * -6%), 0)
+      scale(calc(1 - clamp(0, (var(--p, 0) - 0.06) / 0.34, 1) * 0.5));
+    box-shadow: 0 0 0 100vmax hsl(var(--background));
+    will-change: transform;
+  }
+  .op-hero {
+    opacity: clamp(0, (0.22 - var(--p, 0)) / 0.12, 1);
+    transform: translate3d(0, calc(clamp(0, (var(--p, 0) - 0.04) / 0.16, 1) * -36px), 0);
+  }
+  .op-scrim {
+    opacity: clamp(0, (0.36 - var(--p, 0)) / 0.2, 1);
+  }
+  .op-caption {
+    opacity: clamp(0, (var(--p, 0) - 0.5) / 0.2, 1);
+    transform: translate3d(0, calc((1 - clamp(0, (var(--p, 0) - 0.5) / 0.2, 1)) * 26px), 0);
+  }
+  .op-img-a {
+    opacity: clamp(0, (0.4 - var(--p, 0)) / 0.14, 1);
+  }
+  .op-cue {
+    opacity: clamp(0, 1 - var(--p, 0) / 0.06, 1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .op-window,
+    .op-hero,
+    .op-caption {
+      transform: none !important;
+    }
+  }
+
   .scene-lead {
     transform: translate3d(0, calc(var(--p, 0) * -48px), 0);
   }
@@ -208,12 +248,12 @@
   .scene-stats {
     transform: translate3d(0, calc(var(--p, 0) * -12px), 0);
   }
-  /* Kadastro parseli: son (havadan) sahne otururken çizilir */
+  /* Kadastro parseli: görsel çerçevelendikten sonra çizilir */
   .scene-parcel {
-    stroke-dashoffset: calc(1 - clamp(0, (var(--p, 0) - 0.6) / 0.3, 1));
+    stroke-dashoffset: calc(1 - clamp(0, (var(--p, 0) - 0.42) / 0.3, 1));
   }
   .scene-corner {
-    opacity: clamp(0, (var(--p, 0) - 0.86) / 0.12, 1);
+    opacity: clamp(0, (var(--p, 0) - 0.68) / 0.14, 1);
   }
   .scene-chip {
     opacity: clamp(0, (var(--p, 0) - 0.9) / 0.1, 1);
@@ -308,6 +348,25 @@
       transform: none !important;
       transition: none;
     }
+  }
+}
+
+/* Kaydırma ipucu: bounce yerine yumuşak süzülme (rafine his) */
+@keyframes hint-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+.hint-float {
+  animation: hint-float 1.9s var(--ease-in-out-quint) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hint-float {
+    animation: none;
   }
 }
 
