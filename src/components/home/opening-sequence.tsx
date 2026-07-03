@@ -51,6 +51,16 @@ export function OpeningSequence() {
 
   const active = listings[idx] ?? first;
 
+  // İlan duvarı: tüm ilan görsellerinden küçük karolar, 3 sıraya dağıtılır.
+  const wallPool = listings
+    .flatMap((l) => l.images ?? [])
+    .map((u) => u.replace(/w=\d+/, 'w=520'));
+  const wallRows = [0, 1, 2].map((r) => {
+    const a = wallPool.filter((_, i) => i % 3 === r);
+    const b = a.length >= 4 ? a : wallPool;
+    return b.length ? b : [firstCover];
+  });
+
   function go(d: 1 | -1) {
     if (listings.length < 2) return;
     const next = (idx + d + listings.length) % listings.length;
@@ -90,9 +100,37 @@ export function OpeningSequence() {
       >
         {scenic && active ? (
           <div className="relative h-full w-full">
-            {/* Morph penceresi: tam ekrandan kart-görseline çerçevelenir */}
+            {/* İlan duvarı — hero arka planı: 3 sıra yatay marquee (gerçek ilanlar) */}
+            <div className="op-wall absolute inset-0 overflow-hidden">
+              <div className="flex h-full flex-col justify-center gap-3 lg:gap-4">
+                {wallRows.map((tiles, r) => (
+                  <div
+                    key={r}
+                    className={cn('op-row gap-3 lg:gap-4', r === 1 ? 'op-row-r' : 'op-row-l')}
+                    style={{ ['--dur' as string]: `${[74, 96, 62][r]}s` }}
+                  >
+                    {[...tiles, ...tiles].map((src, i) => (
+                      <div
+                        key={i}
+                        className="relative h-40 w-60 shrink-0 overflow-hidden rounded-md lg:h-48 lg:w-72"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={src}
+                          alt=""
+                          aria-hidden="true"
+                          loading="lazy"
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Seçili ilan — duvardan belirir, büyür, çerçevelenir; ok'la değişir */}
             <div className="op-window absolute inset-0 overflow-hidden">
-              {/* İlan görseli — taban + yandan kayan yeni görsel */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={baseSrc}
@@ -113,19 +151,6 @@ export function OpeningSequence() {
                   )}
                 />
               ) : null}
-              {/* Hero görseli — çerçevelenirken çıkar (morph çapraz geçişi) */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={HERO_IMG}
-                alt=""
-                aria-hidden="true"
-                className="op-img-a absolute inset-0 h-full w-full object-cover"
-              />
-              <div className="op-scrim absolute inset-0" aria-hidden="true">
-                <div className="absolute inset-0 bg-gradient-to-r from-[hsl(155_34%_5%_/_0.9)] via-[hsl(155_30%_7%_/_0.4)] via-[42%] to-transparent to-[72%]" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[hsl(155_34%_5%_/_0.78)] via-transparent via-[46%] to-transparent" />
-                <TopoLines className="inset-0 h-full w-full text-white/[0.06]" />
-              </div>
 
               {/* Kadastro parseli — çerçevelenmiş görsele çizilir */}
               <svg
@@ -157,6 +182,13 @@ export function OpeningSequence() {
                   </g>
                 ))}
               </svg>
+            </div>
+
+            {/* Metin scrim'i — duvar ve büyüyen görsel üstünde okunurluk */}
+            <div className="op-scrim absolute inset-0 z-[5]" aria-hidden="true">
+              <div className="absolute inset-0 bg-gradient-to-r from-[hsl(155_36%_5%_/_0.92)] via-[hsl(155_32%_7%_/_0.5)] via-[44%] to-[hsl(155_32%_8%_/_0.15)] to-[80%]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[hsl(155_36%_5%_/_0.72)] via-transparent via-[48%] to-transparent" />
+              <TopoLines className="inset-0 h-full w-full text-white/[0.05]" />
             </div>
 
             {/* Hero metni — çerçeveleme başlayınca çıkar */}

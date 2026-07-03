@@ -204,22 +204,31 @@
      çerçevelenip küçülür + ilan fotoğrafına geçer, (3) künye belirir + parsel
      çizilir. box-shadow 100vmax = fildişi matte; pencere küçüldükçe çerçeveler.
      Yalnızca transform/opacity; kaydırma kilitlenmez. */
-  /* Çerçeveleme ilk kaydırmada başlar (ölü bekleme yok); görselin alt kenarı
-     ~%74'e oturur, künye kartı oraya bağlanır. */
+  /* İlan duvarı (hero arka planı) — kaydırınca hafifçe geri çekilir/bulanır */
+  .op-wall {
+    transform: scale(calc(1 - clamp(0, var(--p, 0) / 0.3, 1) * 0.06));
+    filter: blur(calc(clamp(0, var(--p, 0) / 0.3, 1) * 4px));
+    will-change: transform, filter;
+  }
+  /* Seçili ilan: duvardan belirip tam ekrana büyür, sonra çerçevelenip
+     kart olur (alt kenar ~%74'e oturur, künye kartı oraya bağlanır). */
   .op-window {
-    border-radius: calc(clamp(0, (var(--p, 0) - 0.06) / 0.34, 1) * 16px);
+    opacity: clamp(0, (var(--p, 0) - 0.12) / 0.14, 1);
+    border-radius: calc(clamp(0, (var(--p, 0) - 0.28) / 0.3, 1) * 16px);
     transform:
-      translate3d(0, calc(clamp(0, (var(--p, 0) - 0.06) / 0.34, 1) * -6%), 0)
-      scale(calc(1 - clamp(0, (var(--p, 0) - 0.06) / 0.34, 1) * 0.5));
+      translate3d(0, calc(clamp(0, (var(--p, 0) - 0.28) / 0.3, 1) * -6%), 0)
+      scale(calc(1 - clamp(0, (var(--p, 0) - 0.28) / 0.3, 1) * 0.5));
     box-shadow: 0 0 0 100vmax hsl(var(--background));
-    will-change: transform;
+    will-change: transform, opacity;
   }
   .op-hero {
-    opacity: clamp(0, (0.22 - var(--p, 0)) / 0.12, 1);
-    transform: translate3d(0, calc(clamp(0, (var(--p, 0) - 0.04) / 0.16, 1) * -36px), 0);
+    opacity: clamp(0, (0.24 - var(--p, 0)) / 0.12, 1);
+    transform: translate3d(0, calc(clamp(0, (var(--p, 0) - 0.04) / 0.18, 1) * -36px), 0);
   }
+  /* Metin scrim'i: duvar + büyüyen görsel üstünde okunurluk; çerçevelenirken
+     hızla çıkar ki kart parlak kalsın (metin zaten 0.24'te sönmüş olur). */
   .op-scrim {
-    opacity: clamp(0, (0.36 - var(--p, 0)) / 0.2, 1);
+    opacity: clamp(0, (0.44 - var(--p, 0)) / 0.14, 1);
   }
   .op-caption {
     opacity: clamp(0, (var(--p, 0) - 0.5) / 0.2, 1);
@@ -272,10 +281,28 @@
   }
   /* Kadastro parseli: görsel çerçevelendikten sonra çizilir */
   .scene-parcel {
-    stroke-dashoffset: calc(1 - clamp(0, (var(--p, 0) - 0.42) / 0.3, 1));
+    stroke-dashoffset: calc(1 - clamp(0, (var(--p, 0) - 0.56) / 0.24, 1));
   }
   .scene-corner {
-    opacity: clamp(0, (var(--p, 0) - 0.68) / 0.14, 1);
+    opacity: clamp(0, (var(--p, 0) - 0.78) / 0.12, 1);
+  }
+  /* İlan duvarı sıraları — yatay marquee, zıt yön + farklı hız */
+  .op-row {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+  }
+  .op-row-l {
+    animation: op-marquee-l var(--dur, 72s) linear infinite;
+  }
+  .op-row-r {
+    animation: op-marquee-r var(--dur, 72s) linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .op-row-l,
+    .op-row-r {
+      animation: none;
+    }
   }
   .scene-chip {
     opacity: clamp(0, (var(--p, 0) - 0.9) / 0.1, 1);
@@ -381,6 +408,19 @@
   to {
     opacity: 1;
     transform: none;
+  }
+}
+@keyframes op-marquee-l {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes op-marquee-r {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
   }
 }
 @keyframes op-slide-r {
