@@ -210,15 +210,27 @@
     filter: blur(calc(clamp(0, var(--p, 0) / 0.3, 1) * 4px));
     will-change: transform, filter;
   }
-  /* Seçili ilan: duvardan belirip tam ekrana büyür, sonra çerçevelenip
-     kart olur (alt kenar ~%74'e oturur, künye kartı oraya bağlanır). */
+  /* Fildişi veil: görsel çerçevelenirken belirir, duvarı kapatıp sayfa
+     zeminine döner (box-shadow matte yerine — karo yaklaşımıyla uyumlu). */
+  .op-veil {
+    opacity: clamp(0, (var(--p, 0) - 0.34) / 0.22, 1);
+  }
+  /* Seçili karo: duvardaki bir konumdan öne YAKLAŞIP büyür (a fazı, tam
+     ekrana), sonra çerçevelenip karta iner (b fazı). Matte yok; veil zemin. */
   .op-window {
-    opacity: clamp(0, (var(--p, 0) - 0.12) / 0.14, 1);
-    border-radius: calc(clamp(0, (var(--p, 0) - 0.28) / 0.3, 1) * 16px);
+    --a: clamp(0, (var(--p, 0) - 0.06) / 0.26, 1);
+    --b: clamp(0, (var(--p, 0) - 0.32) / 0.26, 1);
+    opacity: clamp(0, (var(--p, 0) - 0.02) / 0.05, 1);
+    border-radius: calc((1 - var(--a)) * 8px + var(--b) * 16px);
     transform:
-      translate3d(0, calc(clamp(0, (var(--p, 0) - 0.28) / 0.3, 1) * -6%), 0)
-      scale(calc(1 - clamp(0, (var(--p, 0) - 0.28) / 0.3, 1) * 0.5));
-    box-shadow: 0 0 0 100vmax hsl(var(--background));
+      translate3d(
+        calc((1 - var(--a)) * 21%),
+        calc((1 - var(--a)) * 8% + var(--b) * -6%),
+        0
+      )
+      scale(calc(0.2 + var(--a) * 0.8 - var(--b) * 0.5));
+    box-shadow: 0 calc(var(--b) * 26px) calc(var(--b) * 64px + 1px)
+      calc(var(--b) * -22px) hsl(154 30% 12% / 0.32);
     will-change: transform, opacity;
   }
   .op-hero {

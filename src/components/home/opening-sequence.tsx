@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowRight,
@@ -50,6 +50,17 @@ export function OpeningSequence() {
   const seq = useRef(0);
 
   const active = listings[idx] ?? first;
+
+  // Açılışta duvardan rastgele bir ilan öne çıkar (kart görünmeden önce
+  // seçildiği için ekranda takla olmaz). SSR'da idx=0, istemcide rastgele.
+  useEffect(() => {
+    if (listings.length > 1) {
+      const r = Math.floor(Math.random() * listings.length);
+      setIdx(r);
+      setBaseSrc(listings[r]?.images?.[0] ?? firstCover);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // İlan duvarı: tüm ilan görsellerinden küçük karolar, 3 sıraya dağıtılır.
   const wallPool = listings
@@ -129,8 +140,11 @@ export function OpeningSequence() {
               </div>
             </div>
 
-            {/* Seçili ilan — duvardan belirir, büyür, çerçevelenir; ok'la değişir */}
-            <div className="op-window absolute inset-0 overflow-hidden">
+            {/* Fildişi veil — görsel çerçevelenirken duvarı kapatır (kart zemini) */}
+            <div className="op-veil absolute inset-0 bg-background" aria-hidden="true" />
+
+            {/* Seçili karo — duvardan yaklaşıp büyür, çerçevelenir; ok'la değişir */}
+            <div className="op-window absolute inset-0 z-[6] overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={baseSrc}
