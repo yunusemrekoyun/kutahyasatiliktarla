@@ -210,37 +210,36 @@
     filter: blur(calc(clamp(0, var(--p, 0) / 0.3, 1) * 4px));
     will-change: transform, filter;
   }
-  /* Fildişi veil: görsel çerçevelenirken belirir, duvarı kapatıp sayfa
-     zeminine döner (box-shadow matte yerine — karo yaklaşımıyla uyumlu). */
+  /* Fildişi veil: karo büyürken belirir, duvarı kapatıp sayfa zemini olur. */
   .op-veil {
-    opacity: clamp(0, (var(--p, 0) - 0.34) / 0.22, 1);
+    opacity: clamp(0, (var(--p, 0) - 0.2) / 0.26, 1);
   }
-  /* Seçili karo: duvardaki bir konumdan öne YAKLAŞIP büyür (a fazı, tam
-     ekrana), sonra çerçevelenip karta iner (b fazı). Matte yok; veil zemin. */
+  /* Seçili karo: duvardaki bir konumdan öne YAKLAŞIP doğrudan kart boyutuna
+     yumuşakça büyür (tam ekranı kaplamaz); hafif bir taşma ile oturur.
+     --g büyüme, --s oturma. Matte yok; zemin veil. */
   .op-window {
-    --a: clamp(0, (var(--p, 0) - 0.06) / 0.26, 1);
-    --b: clamp(0, (var(--p, 0) - 0.32) / 0.26, 1);
+    --g: clamp(0, (var(--p, 0) - 0.06) / 0.4, 1);
+    --s: clamp(0, (var(--p, 0) - 0.36) / 0.16, 1);
     opacity: clamp(0, (var(--p, 0) - 0.02) / 0.05, 1);
-    border-radius: calc((1 - var(--a)) * 8px + var(--b) * 16px);
+    border-radius: calc(8px + var(--g) * 8px);
     transform:
       translate3d(
-        calc((1 - var(--a)) * 21%),
-        calc((1 - var(--a)) * 8% + var(--b) * -6%),
+        calc((1 - var(--g)) * 21%),
+        calc((1 - var(--g)) * 8% - var(--g) * 6%),
         0
       )
-      scale(calc(0.2 + var(--a) * 0.8 - var(--b) * 0.5));
-    box-shadow: 0 calc(var(--b) * 26px) calc(var(--b) * 64px + 1px)
-      calc(var(--b) * -22px) hsl(154 30% 12% / 0.32);
+      scale(calc(0.2 + var(--g) * 0.4 - var(--s) * 0.1));
+    box-shadow: 0 calc(var(--g) * 26px) calc(var(--g) * 64px + 1px)
+      calc(var(--g) * -22px) hsl(154 30% 12% / 0.32);
     will-change: transform, opacity;
   }
   .op-hero {
-    opacity: clamp(0, (0.24 - var(--p, 0)) / 0.12, 1);
+    opacity: clamp(0, (0.22 - var(--p, 0)) / 0.12, 1);
     transform: translate3d(0, calc(clamp(0, (var(--p, 0) - 0.04) / 0.18, 1) * -36px), 0);
   }
-  /* Metin scrim'i: duvar + büyüyen görsel üstünde okunurluk; çerçevelenirken
-     hızla çıkar ki kart parlak kalsın (metin zaten 0.24'te sönmüş olur). */
+  /* Metin scrim'i: duvar üstünde okunurluk; karo büyürken çıkar. */
   .op-scrim {
-    opacity: clamp(0, (0.44 - var(--p, 0)) / 0.14, 1);
+    opacity: clamp(0, (0.3 - var(--p, 0)) / 0.14, 1);
   }
   .op-caption {
     opacity: clamp(0, (var(--p, 0) - 0.5) / 0.2, 1);
@@ -255,6 +254,31 @@
   /* Slider okları — kart oluşunca (künyeyle birlikte) belirir */
   .op-arrows {
     opacity: clamp(0, (var(--p, 0) - 0.56) / 0.2, 1);
+  }
+  /* Kontroller sahne evresine göre etkin: görünmezken tab/tık dışı kalır.
+     data-phase, kaydırma hook'u tarafından yazılır (hero | card). */
+  .op-caption,
+  .op-arrows {
+    visibility: hidden;
+    pointer-events: none;
+  }
+  [data-phase='card'] .op-caption,
+  [data-phase='card'] .op-arrows {
+    visibility: visible;
+    pointer-events: auto;
+  }
+  [data-phase='card'] .op-hero {
+    visibility: hidden;
+    pointer-events: none;
+  }
+  /* Kart evresinde duvar marquee'sini durdur (perf, gereksiz boyama yok) */
+  [data-phase='card'] .op-row-l,
+  [data-phase='card'] .op-row-r {
+    animation-play-state: paused;
+  }
+  [data-phase='card'] .op-wall,
+  [data-phase='card'] .op-row {
+    will-change: auto;
   }
   /* İlan görseli yandan kayarak gelir (eski görselin üstüne biner) */
   .op-slide-r {

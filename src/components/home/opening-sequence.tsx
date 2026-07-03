@@ -103,7 +103,7 @@ export function OpeningSequence() {
     <section
       ref={sectionRef}
       aria-label="Tanıtım"
-      className={scenic ? 'relative -mt-20 h-[260vh] bg-primary lg:-mt-24' : '-mt-20 lg:-mt-24'}
+      className={scenic ? 'relative -mt-20 h-[220vh] bg-primary lg:-mt-24' : '-mt-20 lg:-mt-24'}
     >
       <div
         ref={rootRef}
@@ -114,29 +114,42 @@ export function OpeningSequence() {
             {/* İlan duvarı — hero arka planı: 3 sıra yatay marquee (gerçek ilanlar) */}
             <div className="op-wall absolute inset-0 overflow-hidden">
               <div className="flex h-full flex-col justify-center gap-3 lg:gap-4">
-                {wallRows.map((tiles, r) => (
-                  <div
-                    key={r}
-                    className={cn('op-row gap-3 lg:gap-4', r === 1 ? 'op-row-r' : 'op-row-l')}
-                    style={{ ['--dur' as string]: `${[74, 96, 62][r]}s` }}
-                  >
-                    {[...tiles, ...tiles].map((src, i) => (
-                      <div
-                        key={i}
-                        className="relative h-40 w-60 shrink-0 overflow-hidden rounded-md lg:h-48 lg:w-72"
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={src}
-                          alt=""
-                          aria-hidden="true"
-                          loading="lazy"
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ))}
+                {wallRows.map((tiles, r) => {
+                  // Derinlik: orta sıra büyük/net, dış sıralar küçük/soluk.
+                  const size =
+                    r === 1
+                      ? 'h-44 w-64 lg:h-52 lg:w-80'
+                      : 'h-32 w-48 lg:h-40 lg:w-64';
+                  return (
+                    <div
+                      key={r}
+                      className={cn(
+                        'op-row',
+                        r === 1 ? 'op-row-r opacity-100' : 'op-row-l opacity-[0.55]',
+                      )}
+                      style={{ ['--dur' as string]: `${[78, 104, 66][r]}s` }}
+                    >
+                      {[...tiles, ...tiles].map((src, i) => (
+                        <div
+                          key={i}
+                          className={cn(
+                            'relative mr-3 shrink-0 overflow-hidden rounded-md after:absolute after:inset-0 after:bg-primary/25 lg:mr-4',
+                            size,
+                          )}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={src}
+                            alt=""
+                            aria-hidden="true"
+                            loading="lazy"
+                            className="h-full w-full object-cover brightness-90 saturate-[.85]"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -235,7 +248,7 @@ export function OpeningSequence() {
                     </Button>
                   </div>
                 </div>
-                <div className="mt-14 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-6 border-t border-white/15 pt-8 sm:grid-cols-4">
+                <div className="mt-14 grid max-w-2xl grid-cols-2 gap-x-8 gap-y-6 border-t border-white/15 pt-8 sm:grid-cols-4">
                   {stats.map((s) => (
                     <div key={s.label}>
                       <div className="nums font-heading text-3xl font-bold leading-none text-white">
@@ -255,7 +268,7 @@ export function OpeningSequence() {
                   type="button"
                   onClick={() => go(-1)}
                   aria-label="Önceki ilan"
-                  className="op-arrows absolute left-4 top-[42%] z-30 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full border border-border bg-card/85 text-foreground shadow-soft backdrop-blur transition hover:bg-card hover:shadow-soft-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:left-8"
+                  className="op-arrows absolute left-4 top-[42%] z-30 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-primary text-white shadow-soft-lg transition hover:bg-[hsl(154_46%_11%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:left-8"
                 >
                   <ChevronLeft className="h-6 w-6" />
                 </button>
@@ -263,7 +276,7 @@ export function OpeningSequence() {
                   type="button"
                   onClick={() => go(1)}
                   aria-label="Sonraki ilan"
-                  className="op-arrows absolute right-4 top-[42%] z-30 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full border border-border bg-card/85 text-foreground shadow-soft backdrop-blur transition hover:bg-card hover:shadow-soft-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:right-8"
+                  className="op-arrows absolute right-4 top-[42%] z-30 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-primary text-white shadow-soft-lg transition hover:bg-[hsl(154_46%_11%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 lg:right-8"
                 >
                   <ChevronRight className="h-6 w-6" />
                 </button>
@@ -277,6 +290,8 @@ export function OpeningSequence() {
                   key={idx}
                   className="op-fade"
                   style={{ ['--sdir' as string]: `${dir * 22}px` }}
+                  aria-live="polite"
+                  aria-atomic="true"
                 >
                   <p className="flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-brass-strong">
                     <span className="h-0.5 w-6 bg-brass" aria-hidden="true" />
@@ -371,7 +386,7 @@ export function OpeningSequence() {
                     </Button>
                   </div>
                 </div>
-                <div className="mt-14 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-6 border-t border-white/15 pt-8 sm:grid-cols-4">
+                <div className="mt-14 grid max-w-2xl grid-cols-2 gap-x-8 gap-y-6 border-t border-white/15 pt-8 sm:grid-cols-4">
                   {stats.map((s) => (
                     <div key={s.label}>
                       <div className="nums font-heading text-3xl font-bold leading-none text-white">
