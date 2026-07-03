@@ -1,3 +1,7 @@
+# Benzersiz proje adı: /var/www/*/app dizinlerinin ortak "app" proje adıyla
+# çakışıp başka sitelerin container'larını devralmasını engeller.
+name: kutahyasatiliktarla
+
 services:
   app:
     build: .
