@@ -29,15 +29,20 @@ export function Hero() {
           alt="Kütahya kırsalında gün batımında tarlalar"
           className="kenburns h-full w-full object-cover"
         />
-        {/* Dikkat: arbitrary hsl renklerde eğik çizgili opaklık (…)]/90) bu
-            Tailwind sürümünde HİÇ derlenmez; alpha değerin içine yazılmalı:
-            [hsl(… _/_0.9)] — aksi halde scrim sessizce kaybolur. */}
+        {/* Not: arbitrary hsl'de eğik çizgili opaklık (…)]/90) bu Tailwind
+            sürümünde derlenmez; alpha değerin İÇİNE yazılır: [hsl(… _/_0.9)].
+            Amaç: görseli öne çıkar — gölge yalnızca metnin arkasında yoğun,
+            sağdaki gün batımı canlı kalsın. */}
+        {/* 1) Hafif marka grade'i — görseli karartmadan tona çeker */}
+        <div className="absolute inset-0 bg-[hsl(154_40%_10%_/_0.12)]" aria-hidden="true" />
+        {/* 2) Yönlü metin gölgesi: solda koyu → ~%72'de tamamen şeffaf */}
         <div
-          className="absolute inset-0 bg-gradient-to-r from-[hsl(154_46%_8%_/_0.9)] via-[hsl(154_46%_9%_/_0.75)] to-[hsl(154_46%_10%_/_0.3)]"
+          className="absolute inset-0 bg-gradient-to-r from-[hsl(155_34%_5%_/_0.92)] via-[hsl(155_30%_7%_/_0.42)] via-[42%] to-transparent to-[72%]"
           aria-hidden="true"
         />
+        {/* 3) Alt gölge — istatistik şeridi ve koordinat okunur kalsın */}
         <div
-          className="absolute inset-0 bg-gradient-to-t from-[hsl(154_46%_8%_/_0.8)] via-transparent to-transparent"
+          className="absolute inset-0 bg-gradient-to-t from-[hsl(155_34%_5%_/_0.78)] via-transparent via-[46%] to-transparent"
           aria-hidden="true"
         />
         {/* Pafta motifi: soluk eş yükselti eğrileri */}
