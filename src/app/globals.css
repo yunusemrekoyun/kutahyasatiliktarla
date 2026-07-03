@@ -167,6 +167,53 @@
       animation: none;
     }
   }
+
+  /* ---- Scroll-sahne: hero'da kaydırmaya bağlı sinematik dönüşüm ----
+     Tümü tek bir --p (0→1) ilerleme değişkeninden sürülür; JS her karede
+     yalnızca --p'yi yazar, DOM/layout'a dokunmaz. Sadece transform/opacity
+     (GPU). --p tanımsızsa 0 kabul edilir → sabit hero (mobil/JS-yok güvenli).
+     Kaydırma ASLA ele geçirilmez; efekt sticky ile normal akış içinde çalışır. */
+  .scene-img {
+    transform: scale(calc(1 + var(--p, 0) * 0.16))
+      translate3d(0, calc(var(--p, 0) * -1.4%), 0);
+  }
+  .scene-lead {
+    transform: translate3d(0, calc(var(--p, 0) * -48px), 0);
+  }
+  .scene-mid {
+    transform: translate3d(0, calc(var(--p, 0) * -26px), 0);
+  }
+  .scene-stats {
+    transform: translate3d(0, calc(var(--p, 0) * -12px), 0);
+  }
+  /* Kadastro parseli: kaydırdıkça kendini çizer (pathLength=1 normalize) */
+  .scene-parcel {
+    stroke-dashoffset: calc(1 - clamp(0, (var(--p, 0) - 0.08) / 0.5, 1));
+  }
+  .scene-corner {
+    opacity: clamp(0, (var(--p, 0) - 0.46) / 0.16, 1);
+  }
+  .scene-chip {
+    opacity: clamp(0, (var(--p, 0) - 0.62) / 0.18, 1);
+    transform: translate3d(
+      0,
+      calc((1 - clamp(0, (var(--p, 0) - 0.62) / 0.18, 1)) * 12px),
+      0
+    );
+  }
+  /* "Kaydırın" ipucu: efekt başlar başlamaz solar */
+  .scene-cue {
+    opacity: clamp(0, 1 - var(--p, 0) / 0.1, 1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scene-img,
+    .scene-lead,
+    .scene-mid,
+    .scene-stats,
+    .scene-chip {
+      transform: none !important;
+    }
+  }
 }
 
 @keyframes kenburns {
