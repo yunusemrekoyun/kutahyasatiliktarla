@@ -19,7 +19,7 @@ export function Hero() {
   return (
     <section
       aria-label="Tanıtım"
-      className="relative isolate flex min-h-[38rem] items-center overflow-hidden bg-primary lg:min-h-[44rem]"
+      className="relative isolate -mt-20 flex min-h-[42rem] items-center overflow-hidden bg-primary lg:-mt-24 lg:min-h-[48rem]"
     >
       {/* Sinematik arka plan */}
       <div className="absolute inset-0 -z-10">
@@ -29,21 +29,22 @@ export function Hero() {
           alt="Kütahya kırsalında gün batımında tarlalar"
           className="kenburns h-full w-full object-cover"
         />
-        {/* Dikkat: eğik çizgili opaklıklar Tailwind ölçeğinde olmalı (5'in katı),
-            aksi halde sınıf üretilmez ve scrim sessizce kaybolur. */}
+        {/* Dikkat: arbitrary hsl renklerde eğik çizgili opaklık (…)]/90) bu
+            Tailwind sürümünde HİÇ derlenmez; alpha değerin içine yazılmalı:
+            [hsl(… _/_0.9)] — aksi halde scrim sessizce kaybolur. */}
         <div
-          className="absolute inset-0 bg-gradient-to-r from-[hsl(154_46%_8%)]/90 via-[hsl(154_46%_9%)]/75 to-[hsl(154_46%_10%)]/30"
+          className="absolute inset-0 bg-gradient-to-r from-[hsl(154_46%_8%_/_0.9)] via-[hsl(154_46%_9%_/_0.75)] to-[hsl(154_46%_10%_/_0.3)]"
           aria-hidden="true"
         />
         <div
-          className="absolute inset-0 bg-gradient-to-t from-[hsl(154_46%_8%)]/80 via-transparent to-transparent"
+          className="absolute inset-0 bg-gradient-to-t from-[hsl(154_46%_8%_/_0.8)] via-transparent to-transparent"
           aria-hidden="true"
         />
         {/* Pafta motifi: soluk eş yükselti eğrileri */}
         <TopoLines className="inset-0 h-full w-full text-white/[0.06]" />
       </div>
 
-      <div className="container py-24 lg:py-28">
+      <div className="container pb-20 pt-32 lg:pb-24 lg:pt-40">
         <Reveal immediate className="max-w-2xl">
           <p className="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-ondark">
             <span className="h-0.5 w-8 bg-brass-ondark" aria-hidden="true" />
