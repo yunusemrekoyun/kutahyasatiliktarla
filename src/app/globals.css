@@ -231,6 +231,19 @@
   .op-cue {
     opacity: clamp(0, 1 - var(--p, 0) / 0.06, 1);
   }
+  /* Slider okları — kart oluşunca (künyeyle birlikte) belirir */
+  .op-arrows {
+    opacity: clamp(0, (var(--p, 0) - 0.56) / 0.2, 1);
+  }
+  /* İlan değişince künye içeriği yumuşak geçer (kart kabı sabit kalır) */
+  .op-fade {
+    animation: op-fade-in 0.42s ease both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .op-fade {
+      animation: none;
+    }
+  }
   @media (prefers-reduced-motion: reduce) {
     .op-window,
     .op-hero,
@@ -348,6 +361,15 @@
       transform: none !important;
       transition: none;
     }
+  }
+}
+
+@keyframes op-fade-in {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 1;
   }
 }
 

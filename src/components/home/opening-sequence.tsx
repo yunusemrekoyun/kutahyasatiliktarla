@@ -1,15 +1,23 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, ChevronDown, MapPin, MessageCircle, Phone } from 'lucide-react';
+import {
+  ArrowRight,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  MessageCircle,
+  Phone,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CountUp } from '@/components/motion/count-up';
 import { Reveal } from '@/components/motion/reveal';
 import { TopoLines } from '@/components/site/topo';
 import { ShowcaseListing } from '@/components/listings/showcase-listing';
 import { useScrollScene } from '@/lib/use-scroll-scene';
+import { cn } from '@/lib/utils';
 import { useStore, telLink, waLink } from '@/store';
-import type { Listing } from '@/content';
 
 const HERO_IMG =
   'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2400&q=80';
@@ -17,24 +25,52 @@ const HERO_IMG =
 /**
  * Açılış sekansı: hero → öne çıkan ilan tek kesintisiz morph. Kaydırdıkça
  * hero görseli fildişi matte ile çerçevelenip küçülür, ilan fotoğrafına
- * geçer, üstüne parsel çizilir ve künye belirir — bölüm dikişi kaybolur.
- * Kaydırma kilitlenmez (sticky + --p). Mobil/reduced-motion: normal hero +
- * sabit vitrin kartı.
+ * geçer, üstüne parsel çizilir ve künye belirir. Kart oluşunca yanlardaki
+ * oklarla ilanlar arasında geçilir (görsel çapraz geçişle akar); aşağı
+ * kaydırınca sayfa normal akışına döner. Kaydırma kilitlenmez (sticky + --p).
+ * Mobil/reduced-motion: normal hero + sabit vitrin kartı.
  */
-export function OpeningSequence({ listing }: { listing: Listing }) {
+export function OpeningSequence() {
   const { sectionRef, rootRef, scenic } = useScrollScene<HTMLElement, HTMLDivElement>();
   const { content } = useStore();
+  const listings = content.listings;
   const phone = content.contact.phone;
-  const cover = listing.images?.[0] ?? HERO_IMG;
+
+  const first = listings[0];
+  const firstCover = first?.images?.[0] ?? HERO_IMG;
+
+  const [idx, setIdx] = useState(0);
+  // İki katman: aktif ilan üstte, diğeri arkada; ok'a basınca çapraz geçer.
+  const [front, setFront] = useState(0);
+  const [layers, setLayers] = useState<[string, string]>([firstCover, firstCover]);
+
+  const active = listings[idx] ?? first;
+
+  function go(dir: 1 | -1) {
+    if (listings.length < 2) return;
+    const next = (idx + dir + listings.length) % listings.length;
+    const back = front ^ 1;
+    const cover = listings[next]?.images?.[0] ?? HERO_IMG;
+    setLayers((l) => {
+      const c: [string, string] = [...l];
+      c[back] = cover;
+      return c;
+    });
+    setFront(back);
+    setIdx(next);
+  }
+
+  const wa = active
+    ? waLink(
+        content.contact.whatsapp,
+        `Merhaba, "${active.title}" (${active.price}) ilanı hakkında bilgi almak istiyorum.`,
+      )
+    : '#';
 
   const stats = [
-    { value: String(content.listings.length), label: 'Yayında arazi ilanı' },
+    { value: String(listings.length), label: 'Yayında arazi ilanı' },
     ...content.stats.filter((s) => !/ilan/i.test(s.label)).slice(0, 3),
   ];
-  const wa = waLink(
-    content.contact.whatsapp,
-    `Merhaba, "${listing.title}" (${listing.price}) ilanı hakkında bilgi almak istiyorum.`,
-  );
 
   return (
     <section
@@ -46,16 +82,31 @@ export function OpeningSequence({ listing }: { listing: Listing }) {
         ref={rootRef}
         className={scenic ? 'sticky top-0 h-[100svh] overflow-hidden bg-background' : ''}
       >
-        {scenic ? (
+        {scenic && active ? (
           <div className="relative h-full w-full">
             {/* Morph penceresi: tam ekrandan kart-görseline çerçevelenir */}
             <div className="op-window absolute inset-0 overflow-hidden">
+              {/* İlan görseli — iki katman, ok'a basınca çapraz geçer */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={cover}
-                alt={listing.title}
-                className="absolute inset-0 h-full w-full object-cover"
+                src={layers[0]}
+                alt={active.title}
+                className={cn(
+                  'absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-out',
+                  front === 0 ? 'opacity-100' : 'opacity-0',
+                )}
               />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={layers[1]}
+                alt=""
+                aria-hidden="true"
+                className={cn(
+                  'absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-out',
+                  front === 1 ? 'opacity-100' : 'opacity-0',
+                )}
+              />
+              {/* Hero görseli — çerçevelenirken çıkar (morph çapraz geçişi) */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={HERO_IMG}
@@ -69,7 +120,7 @@ export function OpeningSequence({ listing }: { listing: Listing }) {
                 <TopoLines className="inset-0 h-full w-full text-white/[0.06]" />
               </div>
 
-              {/* Kadastro parseli — kaydırınca çerçevelenmiş görsele çizilir */}
+              {/* Kadastro parseli — çerçevelenmiş görsele çizilir */}
               <svg
                 className="pointer-events-none absolute inset-0 h-full w-full"
                 viewBox="0 0 1440 900"
@@ -144,45 +195,72 @@ export function OpeningSequence({ listing }: { listing: Listing }) {
               </div>
             </div>
 
-            {/* Künye kartı — çerçevelenmiş görselin alt kenarına oturur */}
+            {/* Slider okları — görselin yanlarında, kart oluşunca belirir */}
+            {listings.length > 1 ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => go(-1)}
+                  aria-label="Önceki ilan"
+                  className="op-arrows absolute left-[25.5%] top-[42%] z-30 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/25 bg-[hsl(154_42%_9%_/_0.5)] text-white backdrop-blur-sm transition hover:bg-[hsl(154_42%_9%_/_0.78)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => go(1)}
+                  aria-label="Sonraki ilan"
+                  className="op-arrows absolute right-[25.5%] top-[42%] z-30 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/25 bg-[hsl(154_42%_9%_/_0.5)] text-white backdrop-blur-sm transition hover:bg-[hsl(154_42%_9%_/_0.78)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </>
+            ) : null}
+
+            {/* Künye kartı — kap sabit, içerik ilan değişince yumuşak geçer */}
             <div className="op-caption absolute inset-x-0 top-[68.5%] z-20 flex justify-center">
               <div className="w-[50%] max-w-[52rem] rounded-lg border border-border bg-card/95 p-5 shadow-soft-lg backdrop-blur-sm sm:p-6">
-                <p className="flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-brass-strong">
-                  <span className="h-0.5 w-6 bg-brass" aria-hidden="true" />
-                  Öne çıkan parsel
-                </p>
-                <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
-                  <div className="min-w-0">
-                    <h2 className="font-heading text-xl font-bold leading-tight tracking-[-0.01em] text-foreground sm:text-2xl">
-                      {listing.title}
-                    </h2>
-                    <p className="mt-1.5 flex items-center gap-1.5 text-[14px] text-muted-foreground">
-                      <MapPin className="h-4 w-4 shrink-0 text-brass-strong" />
-                      {listing.location}
-                      <span aria-hidden="true" className="text-border">·</span>
-                      <span className="nums">{listing.area}</span>
-                    </p>
+                <div key={idx} className="op-fade">
+                  <p className="flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-brass-strong">
+                    <span className="h-0.5 w-6 bg-brass" aria-hidden="true" />
+                    Öne çıkan parsel
+                    <span className="nums ml-auto normal-case tracking-normal text-muted-foreground">
+                      {idx + 1} / {listings.length}
+                    </span>
+                  </p>
+                  <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
+                    <div className="min-w-0">
+                      <h2 className="font-heading text-xl font-bold leading-tight tracking-[-0.01em] text-foreground sm:text-2xl">
+                        {active.title}
+                      </h2>
+                      <p className="mt-1.5 flex items-center gap-1.5 text-[14px] text-muted-foreground">
+                        <MapPin className="h-4 w-4 shrink-0 text-brass-strong" />
+                        {active.location}
+                        <span aria-hidden="true" className="text-border">·</span>
+                        <span className="nums">{active.area}</span>
+                      </p>
+                    </div>
+                    <div className="nums font-heading text-2xl font-bold leading-none text-foreground sm:text-[1.75rem]">
+                      {active.price}
+                    </div>
                   </div>
-                  <div className="nums font-heading text-2xl font-bold leading-none text-foreground sm:text-[1.75rem]">
-                    {listing.price}
+                  <div className="mt-5 flex items-center gap-3">
+                    <Button asChild size="lg" className="h-12 flex-1">
+                      <Link href={`/ilan/${active.id}`}>
+                        Detayları Gör
+                        <ArrowRight className="size-5" />
+                      </Link>
+                    </Button>
+                    <a
+                      href={wa}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label="WhatsApp’tan yazın"
+                      className="grid h-12 w-12 shrink-0 place-items-center rounded-sm border border-border text-whatsapp transition-colors hover:border-whatsapp/40 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      <MessageCircle className="h-5 w-5" />
+                    </a>
                   </div>
-                </div>
-                <div className="mt-5 flex items-center gap-3">
-                  <Button asChild size="lg" className="h-12 flex-1">
-                    <Link href={`/ilan/${listing.id}`}>
-                      Detayları Gör
-                      <ArrowRight className="size-5" />
-                    </Link>
-                  </Button>
-                  <a
-                    href={wa}
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="WhatsApp’tan yazın"
-                    className="grid h-12 w-12 shrink-0 place-items-center rounded-sm border border-border text-whatsapp transition-colors hover:border-whatsapp/40 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    <MessageCircle className="h-5 w-5" />
-                  </a>
                 </div>
               </div>
             </div>
@@ -240,7 +318,7 @@ export function OpeningSequence({ listing }: { listing: Listing }) {
                   {stats.map((s) => (
                     <div key={s.label}>
                       <div className="nums font-heading text-3xl font-bold leading-none text-white">
-                        {s.value.includes('–') ? s.value : <CountUp value={s.value} />}
+                        {s.value}
                       </div>
                       <div className="mt-2 text-[13px] leading-snug text-white/75">{s.label}</div>
                     </div>
@@ -248,13 +326,15 @@ export function OpeningSequence({ listing }: { listing: Listing }) {
                 </div>
               </div>
             </div>
-            <div className="bg-background py-16 sm:py-20">
-              <div className="container">
-                <Reveal>
-                  <ShowcaseListing listing={listing} />
-                </Reveal>
+            {first ? (
+              <div className="bg-background py-16 sm:py-20">
+                <div className="container">
+                  <Reveal>
+                    <ShowcaseListing listing={first} />
+                  </Reveal>
+                </div>
               </div>
-            </div>
+            ) : null}
           </>
         )}
       </div>

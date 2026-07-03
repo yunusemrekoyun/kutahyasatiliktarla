@@ -10,7 +10,6 @@ import { SellCta } from './sell-cta';
 
 export function Home() {
   const { content } = useStore();
-  const showcase = content.listings[0];
 
   // İlçe kartlarındaki sayılar elle yazılmaz; gerçek ilan sayısından türetilir.
   const districtsWithCounts = content.districts.map((d) => ({
@@ -20,8 +19,8 @@ export function Home() {
 
   return (
     <>
-      {/* Açılış sekansı: hero → öne çıkan ilan tek akışta morph */}
-      {showcase ? <OpeningSequence listing={showcase} /> : null}
+      {/* Açılış sekansı: hero → öne çıkan ilan morph + slider */}
+      <OpeningSequence />
       <SearchBand districts={content.districts.map((d) => d.name)} />
       <FeaturedListings />
       <CategoryTiles districts={districtsWithCounts} />
