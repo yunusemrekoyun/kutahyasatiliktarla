@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ArrowRight, MapPin, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useParallax } from '@/lib/parallax';
 import { useStore, waLink } from '@/store';
 import type { Listing } from '@/content';
 
@@ -14,6 +15,7 @@ export function ListingCard({
   className?: string;
 }) {
   const { content } = useStore();
+  const coverRef = useParallax<HTMLImageElement>(18);
   const cover = listing.images?.[0];
   const wa = waLink(
     content.contact.whatsapp,
@@ -35,10 +37,11 @@ export function ListingCard({
         {cover ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
+            ref={coverRef}
             src={cover}
             alt={listing.title}
             loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-[900ms] ease-out-expo group-hover:scale-[1.06]"
+            className="parallax-cover absolute inset-0 h-full w-full object-cover"
           />
         ) : (
           <div className="grid h-full w-full place-items-center bg-muted text-muted-foreground">

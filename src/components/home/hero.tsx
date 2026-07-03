@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowRight, ChevronDown, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/motion/reveal';
+import { CountUp } from '@/components/motion/count-up';
 import { TopoLines } from '@/components/site/topo';
 import { useStore, telLink } from '@/store';
 
@@ -74,11 +75,33 @@ export function Hero() {
         {/* Sinematik arka plan */}
         <div className="absolute inset-0 -z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
+          {/* Sahne A — açılış: kaydırma yoksa tek gösterilen (sabit/mobil fallback) */}
           <img
             src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2400&q=80"
             alt="Kütahya kırsalında gün batımında tarlalar"
-            className={`h-full w-full object-cover ${scenic ? 'scene-img' : 'kenburns'}`}
+            className={`absolute inset-0 h-full w-full object-cover ${
+              scenic ? 'hz-a' : 'kenburns'
+            }`}
           />
+          {/* Sahne B ve C yalnızca sahne modunda — kaydırdıkça açı değişir */}
+          {scenic ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=2400&q=80"
+                alt=""
+                aria-hidden="true"
+                className="hz-b absolute inset-0 h-full w-full object-cover"
+              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&w=2400&q=80"
+                alt=""
+                aria-hidden="true"
+                className="hz-c absolute inset-0 h-full w-full object-cover"
+              />
+            </>
+          ) : null}
           {/* Not: arbitrary hsl'de opaklık değerin İÇİNE yazılır ([hsl(… _/_0.9)]);
               slash-opacity bu sürümde derlenmez. Görsel öne çıkar, gölge yalnız
               metnin arkasında yoğun, sağdaki gün batımı canlı kalır. */}
@@ -188,7 +211,7 @@ export function Hero() {
             {stats.map((s) => (
               <div key={s.label}>
                 <div className="nums font-heading text-3xl font-bold leading-none text-white">
-                  {s.value}
+                  {s.value.includes('–') ? s.value : <CountUp value={s.value} />}
                 </div>
                 <div className="mt-2 text-[13px] leading-snug text-white/75">{s.label}</div>
               </div>

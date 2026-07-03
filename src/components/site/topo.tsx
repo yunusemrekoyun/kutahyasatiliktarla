@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import { cn } from '@/lib/utils';
 
 /**
@@ -30,11 +31,18 @@ export function TopoLines({ className }: { className?: string }) {
 }
 
 /** Pafta köşe işareti — kesikli parsel çerçevesinin köşelerine oturur. */
-export function CornerMark({ className }: { className?: string }) {
+export function CornerMark({
+  className,
+  style,
+}: {
+  className?: string;
+  style?: CSSProperties;
+}) {
   return (
     <svg
       viewBox="0 0 12 12"
       className={cn('absolute h-3 w-3 text-brass', className)}
+      style={style}
       fill="none"
       stroke="currentColor"
       strokeWidth="2"

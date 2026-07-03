@@ -4,16 +4,20 @@ import Link from 'next/link';
 import { ArrowRight, MapPin, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CornerMark } from '@/components/site/topo';
+import { CountUp } from '@/components/motion/count-up';
+import { useParallax } from '@/lib/parallax';
 import { useStore, waLink } from '@/store';
 import type { Listing } from '@/content';
 
 /**
  * Vitrin parseli: ilk ilan, kesikli parsel sınırı ve pafta köşe
- * işaretleriyle çerçevelenmiş büyük yatay kart olarak sunulur.
- * Sağ sütun tapu künyesi gibi satır satır okunur.
+ * işaretleriyle çerçevelenmiş büyük yatay kart. Bölüm görününce köşe
+ * işaretleri belirir; görsel kaydırdıkça çerçevesi içinde hafifçe kayar;
+ * künye sayıları sayarak yükselir. (Kapsayan Reveal FeaturedListings'te.)
  */
 export function ShowcaseListing({ listing }: { listing: Listing }) {
   const { content } = useStore();
+  const coverRef = useParallax<HTMLImageElement>(24);
   const cover = listing.images?.[0];
   const wa = waLink(
     content.contact.whatsapp,
@@ -30,17 +34,27 @@ export function ShowcaseListing({ listing }: { listing: Listing }) {
       : []),
   ];
 
+  const corners = [
+    '-left-px -top-px',
+    '-right-px -top-px rotate-90',
+    '-bottom-px -right-px rotate-180',
+    '-bottom-px -left-px -rotate-90',
+  ];
+
   return (
     <div className="relative">
-      {/* Kesikli parsel sınırı + köşe işaretleri */}
+      {/* Kesikli parsel sınırı + köşe işaretleri (bölüm girince çizilir) */}
       <div
         className="pointer-events-none absolute -inset-2.5 rounded-lg border border-dashed border-primary/30"
         aria-hidden="true"
       >
-        <CornerMark className="-left-px -top-px" />
-        <CornerMark className="-right-px -top-px rotate-90" />
-        <CornerMark className="-bottom-px -right-px rotate-180" />
-        <CornerMark className="-bottom-px -left-px -rotate-90" />
+        {corners.map((c, i) => (
+          <CornerMark
+            key={c}
+            className={`draw-pop ${c}`}
+            style={{ transitionDelay: `${200 + i * 90}ms` }}
+          />
+        ))}
       </div>
 
       <article className="group grid overflow-hidden rounded-lg border border-border bg-card lg:grid-cols-[1.55fr_1fr]">
@@ -52,9 +66,10 @@ export function ShowcaseListing({ listing }: { listing: Listing }) {
           {cover ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
+              ref={coverRef}
               src={cover}
               alt={listing.title}
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out-expo group-hover:scale-[1.05]"
+              className="parallax-cover absolute inset-0 h-full w-full object-cover"
             />
           ) : (
             <div className="grid h-full w-full place-items-center text-muted-foreground">
@@ -70,7 +85,7 @@ export function ShowcaseListing({ listing }: { listing: Listing }) {
 
         <div className="flex flex-col p-6 sm:p-8 lg:border-l lg:border-dashed lg:border-border">
           <p className="flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-brass-strong">
-            <span className="h-0.5 w-6 bg-brass" aria-hidden="true" />
+            <span className="draw-dash h-0.5 w-6 bg-brass" aria-hidden="true" />
             Öne çıkan parsel
           </p>
           <h3 className="mt-3 font-heading text-2xl font-bold leading-tight tracking-[-0.01em] text-foreground sm:text-[1.75rem]">
@@ -88,16 +103,16 @@ export function ShowcaseListing({ listing }: { listing: Listing }) {
                   {label}
                 </dt>
                 <dd className="nums text-right text-[15px] font-semibold text-foreground">
-                  {value}
+                  <CountUp value={value} />
                 </dd>
               </div>
             ))}
           </dl>
 
           <div className="mt-auto pt-6">
-            <div className="nums font-heading text-3xl font-bold leading-none text-foreground">
+            <div className="font-heading text-3xl font-bold leading-none text-foreground">
               <span className="sr-only">Fiyat: </span>
-              {listing.price}
+              <CountUp value={listing.price} className="nums" />
             </div>
             <div className="mt-5 flex items-center gap-3">
               <Button asChild size="lg" className="h-12 flex-1">

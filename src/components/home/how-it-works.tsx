@@ -52,19 +52,19 @@ export function HowItWorks() {
           subtitle="Arazi almak güven ister. Süreci üç basit adıma indirdik; her adımda yanınızdayız."
         />
 
-        {/* Adımlar: kesikli ölçüm hattıyla bağlı zaman çizelgesi. Hat, adım
-            başına segment olarak li içinde çizilir (geçerli HTML) ve son
-            işarette biter. */}
+        {/* Adımlar: işaretler arası ölçüm hattı, her adım görününce soldan
+            sağa çizilir; son adımdan sonra hat yok. */}
         <ol className="mt-14 grid gap-12 md:grid-cols-3 md:gap-8">
           {steps.map((s, i) => (
             <li key={s.title} className="relative">
-              {i < steps.length - 1 ? (
-                <div
-                  className="absolute -right-8 left-6 top-6 hidden border-t border-dashed border-primary/25 md:block"
-                  aria-hidden="true"
-                />
-              ) : null}
-              <Reveal delay={i * 100}>
+              <Reveal delay={i * 120}>
+                {i < steps.length - 1 ? (
+                  <span
+                    className="draw-dash absolute left-32 top-6 hidden h-px bg-primary/25 md:block"
+                    style={{ right: '-2rem' }}
+                    aria-hidden="true"
+                  />
+                ) : null}
                 <div className="relative inline-flex items-center gap-4 bg-background pr-5">
                   <span className="grid h-12 w-12 shrink-0 place-items-center rounded-sm bg-primary text-primary-foreground">
                     <s.icon className="h-6 w-6" />

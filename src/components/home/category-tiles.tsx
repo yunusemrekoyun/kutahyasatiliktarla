@@ -5,6 +5,7 @@ import { ArrowRight } from 'lucide-react';
 import { useStore } from '@/store';
 import { SectionHeading } from '@/components/site/section-heading';
 import { Reveal } from '@/components/motion/reveal';
+import { CountUp } from '@/components/motion/count-up';
 import type { District } from '@/content';
 
 /**
@@ -48,7 +49,7 @@ export function CategoryTiles({ districts }: { districts: District[] }) {
                     </span>
                   </span>
                   <span className="nums hidden text-[14px] font-semibold text-muted-foreground sm:block">
-                    {d.count}
+                    <CountUp value={d.count} />
                   </span>
                   <ArrowRight className="h-5 w-5 justify-self-end text-brass-strong transition-transform duration-300 ease-out-quart group-hover:translate-x-1.5" />
                 </Link>

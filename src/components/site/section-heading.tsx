@@ -30,7 +30,7 @@ export function SectionHeading({
                   {index}
                 </span>
               ) : null}
-              <span className="h-0.5 w-8 bg-brass" aria-hidden="true" />
+              <span className="draw-dash h-0.5 w-8 bg-brass" aria-hidden="true" />
               {eyebrow}
             </p>
           ) : null}
