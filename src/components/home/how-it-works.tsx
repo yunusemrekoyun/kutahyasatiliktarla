@@ -46,42 +46,58 @@ export function HowItWorks() {
     <section id="nasil-calisir" className="bg-background py-20 sm:py-28">
       <div className="container">
         <SectionHeading
+          index="04"
           eyebrow="Süreç"
           title="Nasıl çalışır?"
           subtitle="Arazi almak güven ister. Süreci üç basit adıma indirdik; her adımda yanınızdayız."
         />
 
-        <ol className="mt-12 grid gap-8 md:grid-cols-3">
+        {/* Adımlar: kesikli ölçüm hattıyla bağlı zaman çizelgesi. Hat, adım
+            başına segment olarak li içinde çizilir (geçerli HTML) ve son
+            işarette biter. */}
+        <ol className="mt-14 grid gap-12 md:grid-cols-3 md:gap-8">
           {steps.map((s, i) => (
-            <Reveal key={s.title} delay={i * 100}>
-              <li className="flex h-full flex-col rounded-lg border border-border bg-card p-6">
-                <div className="flex items-center gap-4">
+            <li key={s.title} className="relative">
+              {i < steps.length - 1 ? (
+                <div
+                  className="absolute -right-8 left-6 top-6 hidden border-t border-dashed border-primary/25 md:block"
+                  aria-hidden="true"
+                />
+              ) : null}
+              <Reveal delay={i * 100}>
+                <div className="relative inline-flex items-center gap-4 bg-background pr-5">
                   <span className="grid h-12 w-12 shrink-0 place-items-center rounded-sm bg-primary text-primary-foreground">
                     <s.icon className="h-6 w-6" />
                   </span>
-                  <span className="nums font-heading text-2xl font-bold text-brass">
+                  <span
+                    className="nums font-heading text-2xl font-bold text-brass-strong"
+                    aria-hidden="true"
+                  >
                     {String(i + 1).padStart(2, '0')}
                   </span>
                 </div>
                 <h3 className="mt-5 font-heading text-[1.35rem] font-semibold tracking-[-0.01em] text-foreground">
                   {s.title}
                 </h3>
-                <p className="mt-2 leading-relaxed text-muted-foreground">{s.text}</p>
-              </li>
-            </Reveal>
+                <p className="mt-2 max-w-sm leading-relaxed text-muted-foreground">{s.text}</p>
+              </Reveal>
+            </li>
           ))}
         </ol>
 
-        {/* Neden biz: güven şeridi */}
+        {/* Neden biz: güven şeridi — başlığı admin panelinden düzenlenir */}
         <Reveal delay={120}>
-          <div className="mt-14 grid gap-x-8 gap-y-8 border-t border-border pt-10 sm:grid-cols-2 lg:grid-cols-4">
+          <h3 className="mt-16 border-t border-border pt-10 text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-strong">
+            {content.sections.aboutTitle}
+          </h3>
+          <div className="mt-8 grid gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
             {content.features.map((f) => {
               const Icon = FEATURE_ICONS[f.iconKey] ?? BadgeCheck;
               return (
                 <div key={f.title} className="flex items-start gap-3.5">
-                  <Icon className="mt-0.5 h-6 w-6 shrink-0 text-brass" />
+                  <Icon className="mt-0.5 h-6 w-6 shrink-0 text-brass-strong" />
                   <div>
-                    <h3 className="text-[16px] font-semibold text-foreground">{f.title}</h3>
+                    <h4 className="text-[16px] font-semibold text-foreground">{f.title}</h4>
                     <p className="mt-1 text-[14px] leading-relaxed text-muted-foreground">
                       {f.text}
                     </p>

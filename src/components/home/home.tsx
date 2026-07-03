@@ -48,7 +48,7 @@ export function Home() {
   return (
     <>
       <Hero />
-      <SearchBand districts={districtNames} onApply={setFilters} />
+      <SearchBand districts={districtNames} filters={filters} onApply={setFilters} />
       <FeaturedListings filters={filters} onClear={() => setFilters(EMPTY)} />
       <CategoryTiles districts={districtsWithCounts} onPick={pickDistrict} />
       <HowItWorks />

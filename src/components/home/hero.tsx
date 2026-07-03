@@ -3,12 +3,18 @@
 import { ArrowRight, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/motion/reveal';
+import { TopoLines } from '@/components/site/topo';
 import { scrollToId } from '@/lib/scroll';
 import { useStore, telLink } from '@/store';
 
 export function Hero() {
   const { content } = useStore();
-  const stats = content.stats.slice(0, 4);
+  // İlan sayısı elle yazılmaz; gerçek ilan listesinden türetilir ki
+  // vitrindeki sayıyla asla çelişmesin.
+  const stats = [
+    { value: String(content.listings.length), label: 'Yayında arazi ilanı' },
+    ...content.stats.filter((s) => !/ilan/i.test(s.label)).slice(0, 3),
+  ];
 
   return (
     <section
@@ -23,14 +29,18 @@ export function Hero() {
           alt="Kütahya kırsalında gün batımında tarlalar"
           className="kenburns h-full w-full object-cover"
         />
+        {/* Dikkat: eğik çizgili opaklıklar Tailwind ölçeğinde olmalı (5'in katı),
+            aksi halde sınıf üretilmez ve scrim sessizce kaybolur. */}
         <div
-          className="absolute inset-0 bg-gradient-to-r from-[hsl(154_46%_8%)]/92 via-[hsl(154_46%_9%)]/75 to-[hsl(154_46%_10%)]/30"
+          className="absolute inset-0 bg-gradient-to-r from-[hsl(154_46%_8%)]/90 via-[hsl(154_46%_9%)]/75 to-[hsl(154_46%_10%)]/30"
           aria-hidden="true"
         />
         <div
           className="absolute inset-0 bg-gradient-to-t from-[hsl(154_46%_8%)]/80 via-transparent to-transparent"
           aria-hidden="true"
         />
+        {/* Pafta motifi: soluk eş yükselti eğrileri */}
+        <TopoLines className="inset-0 h-full w-full text-white/[0.06]" />
       </div>
 
       <div className="container py-24 lg:py-28">
@@ -83,10 +93,15 @@ export function Hero() {
               <div className="nums font-heading text-3xl font-bold leading-none text-white">
                 {s.value}
               </div>
-              <div className="mt-2 text-[13px] leading-snug text-white/65">{s.label}</div>
+              <div className="mt-2 text-[13px] leading-snug text-white/75">{s.label}</div>
             </div>
           ))}
         </Reveal>
+
+        {/* Saha kaydı: koordinat mikro-metni */}
+        <p className="nums mt-10 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/55">
+          39.42° K · 29.98° D · Kütahya
+        </p>
       </div>
     </section>
   );

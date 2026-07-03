@@ -21,8 +21,8 @@
     /* Pirinç/bronz — birincil CTA, fiyat, aksan (sıcak enerji, rafine) */
     --brass: 34 54% 45%;
     --brass-foreground: 36 50% 10%;
-    /* Açık zeminde küçük metin için koyultulmuş pirinç (WCAG AA ≥4.5:1) */
-    --brass-strong: 34 60% 36%;
+    /* Açık zeminde küçük metin için koyultulmuş pirinç (WCAG AA ≥4.5:1, muted zemin dahil) */
+    --brass-strong: 34 60% 34%;
     /* Koyu/yeşil zeminde okunur açık pirinç (eyebrow, başlık aksanı) */
     --brass-on-dark: 36 72% 64%;
 
@@ -121,10 +121,6 @@
     height: 2px;
     margin-top: 14px;
     background: hsl(var(--brass));
-  }
-  .rule-brass-center::after {
-    margin-left: auto;
-    margin-right: auto;
   }
   /* Küçük başlıklar (footer) için daralan varyant */
   .rule-brass-sm::after {

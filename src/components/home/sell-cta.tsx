@@ -3,13 +3,19 @@
 import { ArrowRight, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/motion/reveal';
+import { TopoLines } from '@/components/site/topo';
 import { useStore, telLink, waLink } from '@/store';
 
 export function SellCta() {
   const { content } = useStore();
   return (
-    <section id="ilan-ver" aria-label="İlan verin" className="bg-primary">
-      <div className="container flex flex-col items-start justify-between gap-8 py-16 sm:py-20 lg:flex-row lg:items-center">
+    <section
+      id="ilan-ver"
+      aria-label="İlan verin"
+      className="relative overflow-hidden bg-primary"
+    >
+      <TopoLines className="inset-0 h-full w-full text-white/[0.05]" />
+      <div className="container relative flex flex-col items-start justify-between gap-8 py-16 sm:py-20 lg:flex-row lg:items-center">
         <Reveal className="max-w-2xl">
           <p className="text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-ondark">
             Satıcılar için

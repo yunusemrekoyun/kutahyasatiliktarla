@@ -80,10 +80,9 @@ export const defaultContent: SiteContent = {
       'Gerçek fotoğraflar, net tapu ve künye bilgisiyle; ilçe ilçe tarla, arsa ve arazi. Aradığınızı bulun ya da arazinizi ücretsiz ilana verin.',
   },
   stats: [
-    { value: '120+', label: 'Aktif arazi ilanı' },
     { value: '6', label: 'İlçe ve çevresi' },
     { value: '100%', label: 'Drone destekli çekim' },
-    { value: '7/24', label: 'Danışman erişimi' },
+    { value: '09–19', label: 'Her gün telefon desteği' },
   ],
   sections: {
     listingsTitle: 'Öne çıkan ilanlar',
@@ -123,7 +122,7 @@ export const defaultContent: SiteContent = {
       tags: ['Müstakil Tapu', 'Yola Cepheli', 'Hissesiz'],
       droneVideo: BG_VIDEO,
       images: [
-        'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1200&q=80',
         'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80',
         'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80',
       ],
@@ -163,7 +162,7 @@ export const defaultContent: SiteContent = {
       tags: ['Müstakil Tapu', 'Gelişim Aksı', 'Hissesiz'],
       droneVideo: BG_VIDEO,
       images: [
-        'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=1200&q=80',
         'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80',
         'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=80',
       ],
@@ -203,7 +202,7 @@ export const defaultContent: SiteContent = {
       tags: ['Müstakil Tapu', 'Köy İçi', 'Altyapı Yakın'],
       droneVideo: BG_VIDEO,
       images: [
-        'https://images.unsplash.com/photo-1499346030926-9a72daac6c63?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1517022812141-23620dba5c23?auto=format&fit=crop&w=1200&q=80',
         'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
         'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
       ],
@@ -243,7 +242,7 @@ export const defaultContent: SiteContent = {
       tags: ['Müstakil Tapu', 'Su Kaynağı', 'Manzaralı'],
       droneVideo: BG_VIDEO,
       images: [
-        'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?auto=format&fit=crop&w=1200&q=80',
         'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80',
         'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
       ],
@@ -283,7 +282,7 @@ export const defaultContent: SiteContent = {
       tags: ['Müstakil Tapu', 'Sulu Tarım', 'Geniş Cephe'],
       droneVideo: BG_VIDEO,
       images: [
-        'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&w=1200&q=80',
         'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80',
         'https://images.unsplash.com/photo-1499346030926-9a72daac6c63?auto=format&fit=crop&w=1200&q=80',
       ],
@@ -323,7 +322,7 @@ export const defaultContent: SiteContent = {
       tags: ['Müstakil Tapu', 'Köy İçi', 'Uygun Bütçe'],
       droneVideo: BG_VIDEO,
       images: [
-        'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=1200&q=80',
         'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=80',
         'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=1200&q=80',
       ],

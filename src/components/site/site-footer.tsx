@@ -2,6 +2,7 @@
 
 import { Mail, MessageCircle, Phone } from 'lucide-react';
 import { Logo } from './logo';
+import { TopoLines } from './topo';
 import { useStore, telLink, waLink } from '@/store';
 
 export function SiteFooter() {
@@ -11,24 +12,10 @@ export function SiteFooter() {
   return (
     <footer
       id="iletisim"
-      className="relative overflow-hidden bg-primary text-primary-foreground/70"
+      className="relative overflow-hidden border-t border-white/10 bg-primary text-primary-foreground/70"
     >
-      {/* Filigran: soluk amblem izi */}
-      <svg
-        viewBox="0 0 24 24"
-        className="pointer-events-none absolute -bottom-16 -right-10 h-72 w-72 text-white/[0.05]"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <path d="M12 21v-8.5" />
-        <path d="M12 12.5c0-3.3 2.2-5.5 5.5-5.5 0 3.3-2.2 5.5-5.5 5.5Z" />
-        <path d="M12 14.5c0-2.6-2-4.2-4.7-4.2 0 2.6 2 4.2 4.7 4.2Z" />
-        <path d="M4.5 21h15" />
-      </svg>
+      {/* Filigran: pafta motifi — koyu bantların ortak dili */}
+      <TopoLines className="inset-0 h-full w-full text-white/[0.04]" />
 
       <div className="container relative grid gap-12 py-16 sm:py-20 lg:grid-cols-[1.4fr_1fr_1fr_1.3fr]">
         <div>
@@ -117,8 +104,11 @@ export function SiteFooter() {
       </div>
 
       <div className="relative border-t border-white/10">
-        <div className="container flex items-center justify-center py-6 text-sm text-primary-foreground/55">
-          <p>© 2026 {content.brand}. Tüm hakları saklıdır.</p>
+        <div className="container flex flex-col items-center justify-between gap-2 py-6 text-sm text-primary-foreground/55 sm:flex-row">
+          <p>© {new Date().getFullYear()} {content.brand}. Tüm hakları saklıdır.</p>
+          <p className="nums text-[11px] font-semibold uppercase tracking-[0.22em] text-primary-foreground/55">
+            39.42° K · 29.98° D · Kütahya
+          </p>
         </div>
       </div>
     </footer>

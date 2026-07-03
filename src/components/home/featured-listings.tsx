@@ -5,6 +5,7 @@ import { Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ListingCard } from '@/components/listings/listing-card';
 import { ListingDetailDialog } from '@/components/listings/listing-detail-dialog';
+import { ShowcaseListing } from '@/components/listings/showcase-listing';
 import { SectionHeading } from '@/components/site/section-heading';
 import { Reveal } from '@/components/motion/reveal';
 import { useStore, waLink } from '@/store';
@@ -38,10 +39,16 @@ export function FeaturedListings({
     [content.listings, filters],
   );
 
+  // Filtre yokken ilk ilan büyük "vitrin parseli" olarak öne çıkarılır;
+  // arama/filtre sonuçları eş boyutlu grid'de kalır.
+  const showcase = !active && visible.length > 1 ? visible[0] : null;
+  const gridItems = showcase ? visible.slice(1) : visible;
+
   return (
     <section id="ilanlar" className="bg-background py-20 sm:py-28">
       <div className="container">
         <SectionHeading
+          index="02"
           eyebrow="Vitrin"
           title={content.sections.listingsTitle}
           subtitle={content.sections.listingsSubtitle}
@@ -98,13 +105,48 @@ export function FeaturedListings({
             </div>
           </div>
         ) : (
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {visible.map((l, i) => (
-              <Reveal key={l.id} delay={(i % 3) * 90} className="h-full">
-                <ListingCard listing={l} onOpen={setSelected} className="h-full" />
+          <>
+            {showcase ? (
+              <Reveal className="mt-10">
+                <ShowcaseListing listing={showcase} onOpen={setSelected} />
               </Reveal>
-            ))}
-          </div>
+            ) : null}
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {gridItems.map((l, i) => (
+                <Reveal key={l.id} delay={(i % 3) * 90} className="h-full">
+                  <ListingCard listing={l} onOpen={setSelected} className="h-full" />
+                </Reveal>
+              ))}
+              {/* Grid'in son hücresi boş kalmasın: kesikli terminal karo */}
+              {showcase && gridItems.length % 3 !== 0 ? (
+                <Reveal delay={(gridItems.length % 3) * 90} className="h-full">
+                  <div className="flex h-full min-h-[16rem] flex-col justify-between rounded-lg border border-dashed border-primary/30 p-6">
+                    <div>
+                      <h3 className="font-heading text-xl font-semibold text-foreground">
+                        Aradığınızı bulamadınız mı?
+                      </h3>
+                      <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
+                        Kriterlerinizi bize yazın; ilçe ilçe tarayıp size uygun
+                        parseli birlikte bulalım.
+                      </p>
+                    </div>
+                    <Button asChild variant="outline" className="mt-6 self-start">
+                      <a
+                        href={waLink(
+                          content.contact.whatsapp,
+                          'Merhaba, aradığım kriterlere uygun bir arazi arıyorum.',
+                        )}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        WhatsApp’tan yazın
+                      </a>
+                    </Button>
+                  </div>
+                </Reveal>
+              ) : null}
+            </div>
+          </>
         )}
       </div>
 

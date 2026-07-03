@@ -1,8 +1,8 @@
 'use client';
 
-import { ArrowRight, MapPin, MessageCircle, Phone } from 'lucide-react';
+import { ArrowRight, MapPin, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useStore, telLink, waLink } from '@/store';
+import { useStore, waLink } from '@/store';
 import type { Listing } from '@/content';
 
 export function ListingCard({
@@ -74,29 +74,20 @@ export function ListingCard({
           <button
             type="button"
             onClick={() => onOpen?.(listing)}
-            className="group/link flex items-center gap-1.5 text-[15px] font-semibold text-primary transition-colors hover:text-[hsl(154_46%_11%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="group/link flex min-h-11 items-center gap-1.5 text-[15px] font-semibold text-primary transition-colors hover:text-[hsl(154_46%_11%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             Detayları Gör
             <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover/link:translate-x-0.5" />
           </button>
-          <div className="flex items-center gap-2">
-            <a
-              href={telLink(content.contact.phone)}
-              aria-label="Telefonla arayın"
-              className="grid h-11 w-11 place-items-center rounded-sm border border-border text-foreground transition-colors hover:border-primary/30 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <Phone className="h-5 w-5" />
-            </a>
-            <a
-              href={wa}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="WhatsApp’tan yazın"
-              className="grid h-11 w-11 place-items-center rounded-sm border border-border text-whatsapp transition-colors hover:border-whatsapp/40 hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <MessageCircle className="h-5 w-5" />
-            </a>
-          </div>
+          <a
+            href={wa}
+            target="_blank"
+            rel="noreferrer"
+            className="flex min-h-11 items-center gap-1.5 text-[14px] font-semibold text-whatsapp transition-colors hover:text-[hsl(173_77%_21%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <MessageCircle className="h-4 w-4" />
+            WhatsApp
+          </a>
         </div>
       </div>
     </article>
