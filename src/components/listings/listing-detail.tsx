@@ -36,14 +36,6 @@ function FieldLabel({ children }: { children: ReactNode }) {
   );
 }
 
-// Parsel sınırı — kapak üzerine çizilen kadastro poligonu (1440×900 viewBox).
-const PARCEL = [
-  [600, 300],
-  [1128, 268],
-  [1206, 596],
-  [690, 656],
-] as const;
-
 // Her bölümün geliş yönü (px). Sağ/sol/alt dönüşümlü — her metin farklı yerden.
 const DIRS = [
   { dx: 96, dy: 0 }, // sağdan
@@ -267,32 +259,6 @@ function DetailHero({
           <div className="absolute inset-0 bg-gradient-to-r from-[hsl(155_36%_5%_/_0.72)] via-transparent via-[56%] to-transparent" />
         </div>
         <TopoLines className="inset-0 h-full w-full text-white/[0.05]" />
-
-        {/* Parsel sınırı — kaydırınca çizilir (dh-parcel), köşeler belirir */}
-        <svg
-          className="pointer-events-none absolute inset-0 h-full w-full"
-          viewBox="0 0 1440 900"
-          preserveAspectRatio="xMidYMid slice"
-          fill="none"
-          aria-hidden="true"
-        >
-          <polygon
-            className={scenic ? 'dh-parcel' : undefined}
-            points={PARCEL.map((p) => p.join(',')).join(' ')}
-            pathLength={1}
-            stroke="hsl(36 74% 66%)"
-            strokeWidth={2.5}
-            strokeDasharray={1}
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          />
-          {PARCEL.map(([x, y]) => (
-            <g key={`${x}-${y}`} className={scenic ? 'dh-corner' : undefined}>
-              <line x1={x - 13} y1={y} x2={x + 13} y2={y} stroke="hsl(36 74% 66%)" strokeWidth={2.5} />
-              <line x1={x} y1={y - 13} x2={x} y2={y + 13} stroke="hsl(36 74% 66%)" strokeWidth={2.5} />
-            </g>
-          ))}
-        </svg>
 
         {/* Sahne — kapak önünde, bölümler sırayla belirip uzun tutup geçer */}
         <div className="relative z-10 h-full">

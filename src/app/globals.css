@@ -491,12 +491,6 @@
   .dh-cue-end {
     opacity: clamp(0, (var(--p, 0) - 0.9) / 0.05, 1);
   }
-  .dh-parcel {
-    stroke-dashoffset: calc(1 - clamp(0, (var(--p, 0) - 0.05) / 0.24, 1));
-  }
-  .dh-corner {
-    opacity: clamp(0, (var(--p, 0) - 0.3) / 0.1, 1);
-  }
   /* İlk bölüm (A) sahneye girince tab/tık dışı — solmuş CTA'ları engelle */
   [data-phase='card'] .dh-chA {
     visibility: hidden;
