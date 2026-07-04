@@ -42,7 +42,9 @@ export function ListingDetail({ id }: { id: string }) {
     setPageUrl(window.location.href);
   }, []);
   // Kapak görselinde ölçülü ken-burns/parallax (ana sayfadaki kartlarla aynı dil)
-  const coverRef = useParallax<HTMLImageElement>(14);
+  const coverRef = useParallax<HTMLDivElement>(14);
+  // Küçük resme tıklanınca kapak yumuşak geçer; ilk yüklemede (LCP) sabit.
+  const [interacted, setInteracted] = useState(false);
 
   const listing = content.listings.find((l) => l.id === id);
 
@@ -95,87 +97,99 @@ export function ListingDetail({ id }: { id: string }) {
         </Reveal>
 
         <div className="mt-6 grid gap-10 lg:grid-cols-[1.6fr_1fr]">
-          {/* Sol: medya + açıklama */}
-          <Reveal immediate className="min-w-0">
-            {/* Kapak — ölçülmüş parsel çerçevesi: kadastro dili hero'dan gelir */}
-            <ParcelFrame>
-              <div className="overflow-hidden rounded-lg border border-border bg-muted">
-                <div className="relative aspect-[16/10]">
-                  {cover ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      ref={coverRef}
-                      src={cover}
-                      alt={listing.title}
-                      className="parallax-cover absolute inset-0 h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div className="grid h-full w-full place-items-center text-muted-foreground">
-                      <MapPin className="h-10 w-10" />
-                    </div>
-                  )}
+          {/* Sol: medya + açıklama — bölüm bölüm scroll ile canlanır */}
+          <div className="min-w-0">
+            {/* Kapak — ölçülmüş parsel çerçevesi + tıklamada yumuşak geçen görsel */}
+            <Reveal immediate>
+              <ParcelFrame>
+                <div className="relative overflow-hidden rounded-lg border border-border bg-muted">
+                  <div ref={coverRef} className="parallax-cover relative aspect-[16/10]">
+                    {cover ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        key={idx}
+                        src={cover}
+                        alt={listing.title}
+                        className={cn(
+                          'absolute inset-0 h-full w-full object-cover',
+                          interacted && 'detail-cover-in',
+                        )}
+                      />
+                    ) : (
+                      <div className="grid h-full w-full place-items-center text-muted-foreground">
+                        <MapPin className="h-10 w-10" />
+                      </div>
+                    )}
+                  </div>
                   {listing.badge ? (
-                    <span className="absolute left-5 top-5 rounded-sm bg-background/90 px-3 py-1.5 text-[12px] font-semibold text-foreground backdrop-blur-sm">
+                    <span className="absolute left-5 top-5 z-10 rounded-sm bg-background/90 px-3 py-1.5 text-[12px] font-semibold text-foreground backdrop-blur-sm">
                       {listing.badge}
                     </span>
                   ) : null}
                 </div>
-              </div>
-            </ParcelFrame>
+              </ParcelFrame>
 
-            {images.length > 1 ? (
-              <div className="mt-3 grid grid-cols-4 gap-3 sm:grid-cols-5">
-                {images.map((src, i) => (
-                  <button
-                    key={src + i}
-                    type="button"
-                    onClick={() => setIdx(i)}
-                    aria-label={`${i + 1}. fotoğrafı gösterin`}
-                    aria-current={i === idx}
-                    className={cn(
-                      'relative aspect-[4/3] overflow-hidden rounded-sm border bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                      i === idx
-                        ? 'border-primary ring-1 ring-primary'
-                        : 'border-border hover:border-primary/40',
-                    )}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={src}
-                      alt=""
-                      loading="lazy"
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
-            ) : null}
+              {images.length > 1 ? (
+                <div className="mt-3 grid grid-cols-4 gap-3 sm:grid-cols-5">
+                  {images.map((src, i) => (
+                    <button
+                      key={src + i}
+                      type="button"
+                      onClick={() => {
+                        setIdx(i);
+                        setInteracted(true);
+                      }}
+                      aria-label={`${i + 1}. fotoğrafı gösterin`}
+                      aria-current={i === idx}
+                      className={cn(
+                        'relative aspect-[4/3] overflow-hidden rounded-sm border bg-muted transition-[transform,border-color] duration-200 ease-out-quart focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                        i === idx
+                          ? 'border-primary ring-1 ring-primary'
+                          : 'border-border hover:-translate-y-0.5 hover:border-primary/40',
+                      )}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={src}
+                        alt=""
+                        loading="lazy"
+                        className="absolute inset-0 h-full w-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </Reveal>
 
             {listing.description ? (
-              <div className="mt-8">
+              <Reveal className="mt-8">
                 <FieldLabel>İlan açıklaması</FieldLabel>
                 <p className="mt-3 leading-relaxed text-foreground/85">
                   {listing.description}
                 </p>
-              </div>
+              </Reveal>
             ) : null}
 
             {listing.highlights?.length > 0 ? (
-              <div className="mt-8">
+              <Reveal className="mt-8">
                 <FieldLabel>Öne çıkanlar</FieldLabel>
                 <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-                  {listing.highlights.map((h) => (
-                    <li key={h} className="flex items-start gap-2 text-[15px] text-foreground/85">
+                  {listing.highlights.map((h, i) => (
+                    <li
+                      key={h}
+                      className="draw-pop flex items-start gap-2 text-[15px] text-foreground/85"
+                      style={{ transitionDelay: `${120 + i * 70}ms` }}
+                    >
                       <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-brass-strong" />
                       {h}
                     </li>
                   ))}
                 </ul>
-              </div>
+              </Reveal>
             ) : null}
 
             {listing.droneVideo ? (
-              <div className="mt-8">
+              <Reveal className="mt-8">
                 <FieldLabel>Drone ile havadan bakış</FieldLabel>
                 <div className="mt-3 overflow-hidden rounded-lg border border-border bg-primary">
                   <video
@@ -187,10 +201,10 @@ export function ListingDetail({ id }: { id: string }) {
                     className="aspect-video h-auto w-full object-cover"
                   />
                 </div>
-              </div>
+              </Reveal>
             ) : null}
 
-            <div className="mt-8">
+            <Reveal className="mt-8">
               <div className="mb-3 flex items-center justify-between">
                 <FieldLabel>Konum</FieldLabel>
                 <a
@@ -212,8 +226,8 @@ export function ListingDetail({ id }: { id: string }) {
                   className="h-72 w-full"
                 />
               </div>
-            </div>
-          </Reveal>
+            </Reveal>
+          </div>
 
           {/* Sağ: künye kartı — tapu dosyası dili */}
           <Reveal immediate>

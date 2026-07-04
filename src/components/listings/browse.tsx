@@ -316,9 +316,14 @@ export function Browse() {
                 </div>
               </div>
             ) : (
-              <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              // Filtre/sıralama değişince grid remount olur → kartlar yeniden
+              // kademeli belirir (etkileşimli yanıt, sert takla değil).
+              <div
+                key={`${ilce}|${tur}|${q}|${sirala}`}
+                className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3"
+              >
                 {visible.map((l, i) => (
-                  <Reveal key={l.id} delay={(i % 3) * 80} className="h-full">
+                  <Reveal key={l.id} delay={(i % 3) * 70} className="h-full">
                     <ListingCard listing={l} className="h-full" />
                   </Reveal>
                 ))}

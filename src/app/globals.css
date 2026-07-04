@@ -434,7 +434,24 @@
     opacity: 1;
     transform: none;
   }
+  /* Galeri kapağı — küçük resme tıklayınca yeni kapak yumuşakça belirir */
+  .detail-cover-in {
+    animation: detail-cover-in 0.5s var(--ease-out-quart) both;
+  }
+  @keyframes detail-cover-in {
+    from {
+      opacity: 0.3;
+      transform: scale(1.05);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
   @media (prefers-reduced-motion: reduce) {
+    .detail-cover-in {
+      animation: none;
+    }
     .parallax {
       transform: none !important;
     }
