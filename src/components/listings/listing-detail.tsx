@@ -38,21 +38,22 @@ function FieldLabel({ children }: { children: ReactNode }) {
 
 // Her bölüm ekranda FARKLI bir konumda durur (hep aynı köşe değil) ve o konuma
 // uygun bir yönden kayarak gelir. POS: yaslama sınıfı, DIR: geliş yönü (px).
-// Not: sağ-üst köşe kalıcı "dock" künyesine ayrıldı; bölümler oraya gelmez.
+// Sağ taraf kalıcı referans rayına ayrıldı (üstte başlık dock'u, altta künye
+// özeti). Bölümler sol + merkezde, farklı yüksekliklerde durur; oraya gelmez.
 const POS = [
-  'bottom-[12%] left-0', // A — alt-sol (bir kez gösterilip sağ-üste sabitlenir)
-  'top-[17%] left-0', // B — üst-sol
-  'top-[38%] left-[4%]', // C — orta-sol
-  'bottom-[15%] right-0', // D — alt-sağ
+  'bottom-[13%] left-0', // A — alt-sol (bir kez gösterilip başlığa dönüşür)
+  'top-[16%] left-0', // B — üst-sol
+  'top-[40%] left-[3%]', // C — orta-sol
+  'top-[19%] left-[30%]', // D — üst-merkez
   'top-[45%] left-[27%]', // E — merkez
-  'bottom-[13%] left-[34%]', // F — alt-orta
+  'bottom-[14%] left-[24%]', // F — alt-merkez
 ] as const;
 const DIRS = [
   { dx: 0, dy: 88 }, // A ← alttan
-  { dx: 0, dy: -84 }, // B ← üstten
+  { dx: -100, dy: 0 }, // B ← soldan
   { dx: -100, dy: 0 }, // C ← soldan
-  { dx: 96, dy: 0 }, // D ← sağdan
-  { dx: 0, dy: -84 }, // E ← üstten
+  { dx: 0, dy: -84 }, // D ← üstten
+  { dx: 0, dy: 84 }, // E ← alttan
   { dx: 0, dy: 88 }, // F ← alttan
 ] as const;
 
@@ -138,6 +139,13 @@ function DetailHero({
   const keyFacts = [{ label: 'Alan', value: listing.area }, ...specs.slice(0, 3)];
   const moreFacts = specs.slice(3, 7);
   const highlights = (listing.highlights ?? []).slice(0, 5);
+  // Sağ-altta kaydırdıkça satır satır dolan künye özeti (biriken tapu kaydı).
+  // Kısa, tek-satırlık değerler → kart temiz açılır.
+  const summary = [
+    { label: 'Alan', value: listing.area },
+    ...specs.slice(0, 3),
+    { label: 'Konum', value: listing.district },
+  ];
 
   // Bölüm A — tür/başlık/fiyat/CTA (tek h1; mobilde de tek gösterilen).
   const titlePanel = framed(
@@ -331,6 +339,43 @@ function DetailHero({
                   <p className="nums mt-3.5 text-[15px] font-semibold text-white/80">
                     {listing.price}
                   </p>
+                </div>
+              </div>
+            ) : null}
+
+            {/* Sağ-alt: kaydırdıkça satır satır dolan künye özeti — biriken tapu
+                kaydı. Double-bezel kart (dış kabuk + iç çekirdek, eş-merkez
+                radius, iç highlight). Blur yok (kaydıran zemin üstünde perf). */}
+            {scenic ? (
+              <div
+                className="dh-summary absolute right-0 top-[42%] z-30 w-[18rem] max-w-[38vw]"
+                aria-hidden="true"
+              >
+                <div className="rounded-[1.5rem] bg-white/[0.06] p-1.5 shadow-[0_26px_60px_-26px_rgba(3,14,9,0.9)] ring-1 ring-white/10">
+                  <div className="rounded-[1.15rem] bg-[hsl(154_30%_6%/0.86)] px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]">
+                    <span className="inline-block rounded-full bg-brass/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-brass-ondark">
+                      Künye özeti
+                    </span>
+                    <dl className="mt-3">
+                      {summary.map((s, i) => {
+                        const a = 0.17 + 0.66 * (i / Math.max(summary.length - 1, 1));
+                        return (
+                          <div
+                            key={s.label}
+                            className="dh-sum flex items-baseline justify-between gap-4 border-t border-white/[0.07] py-[9px] first:border-t-0"
+                            style={{ ['--a' as string]: a }}
+                          >
+                            <dt className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/50">
+                              {s.label}
+                            </dt>
+                            <dd className="nums text-right text-[13.5px] font-semibold text-white">
+                              {s.value}
+                            </dd>
+                          </div>
+                        );
+                      })}
+                    </dl>
+                  </div>
                 </div>
               </div>
             ) : null}

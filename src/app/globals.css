@@ -496,6 +496,25 @@
     visibility: hidden;
     pointer-events: none;
   }
+  /* Sağ-altta biriken künye özeti kartı (double-bezel). Sahne boyunca görünür;
+     satırları --a eşiğinde tek tek alttan belirip kalır (Emil: yoktan belirmez,
+     alttan süzülür; ease-out hissi scroll ile gelir). */
+  .dh-summary {
+    opacity: clamp(
+      0,
+      min((var(--p, 0) - 0.13) / 0.04, (0.97 - var(--p, 0)) / 0.03),
+      1
+    );
+    will-change: opacity;
+  }
+  .dh-sum {
+    --sg: clamp(0, (var(--p, 0) - var(--a, 0)) / 0.028, 1);
+    /* Satır geldikçe kart aşağı açılır (yeni satır basılıyormuş gibi); boş yer
+       kalmaz. max-height yalnızca bu küçük, mutlak-konumlu kartı etkiler. */
+    max-height: calc(var(--sg) * 2.75rem);
+    opacity: var(--sg);
+    overflow: hidden;
+  }
   /* İlk kart bir kez gösterildikten sonra sağ-üstte şeffaf çerçevede sabitlenen
      kompakt künye — sahne boyunca (kaydırdıkça) görünür kalır, sonda solar. */
   .dh-dock {
