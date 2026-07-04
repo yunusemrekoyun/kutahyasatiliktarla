@@ -452,47 +452,44 @@
      verir (yaklaşır + hafif kayar), ilan detayları bölüm bölüm üstünde belirip
      geçer. Tek --p; yalnızca transform/opacity (GPU). Masaüstü + hareket. */
   .dh-cover {
-    transform: scale(calc(1 + var(--p, 0) * 0.16))
-      translate3d(calc(var(--p, 0) * -2.5%), 0, 0);
+    transform: scale(calc(1 + var(--p, 0) * 0.2))
+      translate3d(calc(var(--p, 0) * -3%), 0, 0);
     will-change: transform;
   }
-  /* Bölüm A — başlık/fiyat/CTA: başta görünür, kaydırınca süzülüp solar */
-  .dh-chA {
-    opacity: clamp(0, (0.24 - var(--p, 0)) / 0.07, 1);
-    transform: translate3d(0, calc(var(--p, 0) * -46px), 0);
-    will-change: transform, opacity;
-  }
-  /* Bölüm B — parsel künye özeti: belirir, tutar, geçer */
-  .dh-chB {
+  /* Bölüm paneli — [--a, --b] penceresinde belirir, uzun tutar, geçer. Pencere
+     (--a, --b) ve genişlik (--span) satır içi verilir; böylece kaç bölüm olursa
+     olsun --p ekseninde otomatik dağıtılır (Apple ürün sayfası gibi). */
+  .dh-chapter {
+    --fade: 0.02;
     opacity: clamp(
       0,
-      min((var(--p, 0) - 0.3) / 0.06, (0.56 - var(--p, 0)) / 0.06),
+      min(
+        (var(--p, 0) - var(--a, 0)) / var(--fade),
+        (var(--b, 1) - var(--p, 0)) / var(--fade)
+      ),
       1
     );
-    transform: translate3d(0, calc((0.5 - (var(--p, 0) - 0.3) / 0.26) * 44px), 0);
-    will-change: transform, opacity;
-  }
-  /* Bölüm C — öne çıkanlar */
-  .dh-chC {
-    opacity: clamp(
+    transform: translate3d(
       0,
-      min((var(--p, 0) - 0.62) / 0.06, (0.9 - var(--p, 0)) / 0.06),
-      1
+      calc((0.5 - (var(--p, 0) - var(--a, 0)) / var(--span, 1)) * 42px),
+      0
     );
-    transform: translate3d(0, calc((0.5 - (var(--p, 0) - 0.62) / 0.28) * 44px), 0);
     will-change: transform, opacity;
   }
+  /* Başlangıç daveti + sonda "devam" ipucu */
   .dh-cue {
-    opacity: clamp(0, 1 - var(--p, 0) / 0.06, 1);
+    opacity: clamp(0, 1 - var(--p, 0) / 0.05, 1);
+  }
+  .dh-cue-end {
+    opacity: clamp(0, (var(--p, 0) - 0.9) / 0.05, 1);
   }
   .dh-parcel {
-    stroke-dashoffset: calc(1 - clamp(0, (var(--p, 0) - 0.08) / 0.32, 1));
+    stroke-dashoffset: calc(1 - clamp(0, (var(--p, 0) - 0.05) / 0.24, 1));
   }
   .dh-corner {
-    opacity: clamp(0, (var(--p, 0) - 0.4) / 0.12, 1);
+    opacity: clamp(0, (var(--p, 0) - 0.3) / 0.1, 1);
   }
-  /* Bölüm A sahneye girince (solduktan sonra) tab/tık dışı — görünmez ama
-     odaklanabilir kalan CTA'ları engelle. A, --p≈0.24'te tamamen solar. */
+  /* İlk bölüm (A) sahneye girince tab/tık dışı — solmuş CTA'ları engelle */
   [data-phase='card'] .dh-chA {
     visibility: hidden;
     pointer-events: none;

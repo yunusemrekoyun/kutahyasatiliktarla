@@ -45,13 +45,14 @@ const PARCEL = [
 ] as const;
 
 /**
- * İlan detay sinematik sahnesi: kapak arkada sabit kalıp kaydırmaya tepki
- * verirken (yaklaşır + hafif kayar, parsel sınırı çizilir) ilanın detayları
- * bölüm bölüm üstünde belirir — (A) tür/başlık/fiyat/CTA, (B) parsel künye
- * özeti, (C) öne çıkanlar. Böylece kaydırırken "hareket hissi" hiç kesilmez.
- * Sonda tam-etkileşimli içeriğe (galeri/harita/tam künye) bırakır. Kaydırma
- * kilitlenmez (sticky + --p, yalnızca transform/opacity). Mobil/reduced-motion:
- * tek sabit poster (A) + normal içerik.
+ * İlan detay sinematik sahnesi — Apple ürün sayfası mantığı. Kapak arkada
+ * sabit kalıp kaydırmaya tepki verirken (yaklaşır + kayar, parsel sınırı
+ * çizilir), ilanın TÜM detayları bölüm bölüm belirip uzun süre tutunup geçer:
+ * (A) başlık/fiyat/CTA, (B) parsel künyesi, (C) künye devamı, (D) açıklama,
+ * (E) öne çıkanlar, (F) konum. Böylece kaydırırken hareket hissi hiç kesilmez;
+ * en sonda "tüm detaylar için kaydırın" çıkıp tam-etkileşimli klasik içeriğe
+ * (galeri/harita/tam künye) bırakır. Kaydırma kilitlenmez (sticky + --p,
+ * yalnızca transform/opacity). Mobil/reduced-motion: tek sabit poster (A).
  */
 function DetailHero({
   listing,
@@ -63,33 +64,146 @@ function DetailHero({
   wa: string;
 }) {
   const { sectionRef, rootRef, scenic } = useScrollScene<HTMLElement, HTMLDivElement>();
-  // SSR'da sahne bilinmez; masaüstünde yüksekliği baştan ayır → hydrate'te
-  // alttaki içerik zıplamaz (ana sayfa hero'suyla aynı önlem).
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
   const poster = listing.images?.[0];
 
-  // Bölüm B — parsel künye özeti: alan + ilk üç künye satırı.
-  const keyFacts = [
-    { label: 'Alan', value: listing.area },
-    ...(listing.specs ?? []).slice(0, 3),
-  ];
-  // Bölüm C — öne çıkanlar (en çok dört madde).
-  const highlights = (listing.highlights ?? []).slice(0, 4);
+  const eyebrow = (text: string) => (
+    <p className="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-ondark">
+      <span className="h-0.5 w-8 bg-brass-ondark" aria-hidden="true" />
+      {text}
+    </p>
+  );
+  const factsPanel = (label: string, facts: { label: string; value: string }[]) => (
+    <div className="max-w-xl">
+      {eyebrow(label)}
+      <dl className="mt-6 grid grid-cols-2 gap-x-10 gap-y-7">
+        {facts.map((f) => (
+          <div key={f.label}>
+            <dt className="text-[12px] font-semibold uppercase tracking-[0.15em] text-white/55">
+              {f.label}
+            </dt>
+            <dd className="nums mt-1.5 font-heading text-2xl font-bold text-white lg:text-[1.75rem]">
+              {f.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
 
-  // Bölüm sarmalayıcısı — hepsi alt kısımda aynı bölgede üst üste; çapraz geçer.
-  const chapter = 'absolute inset-x-0 bottom-16 lg:bottom-24';
+  const specs = listing.specs ?? [];
+  const keyFacts = [{ label: 'Alan', value: listing.area }, ...specs.slice(0, 3)];
+  const moreFacts = specs.slice(3, 7);
+  const highlights = (listing.highlights ?? []).slice(0, 5);
+
+  // Bölüm A — tür/başlık/fiyat/CTA (tek h1; mobilde de tek gösterilen).
+  const titlePanel = (
+    <div className="max-w-2xl">
+      {eyebrow(`${listing.type} · ${listing.district}`)}
+      <h1 className="mt-5 font-heading text-4xl font-bold leading-[1.04] tracking-[-0.02em] text-white sm:text-5xl lg:text-[3.5rem]">
+        {listing.title}
+      </h1>
+      <p className="mt-4 flex flex-wrap items-center gap-2 text-[16px] text-white/85">
+        <MapPin className="h-5 w-5 shrink-0 text-brass-ondark" />
+        {listing.location}
+        <span aria-hidden="true" className="text-white/30">·</span>
+        <span className="nums">{listing.area}</span>
+      </p>
+      <div className="mt-8 flex flex-wrap items-end gap-x-8 gap-y-5">
+        <div>
+          <div className="nums font-heading text-4xl font-bold leading-none text-white sm:text-5xl">
+            <span className="sr-only">Fiyat: </span>
+            {listing.price}
+          </div>
+          <div className="nums mt-2 text-[14px] text-white/70">{listing.pricePerM2}</div>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <Button asChild variant="brass" size="lg" className="h-[52px] gap-2 px-7 text-base">
+            <a href={wa} target="_blank" rel="noreferrer">
+              <MessageCircle className="size-5" />
+              WhatsApp’tan Bilgi Al
+            </a>
+          </Button>
+          <Button asChild variant="outlineOnDark" size="lg" className="h-[52px] gap-2 px-7 text-base">
+            <a href={telLink(phone)}>
+              <Phone className="size-5" />
+              Ara
+            </a>
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Bölümler — boş olanlar elenir; --p ekseninde otomatik dağıtılır.
+  const chapters: { key: string; primary?: boolean; node: ReactNode }[] = [
+    { key: 'A', primary: true, node: titlePanel },
+    { key: 'B', node: factsPanel('Parsel künyesi', keyFacts) },
+  ];
+  if (moreFacts.length > 0) {
+    chapters.push({ key: 'C', node: factsPanel('Künye — devamı', moreFacts) });
+  }
+  if (listing.description) {
+    chapters.push({
+      key: 'D',
+      node: (
+        <div className="max-w-2xl">
+          {eyebrow('İlan açıklaması')}
+          <p className="mt-6 text-[19px] leading-relaxed text-white/90 lg:text-[22px] lg:leading-relaxed">
+            {listing.description}
+          </p>
+        </div>
+      ),
+    });
+  }
+  if (highlights.length > 0) {
+    chapters.push({
+      key: 'E',
+      node: (
+        <div className="max-w-xl">
+          {eyebrow('Neden bu parsel')}
+          <ul className="mt-6 grid gap-3.5">
+            {highlights.map((h) => (
+              <li key={h} className="flex items-start gap-3 text-[18px] leading-snug text-white/90">
+                <CircleCheck className="mt-1 h-5 w-5 shrink-0 text-brass-ondark" />
+                {h}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ),
+    });
+  }
+  chapters.push({
+    key: 'F',
+    node: (
+      <div className="max-w-xl">
+        {eyebrow('Konum')}
+        <p className="mt-6 font-heading text-2xl font-bold text-white lg:text-3xl">
+          {listing.location}
+        </p>
+        <p className="nums mt-3 text-[15px] text-white/70">
+          {listing.lat.toFixed(4)}, {listing.lng.toFixed(4)}
+        </p>
+        <p className="mt-4 text-[15px] leading-relaxed text-white/60">
+          Uydu görünümü, harita ve drone çekimi aşağıda.
+        </p>
+      </div>
+    ),
+  });
+
+  const N = chapters.length;
+  // Sahne yüksekliği bölüm sayısına göre ölçeklenir → uzun, ferah tutuş.
+  const sceneVh = 100 + N * 88;
+  const pos = 'absolute inset-x-0 bottom-14 lg:bottom-24';
+  // Bölümleri [0, 0.9] aralığına eşit dağıt; her biri geniş pencere (uzun tutuş).
+  const slot = 0.9 / N;
 
   return (
     <section
       ref={sectionRef}
       aria-label="İlan tanıtımı"
-      className={cn(
-        'bg-primary',
-        scenic
-          ? 'relative -mt-20 h-[280vh] lg:-mt-24'
-          : cn('-mt-20 lg:-mt-24', !mounted && 'lg:h-[280vh]'),
-      )}
+      className={cn('bg-primary -mt-20 lg:-mt-24', scenic && 'relative')}
+      style={scenic ? { height: `${sceneVh}vh` } : undefined}
     >
       <div
         ref={rootRef}
@@ -139,103 +253,54 @@ function DetailHero({
           ))}
         </svg>
 
-        {/* Sahne — kapak önünde, bölümler sırayla geçer */}
+        {/* Sahne — kapak önünde, bölümler sırayla belirip uzun tutup geçer */}
         <div className="relative z-10 h-full">
           <div className="container relative h-full">
-            {/* Bölüm A — tür/başlık/fiyat/CTA (mobilde tek gösterilen) */}
-            <div className={cn(chapter, 'max-w-2xl', scenic && 'dh-chA')}>
-              <p className="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-ondark">
-                <span className="h-0.5 w-8 bg-brass-ondark" aria-hidden="true" />
-                {listing.type} · {listing.district}
-              </p>
-              <h1 className="mt-5 font-heading text-4xl font-bold leading-[1.04] tracking-[-0.02em] text-white sm:text-5xl lg:text-[3.5rem]">
-                {listing.title}
-              </h1>
-              <p className="mt-4 flex flex-wrap items-center gap-2 text-[16px] text-white/85">
-                <MapPin className="h-5 w-5 shrink-0 text-brass-ondark" />
-                {listing.location}
-                <span aria-hidden="true" className="text-white/30">·</span>
-                <span className="nums">{listing.area}</span>
-              </p>
-              <div className="mt-8 flex flex-wrap items-end gap-x-8 gap-y-5">
-                <div>
-                  <div className="nums font-heading text-4xl font-bold leading-none text-white sm:text-5xl">
-                    <span className="sr-only">Fiyat: </span>
-                    {listing.price}
-                  </div>
-                  <div className="nums mt-2 text-[14px] text-white/70">{listing.pricePerM2}</div>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <Button asChild variant="brass" size="lg" className="h-[52px] gap-2 px-7 text-base">
-                    <a href={wa} target="_blank" rel="noreferrer">
-                      <MessageCircle className="size-5" />
-                      WhatsApp’tan Bilgi Al
-                    </a>
-                  </Button>
-                  <Button asChild variant="outlineOnDark" size="lg" className="h-[52px] gap-2 px-7 text-base">
-                    <a href={telLink(phone)}>
-                      <Phone className="size-5" />
-                      Ara
-                    </a>
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Bölüm B ve C yalnızca sahnede (masaüstü + hareket) */}
             {scenic ? (
-              <>
-                {/* Bölüm B — parsel künye özeti */}
-                <div className={cn(chapter, 'dh-chB max-w-xl')} aria-hidden="true">
-                  <p className="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-ondark">
-                    <span className="h-0.5 w-8 bg-brass-ondark" aria-hidden="true" />
-                    Parsel künyesi
-                  </p>
-                  <dl className="mt-6 grid grid-cols-2 gap-x-10 gap-y-7">
-                    {keyFacts.map((f) => (
-                      <div key={f.label}>
-                        <dt className="text-[12px] font-semibold uppercase tracking-[0.15em] text-white/55">
-                          {f.label}
-                        </dt>
-                        <dd className="nums mt-1.5 font-heading text-2xl font-bold text-white lg:text-[1.75rem]">
-                          {f.value}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-                </div>
-
-                {/* Bölüm C — öne çıkanlar */}
-                {highlights.length > 0 ? (
-                  <div className={cn(chapter, 'dh-chC max-w-xl')} aria-hidden="true">
-                    <p className="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-ondark">
-                      <span className="h-0.5 w-8 bg-brass-ondark" aria-hidden="true" />
-                      Neden bu parsel
-                    </p>
-                    <ul className="mt-6 grid gap-3.5">
-                      {highlights.map((h) => (
-                        <li key={h} className="flex items-start gap-3 text-[18px] leading-snug text-white/90">
-                          <CircleCheck className="mt-1 h-5 w-5 shrink-0 text-brass-ondark" />
-                          {h}
-                        </li>
-                      ))}
-                    </ul>
+              chapters.map((ch, i) => {
+                const a = i === 0 ? -0.05 : i * slot + 0.008;
+                const b = (i + 1) * slot - 0.008;
+                return (
+                  <div
+                    key={ch.key}
+                    className={cn(pos, 'dh-chapter', ch.key === 'A' && 'dh-chA')}
+                    style={{
+                      ['--a' as string]: a,
+                      ['--b' as string]: b,
+                      ['--span' as string]: b - a,
+                    }}
+                    aria-hidden={ch.primary ? undefined : true}
+                  >
+                    {ch.node}
                   </div>
-                ) : null}
-              </>
-            ) : null}
+                );
+              })
+            ) : (
+              <div className={pos}>{titlePanel}</div>
+            )}
           </div>
         </div>
 
-        {/* Kaydırma daveti */}
+        {/* Kaydırma daveti (başta) + "tüm detaylar için" ipucu (sonda) */}
         {scenic ? (
-          <div
-            className="dh-cue pointer-events-none absolute inset-x-0 bottom-7 z-20 flex flex-col items-center gap-1.5 text-white/70"
-            aria-hidden="true"
-          >
-            <span className="text-[11px] font-semibold uppercase tracking-[0.22em]">Kaydırın</span>
-            <ChevronDown className="hint-float h-5 w-5" />
-          </div>
+          <>
+            <div
+              className="dh-cue pointer-events-none absolute inset-x-0 bottom-7 z-20 flex flex-col items-center gap-1.5 text-white/70"
+              aria-hidden="true"
+            >
+              <span className="text-[11px] font-semibold uppercase tracking-[0.22em]">Kaydırın</span>
+              <ChevronDown className="hint-float h-5 w-5" />
+            </div>
+            <div
+              className="dh-cue-end pointer-events-none absolute inset-x-0 bottom-7 z-20 flex flex-col items-center gap-1.5 text-white/70"
+              aria-hidden="true"
+            >
+              <span className="text-[11px] font-semibold uppercase tracking-[0.22em]">
+                Tüm detaylar için kaydırın
+              </span>
+              <ChevronDown className="hint-float h-5 w-5" />
+            </div>
+          </>
         ) : null}
       </div>
     </section>
