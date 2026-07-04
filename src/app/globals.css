@@ -448,32 +448,54 @@
       transform: none;
     }
   }
-  /* İlan detay sinematik parsel-hero — tek --p ile koreografi (scroll kilidi
-     yok, sticky + --p). Kapak yavaşça yaklaşır, başlık yukarı süzülüp solar,
-     parsel sınırı çizilir; sonra sahne içeriğe bırakır. Yalnızca transform/
-     opacity (GPU). Yalnızca masaüstü + hareket açıkken uygulanır. */
+  /* İlan detay — sürekli kaydırma sahnesi: kapak arkada kalıp kaydırmaya tepki
+     verir (yaklaşır + hafif kayar), ilan detayları bölüm bölüm üstünde belirip
+     geçer. Tek --p; yalnızca transform/opacity (GPU). Masaüstü + hareket. */
   .dh-cover {
-    transform: scale(calc(1 + var(--p, 0) * 0.12))
-      translate3d(0, calc(var(--p, 0) * -16px), 0);
+    transform: scale(calc(1 + var(--p, 0) * 0.16))
+      translate3d(calc(var(--p, 0) * -2.5%), 0, 0);
     will-change: transform;
   }
-  .dh-overlay {
-    transform: translate3d(0, calc(var(--p, 0) * -52px), 0);
-    opacity: clamp(0, 1 - (var(--p, 0) - 0.32) / 0.26, 1);
+  /* Bölüm A — başlık/fiyat/CTA: başta görünür, kaydırınca süzülüp solar */
+  .dh-chA {
+    opacity: clamp(0, (0.24 - var(--p, 0)) / 0.07, 1);
+    transform: translate3d(0, calc(var(--p, 0) * -46px), 0);
+    will-change: transform, opacity;
+  }
+  /* Bölüm B — parsel künye özeti: belirir, tutar, geçer */
+  .dh-chB {
+    opacity: clamp(
+      0,
+      min((var(--p, 0) - 0.3) / 0.06, (0.56 - var(--p, 0)) / 0.06),
+      1
+    );
+    transform: translate3d(0, calc((0.5 - (var(--p, 0) - 0.3) / 0.26) * 44px), 0);
+    will-change: transform, opacity;
+  }
+  /* Bölüm C — öne çıkanlar */
+  .dh-chC {
+    opacity: clamp(
+      0,
+      min((var(--p, 0) - 0.62) / 0.06, (0.9 - var(--p, 0)) / 0.06),
+      1
+    );
+    transform: translate3d(0, calc((0.5 - (var(--p, 0) - 0.62) / 0.28) * 44px), 0);
     will-change: transform, opacity;
   }
   .dh-cue {
     opacity: clamp(0, 1 - var(--p, 0) / 0.06, 1);
   }
   .dh-parcel {
-    stroke-dashoffset: calc(1 - clamp(0, (var(--p, 0) - 0.12) / 0.42, 1));
+    stroke-dashoffset: calc(1 - clamp(0, (var(--p, 0) - 0.08) / 0.32, 1));
   }
   .dh-corner {
-    opacity: clamp(0, (var(--p, 0) - 0.52) / 0.16, 1);
+    opacity: clamp(0, (var(--p, 0) - 0.4) / 0.12, 1);
   }
-  [data-phase='card'] .dh-cover,
-  [data-phase='card'] .dh-overlay {
-    will-change: auto;
+  /* Bölüm A sahneye girince (solduktan sonra) tab/tık dışı — görünmez ama
+     odaklanabilir kalan CTA'ları engelle. A, --p≈0.24'te tamamen solar. */
+  [data-phase='card'] .dh-chA {
+    visibility: hidden;
+    pointer-events: none;
   }
   @media (prefers-reduced-motion: reduce) {
     .detail-cover-in {

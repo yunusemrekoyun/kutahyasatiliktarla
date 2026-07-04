@@ -45,11 +45,13 @@ const PARCEL = [
 ] as const;
 
 /**
- * İlan detay sinematik açılışı: ilanın "parsel künyesi" title-sekansı. Kapak
- * tam ekran açılır; tür/başlık/fiyat/CTA üstte durur (erişim korunur), aşağı
- * kaydırdıkça kapak hafifçe yaklaşır, başlık süzülüp solar ve parsel sınırı
- * kendini çizer; sonra sahne içeriğe bırakır. Kaydırma kilitlenmez (sticky +
- * --p, yalnızca transform/opacity). Mobil/reduced-motion: sabit poster.
+ * İlan detay sinematik sahnesi: kapak arkada sabit kalıp kaydırmaya tepki
+ * verirken (yaklaşır + hafif kayar, parsel sınırı çizilir) ilanın detayları
+ * bölüm bölüm üstünde belirir — (A) tür/başlık/fiyat/CTA, (B) parsel künye
+ * özeti, (C) öne çıkanlar. Böylece kaydırırken "hareket hissi" hiç kesilmez.
+ * Sonda tam-etkileşimli içeriğe (galeri/harita/tam künye) bırakır. Kaydırma
+ * kilitlenmez (sticky + --p, yalnızca transform/opacity). Mobil/reduced-motion:
+ * tek sabit poster (A) + normal içerik.
  */
 function DetailHero({
   listing,
@@ -67,6 +69,17 @@ function DetailHero({
   useEffect(() => setMounted(true), []);
   const poster = listing.images?.[0];
 
+  // Bölüm B — parsel künye özeti: alan + ilk üç künye satırı.
+  const keyFacts = [
+    { label: 'Alan', value: listing.area },
+    ...(listing.specs ?? []).slice(0, 3),
+  ];
+  // Bölüm C — öne çıkanlar (en çok dört madde).
+  const highlights = (listing.highlights ?? []).slice(0, 4);
+
+  // Bölüm sarmalayıcısı — hepsi alt kısımda aynı bölgede üst üste; çapraz geçer.
+  const chapter = 'absolute inset-x-0 bottom-16 lg:bottom-24';
+
   return (
     <section
       ref={sectionRef}
@@ -74,8 +87,8 @@ function DetailHero({
       className={cn(
         'bg-primary',
         scenic
-          ? 'relative -mt-20 h-[170vh] lg:-mt-24'
-          : cn('-mt-20 lg:-mt-24', !mounted && 'lg:h-[170vh]'),
+          ? 'relative -mt-20 h-[280vh] lg:-mt-24'
+          : cn('-mt-20 lg:-mt-24', !mounted && 'lg:h-[280vh]'),
       )}
     >
       <div
@@ -85,7 +98,7 @@ function DetailHero({
           scenic ? 'sticky top-0 h-screen' : 'relative min-h-[82svh]',
         )}
       >
-        {/* Kapak — kaydırınca hafifçe yaklaşır (dh-cover) */}
+        {/* Kapak — arkada kalır, kaydırınca yaklaşır + hafif kayar (dh-cover) */}
         <div className={cn('absolute inset-0', scenic && 'dh-cover')}>
           {poster ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -95,8 +108,8 @@ function DetailHero({
 
         {/* Okunurluk scrim'i */}
         <div className="absolute inset-0" aria-hidden="true">
-          <div className="absolute inset-0 bg-gradient-to-t from-[hsl(155_38%_5%_/_0.92)] via-[hsl(155_34%_7%_/_0.5)] via-[48%] to-[hsl(155_34%_8%_/_0.22)]" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[hsl(155_36%_5%_/_0.72)] via-transparent via-[54%] to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[hsl(155_38%_5%_/_0.94)] via-[hsl(155_34%_7%_/_0.55)] via-[50%] to-[hsl(155_34%_8%_/_0.25)]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[hsl(155_36%_5%_/_0.72)] via-transparent via-[56%] to-transparent" />
         </div>
         <TopoLines className="inset-0 h-full w-full text-white/[0.05]" />
 
@@ -126,10 +139,11 @@ function DetailHero({
           ))}
         </svg>
 
-        {/* Title-sekansı — kaydırınca yukarı süzülüp solar (dh-overlay) */}
-        <div className={cn('relative z-10 h-full', scenic && 'dh-overlay')}>
-          <div className="container flex h-full flex-col justify-end pb-16 pt-28 lg:pb-20 lg:pt-32">
-            <div className="max-w-2xl">
+        {/* Sahne — kapak önünde, bölümler sırayla geçer */}
+        <div className="relative z-10 h-full">
+          <div className="container relative h-full">
+            {/* Bölüm A — tür/başlık/fiyat/CTA (mobilde tek gösterilen) */}
+            <div className={cn(chapter, 'max-w-2xl', scenic && 'dh-chA')}>
               <p className="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-ondark">
                 <span className="h-0.5 w-8 bg-brass-ondark" aria-hidden="true" />
                 {listing.type} · {listing.district}
@@ -167,10 +181,53 @@ function DetailHero({
                 </div>
               </div>
             </div>
+
+            {/* Bölüm B ve C yalnızca sahnede (masaüstü + hareket) */}
+            {scenic ? (
+              <>
+                {/* Bölüm B — parsel künye özeti */}
+                <div className={cn(chapter, 'dh-chB max-w-xl')} aria-hidden="true">
+                  <p className="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-ondark">
+                    <span className="h-0.5 w-8 bg-brass-ondark" aria-hidden="true" />
+                    Parsel künyesi
+                  </p>
+                  <dl className="mt-6 grid grid-cols-2 gap-x-10 gap-y-7">
+                    {keyFacts.map((f) => (
+                      <div key={f.label}>
+                        <dt className="text-[12px] font-semibold uppercase tracking-[0.15em] text-white/55">
+                          {f.label}
+                        </dt>
+                        <dd className="nums mt-1.5 font-heading text-2xl font-bold text-white lg:text-[1.75rem]">
+                          {f.value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+
+                {/* Bölüm C — öne çıkanlar */}
+                {highlights.length > 0 ? (
+                  <div className={cn(chapter, 'dh-chC max-w-xl')} aria-hidden="true">
+                    <p className="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-ondark">
+                      <span className="h-0.5 w-8 bg-brass-ondark" aria-hidden="true" />
+                      Neden bu parsel
+                    </p>
+                    <ul className="mt-6 grid gap-3.5">
+                      {highlights.map((h) => (
+                        <li key={h} className="flex items-start gap-3 text-[18px] leading-snug text-white/90">
+                          <CircleCheck className="mt-1 h-5 w-5 shrink-0 text-brass-ondark" />
+                          {h}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </>
+            ) : null}
           </div>
         </div>
 
-        {/* Kaydırma ipucu */}
+        {/* Kaydırma daveti */}
         {scenic ? (
           <div
             className="dh-cue pointer-events-none absolute inset-x-0 bottom-7 z-20 flex flex-col items-center gap-1.5 text-white/70"
