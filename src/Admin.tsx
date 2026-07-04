@@ -544,7 +544,7 @@ export default function Admin() {
                       }
                     />
                     <Input
-                      label="Künye (her satır: Etiket | Değer)"
+                      label="Özellikler (her satır: Etiket | Değer)"
                       textarea
                       rows={6}
                       value={specsToStr(l.specs)}

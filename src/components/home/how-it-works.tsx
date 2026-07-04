@@ -24,7 +24,7 @@ const steps = [
   {
     icon: Maximize,
     title: 'İnceleyin',
-    text: 'Gerçek fotoğraflar, konum haritası ve net künye bilgisiyle araziyi uzaktan tanıyın.',
+    text: 'Gerçek fotoğraflar, konum haritası ve net arazi bilgisiyle araziyi uzaktan tanıyın.',
   },
   {
     icon: MessageCircle,

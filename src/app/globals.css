@@ -201,7 +201,7 @@
   }
   /* ---- Açılış sekansı: hero → öne çıkan ilan tek akışta morph ----
      Tek --p (0→1) ile koreografi: (1) hero, (2) görsel fildişi matte ile
-     çerçevelenip küçülür + ilan fotoğrafına geçer, (3) künye belirir + parsel
+     çerçevelenip küçülür + ilan fotoğrafına geçer, (3) bilgi belirir + parsel
      çizilir. box-shadow 100vmax = fildişi matte; pencere küçüldükçe çerçeveler.
      Yalnızca transform/opacity; kaydırma kilitlenmez. */
   /* İlan duvarı (hero arka planı) — kaydırınca hafifçe geri çekilir/bulanır */
@@ -267,7 +267,7 @@
   .op-cue {
     opacity: clamp(0, 1 - var(--p, 0) / 0.06, 1);
   }
-  /* Slider okları — kart oluşunca (künyeyle birlikte) belirir */
+  /* Slider okları — kart oluşunca (bilgiyle birlikte) belirir */
   .op-arrows {
     opacity: clamp(0, (var(--p, 0) - 0.56) / 0.2, 1);
   }
@@ -305,7 +305,7 @@
   .op-slide-l {
     animation: op-slide-l 0.62s var(--ease-out-expo) both;
   }
-  /* Künye içeriği geliş yönünde kayıp belirir (kart kabı sabit) */
+  /* Bilgi içeriği geliş yönünde kayıp belirir (kart kabı sabit) */
   .op-fade {
     animation: op-fade-in 0.55s var(--ease-out-quart) both;
   }
@@ -496,7 +496,7 @@
     visibility: hidden;
     pointer-events: none;
   }
-  /* Sağ-altta biriken künye özeti kartı (double-bezel). Sahne boyunca görünür;
+  /* Sağ-altta biriken bilgi özeti kartı (double-bezel). Sahne boyunca görünür;
      satırları --a eşiğinde tek tek alttan belirip kalır (Emil: yoktan belirmez,
      alttan süzülür; ease-out hissi scroll ile gelir). */
   .dh-summary {
@@ -516,7 +516,7 @@
     overflow: hidden;
   }
   /* İlk kart bir kez gösterildikten sonra sağ-üstte şeffaf çerçevede sabitlenen
-     kompakt künye — sahne boyunca (kaydırdıkça) görünür kalır, sonda solar. */
+     kompakt bilgi — sahne boyunca (kaydırdıkça) görünür kalır, sonda solar. */
   .dh-dock {
     opacity: clamp(
       0,

@@ -190,7 +190,7 @@ export function Browse() {
                 </h1>
                 <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
                   Kütahya merkez ve ilçelerindeki arazi kayıtları. İlçe ve türe
-                  göre süzün; her ilan gerçek fotoğraf ve net künye ile.
+                  göre süzün; her ilan gerçek fotoğraf ve net arazi bilgisiyle.
                 </p>
               </div>
             </div>

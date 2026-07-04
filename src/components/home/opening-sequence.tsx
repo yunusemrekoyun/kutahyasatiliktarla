@@ -25,7 +25,7 @@ const HERO_IMG =
 /**
  * Açılış sekansı: hero → öne çıkan ilan tek kesintisiz morph. Kaydırdıkça
  * hero görseli fildişi matte ile çerçevelenip küçülür, ilan fotoğrafına
- * geçer, üstüne parsel çizilir ve künye belirir. Kart oluşunca yanlardaki
+ * geçer, üstüne parsel çizilir ve bilgi belirir. Kart oluşunca yanlardaki
  * oklarla ilanlar arasında geçilir (görsel çapraz geçişle akar); aşağı
  * kaydırınca sayfa normal akışına döner. Kaydırma kilitlenmez (sticky + --p).
  * Mobil/reduced-motion: normal hero + sabit vitrin kartı.
@@ -302,7 +302,7 @@ export function OpeningSequence() {
               </>
             ) : null}
 
-            {/* Künye kartı — kap sabit, içerik ilan değişince yumuşak geçer */}
+            {/* Bilgi kartı — kap sabit, içerik ilan değişince yumuşak geçer */}
             <div className="op-caption absolute inset-x-0 top-[68.5%] z-20 flex justify-center">
               <div
                 className="w-[50%] max-w-[52rem] overflow-hidden rounded-lg border border-border bg-card/95 p-5 shadow-soft-lg backdrop-blur-sm sm:p-6"

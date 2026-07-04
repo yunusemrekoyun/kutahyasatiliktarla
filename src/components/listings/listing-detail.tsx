@@ -38,15 +38,15 @@ function FieldLabel({ children }: { children: ReactNode }) {
 
 // Her bölüm ekranda FARKLI bir konumda durur (hep aynı köşe değil) ve o konuma
 // uygun bir yönden kayarak gelir. POS: yaslama sınıfı, DIR: geliş yönü (px).
-// Sağ taraf kalıcı referans rayına ayrıldı (üstte başlık dock'u, altta künye
-// özeti). Bölümler sol + merkezde, farklı yüksekliklerde durur; oraya gelmez.
+// Sağ taraf kalıcı referans rayına ayrıldı (üstte başlık dock'u, altta özet).
+// Bölümler sol tarafta, farklı yüksekliklerde durur; sağ rayla çakışmaz.
 const POS = [
   'bottom-[13%] left-0', // A — alt-sol (bir kez gösterilip başlığa dönüşür)
-  'top-[16%] left-0', // B — üst-sol
-  'top-[40%] left-[3%]', // C — orta-sol
-  'top-[19%] left-[30%]', // D — üst-merkez
-  'top-[45%] left-[27%]', // E — merkez
-  'bottom-[14%] left-[24%]', // F — alt-merkez
+  'top-[15%] left-0', // B — üst-sol
+  'top-[41%] left-[2%]', // C — orta-sol
+  'top-[17%] left-[3%]', // D — üst-sol
+  'top-[46%] left-[6%]', // E — orta-sol
+  'bottom-[15%] left-[4%]', // F — alt-sol
 ] as const;
 const DIRS = [
   { dx: 0, dy: 88 }, // A ← alttan
@@ -61,10 +61,10 @@ const DIRS = [
  * İlan detay sinematik sahnesi — Apple ürün sayfası mantığı. Kapak arkada
  * sabit kalıp kaydırmaya tepki verirken (yaklaşır + kayar, parsel sınırı
  * çizilir), ilanın TÜM detayları bölüm bölüm belirip uzun süre tutunup geçer:
- * (A) başlık/fiyat/CTA, (B) parsel künyesi, (C) künye devamı, (D) açıklama,
+ * (A) başlık/fiyat/CTA, (B) parsel bilgileri, (C) bilgi devamı, (D) açıklama,
  * (E) öne çıkanlar, (F) konum. Böylece kaydırırken hareket hissi hiç kesilmez;
  * en sonda "tüm detaylar için kaydırın" çıkıp tam-etkileşimli klasik içeriğe
- * (galeri/harita/tam künye) bırakır. Kaydırma kilitlenmez (sticky + --p,
+ * (galeri/harita/tam bilgi) bırakır. Kaydırma kilitlenmez (sticky + --p,
  * yalnızca transform/opacity). Mobil/reduced-motion: tek sabit poster (A).
  */
 function DetailHero({
@@ -139,7 +139,7 @@ function DetailHero({
   const keyFacts = [{ label: 'Alan', value: listing.area }, ...specs.slice(0, 3)];
   const moreFacts = specs.slice(3, 7);
   const highlights = (listing.highlights ?? []).slice(0, 5);
-  // Sağ-altta kaydırdıkça satır satır dolan künye özeti (biriken tapu kaydı).
+  // Sağ-altta kaydırdıkça satır satır dolan bilgi özeti (biriken tapu kaydı).
   // Kısa, tek-satırlık değerler → kart temiz açılır.
   const summary = [
     { label: 'Alan', value: listing.area },
@@ -190,10 +190,10 @@ function DetailHero({
   // Bölümler — boş olanlar elenir; --p ekseninde otomatik dağıtılır.
   const chapters: { key: string; primary?: boolean; node: ReactNode }[] = [
     { key: 'A', primary: true, node: titlePanel },
-    { key: 'B', node: factsPanel('Parsel künyesi', keyFacts) },
+    { key: 'B', node: factsPanel('Arazi bilgileri', keyFacts) },
   ];
   if (moreFacts.length > 0) {
-    chapters.push({ key: 'C', node: factsPanel('Künye — devamı', moreFacts) });
+    chapters.push({ key: 'C', node: factsPanel('Arazi bilgileri — devamı', moreFacts) });
   }
   if (listing.description) {
     chapters.push({
@@ -201,11 +201,11 @@ function DetailHero({
       node: framed(
         <>
           {eyebrow('İlan açıklaması')}
-          <p className="mt-6 text-[19px] leading-relaxed text-white/90 lg:text-[22px] lg:leading-relaxed">
+          <p className="mt-6 text-[18px] leading-relaxed text-white/90 lg:text-[20px] lg:leading-relaxed">
             {listing.description}
           </p>
         </>,
-        'max-w-2xl',
+        'max-w-xl',
       ),
     });
   }
@@ -318,7 +318,7 @@ function DetailHero({
             )}
 
             {/* İlk kart bir kez gösterilir, sonra sağ-üstte şeffaf çerçevede
-                sabit kalır — kaydırma boyunca kompakt künye olarak görünür. */}
+                sabit kalır — kaydırma boyunca kompakt bilgi olarak görünür. */}
             {scenic ? (
               <div
                 className="dh-dock absolute right-0 top-[14%] z-30 w-[21rem] max-w-[44vw] text-right"
@@ -343,7 +343,7 @@ function DetailHero({
               </div>
             ) : null}
 
-            {/* Sağ-alt: kaydırdıkça satır satır dolan künye özeti — biriken tapu
+            {/* Sağ-alt: kaydırdıkça satır satır dolan bilgi özeti — biriken tapu
                 kaydı. Double-bezel kart (dış kabuk + iç çekirdek, eş-merkez
                 radius, iç highlight). Blur yok (kaydıran zemin üstünde perf). */}
             {scenic ? (
@@ -354,7 +354,7 @@ function DetailHero({
                 <div className="rounded-[1.5rem] bg-white/[0.06] p-1.5 shadow-[0_26px_60px_-26px_rgba(3,14,9,0.9)] ring-1 ring-white/10">
                   <div className="rounded-[1.15rem] bg-[hsl(154_30%_6%/0.86)] px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]">
                     <span className="inline-block rounded-full bg-brass/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-brass-ondark">
-                      Künye özeti
+                      Arazi özeti
                     </span>
                     <dl className="mt-3">
                       {summary.map((s, i) => {
@@ -606,10 +606,10 @@ export function ListingDetail({ id }: { id: string }) {
             </Reveal>
           </div>
 
-          {/* Sağ: künye kartı — tapu dosyası dili */}
+          {/* Sağ: bilgi kartı — tapu dosyası dili */}
           <Reveal immediate>
             <div className="lg:sticky lg:top-28">
-              {/* Künye — tapu dosyası dili: parsel köşeleri + topo filigran */}
+              {/* Bilgi — tapu dosyası dili: parsel köşeleri + topo filigran */}
               <ParcelFrame>
                 <div className="relative overflow-hidden rounded-lg border border-border bg-card p-6 sm:p-7">
                   <TopoLines className="inset-0 h-full w-full text-primary/[0.03]" />

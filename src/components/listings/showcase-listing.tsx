@@ -13,7 +13,7 @@ import type { Listing } from '@/content';
  * Vitrin parseli: ilk ilan, kesikli parsel sınırı ve pafta köşe
  * işaretleriyle çerçevelenmiş büyük yatay kart. Bölüm görününce köşe
  * işaretleri belirir; görsel kaydırdıkça çerçevesi içinde hafifçe kayar;
- * künye sayıları sayarak yükselir. (Kapsayan Reveal FeaturedListings'te.)
+ * bilgi sayıları sayarak yükselir. (Kapsayan Reveal FeaturedListings'te.)
  */
 export function ShowcaseListing({ listing }: { listing: Listing }) {
   const { content } = useStore();
@@ -24,7 +24,7 @@ export function ShowcaseListing({ listing }: { listing: Listing }) {
     `Merhaba, "${listing.title}" (${listing.price}) ilanı hakkında bilgi almak istiyorum.`,
   );
 
-  // Künye: konum satırıyla tekrara düşmeyen kayıtlar (ilk spec = tapu durumu)
+  // Bilgi: konum satırıyla tekrara düşmeyen kayıtlar (ilk spec = tapu durumu)
   const specs: Array<[string, string]> = [
     ['Alan', listing.area],
     ['Tür', listing.type],

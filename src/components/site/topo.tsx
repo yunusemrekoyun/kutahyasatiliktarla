@@ -55,7 +55,7 @@ export function CornerMark({
 
 /**
  * Ölçülmüş parsel çerçevesi — içeriği dört pafta köşe işaretiyle sarar.
- * Hero'daki kadastro dilini alt sayfalara taşır (galeri, künye, başlık).
+ * Hero'daki kadastro dilini alt sayfalara taşır (galeri, bilgi, başlık).
  * İşaretler çerçevenin biraz dışında durur; her zeminde görünür kalır.
  */
 export function ParcelFrame({
