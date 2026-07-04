@@ -460,7 +460,7 @@
      (--a, --b) ve genişlik (--span) satır içi verilir; böylece kaç bölüm olursa
      olsun --p ekseninde otomatik dağıtılır (Apple ürün sayfası gibi). */
   .dh-chapter {
-    --fade: 0.02;
+    --fade: 0.015;
     opacity: clamp(
       0,
       min(

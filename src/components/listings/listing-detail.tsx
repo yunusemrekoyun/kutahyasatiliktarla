@@ -225,10 +225,12 @@ function DetailHero({
   });
 
   const N = chapters.length;
-  // Sahne yüksekliği bölüm sayısına göre ölçeklenir → uzun, ferah tutuş.
-  const sceneVh = 100 + N * 88;
+  // Sahne yüksekliği bölüm sayısına göre ölçeklenir → her bölüm uzun tutunur
+  // (bir bölüm ≈ bir ekran boyu kaydırma görünür kalır).
+  const sceneVh = 100 + N * 118;
   const pos = 'absolute inset-x-0 bottom-14 lg:bottom-24';
-  // Bölümleri [0, 0.9] aralığına eşit dağıt; her biri geniş pencere (uzun tutuş).
+  // Bölümleri [0, 0.9] aralığına dağıt; pencereler neredeyse bitişik (uzun tutuş,
+  // aralarda yalnızca kısa bir "arazi nefesi").
   const slot = 0.9 / N;
 
   return (
@@ -265,8 +267,8 @@ function DetailHero({
           <div className="container relative h-full">
             {scenic ? (
               chapters.map((ch, i) => {
-                const a = i === 0 ? -0.05 : i * slot + 0.008;
-                const b = (i + 1) * slot - 0.008;
+                const a = i === 0 ? -0.05 : i * slot + 0.004;
+                const b = (i + 1) * slot - 0.004;
                 const dir = DIRS[i % DIRS.length];
                 return (
                   <div
