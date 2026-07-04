@@ -313,34 +313,27 @@ function DetailHero({
                 sabit kalır — kaydırma boyunca kompakt künye olarak görünür. */}
             {scenic ? (
               <div
-                className="dh-dock absolute right-0 top-[13%] z-30 w-fit max-w-[16rem]"
+                className="dh-dock absolute right-0 top-[13%] z-30 w-[15.5rem]"
                 aria-hidden="true"
               >
-                <div className="relative px-5 py-4">
-                  <div className="pointer-events-none absolute -inset-6 bg-[radial-gradient(closest-side,hsl(155_36%_4%/0.5),transparent)]" />
-                  <svg className="pointer-events-none absolute inset-0 h-full w-full overflow-visible">
-                    <rect
-                      x="0"
-                      y="0"
-                      width="100%"
-                      height="100%"
-                      rx="6"
-                      fill="none"
-                      stroke="hsl(36 74% 66%)"
-                      strokeWidth="1.5"
-                    />
-                  </svg>
-                  <div className="relative">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brass-ondark">
-                      {listing.type} · {listing.district}
-                    </p>
-                    <p className="mt-1.5 font-heading text-[17px] font-bold leading-tight text-white">
-                      {listing.title}
-                    </p>
-                    <p className="nums mt-2 font-heading text-xl font-bold text-white">
-                      {listing.price}
-                    </p>
-                  </div>
+                {/* Buzlu-cam çip: sahnedeki şeffaf survey çerçevelerinden farklı
+                    malzeme → kalıcı UI öğesi olduğu belli. Üst kenar cam parıltısı,
+                    hairline ışık kenarı, yumuşak elevation, brass aksan. */}
+                <div className="relative overflow-hidden rounded-2xl border border-white/[0.14] bg-[hsl(154_26%_7%/0.52)] py-4 pl-6 pr-5 shadow-[0_22px_60px_-18px_rgba(4,16,10,0.9)] backdrop-blur-xl backdrop-saturate-150 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/25 before:to-transparent before:content-['']">
+                  <span
+                    className="absolute inset-y-4 left-0 w-[3px] rounded-r-full bg-brass"
+                    aria-hidden="true"
+                  />
+                  <p className="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-[0.15em] text-brass-ondark">
+                    <MapPin className="h-3.5 w-3.5 shrink-0" />
+                    {listing.type} · {listing.district}
+                  </p>
+                  <p className="mt-2 font-heading text-[15px] font-bold leading-snug text-white">
+                    {listing.title}
+                  </p>
+                  <p className="nums mt-2.5 font-heading text-[20px] font-bold leading-none text-white">
+                    {listing.price}
+                  </p>
                 </div>
               </div>
             ) : null}
