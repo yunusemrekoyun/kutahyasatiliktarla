@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 /**
@@ -50,5 +50,31 @@ export function CornerMark({
     >
       <path d="M1 11V1h10" />
     </svg>
+  );
+}
+
+/**
+ * Ölçülmüş parsel çerçevesi — içeriği dört pafta köşe işaretiyle sarar.
+ * Hero'daki kadastro dilini alt sayfalara taşır (galeri, künye, başlık).
+ * İşaretler çerçevenin biraz dışında durur; her zeminde görünür kalır.
+ */
+export function ParcelFrame({
+  children,
+  className,
+  tone = 'brass',
+}: {
+  children: ReactNode;
+  className?: string;
+  tone?: 'brass' | 'ondark';
+}) {
+  const color = tone === 'ondark' ? 'text-brass-ondark' : 'text-brass';
+  return (
+    <div className={cn('relative', className)}>
+      {children}
+      <CornerMark className={cn('-left-1.5 -top-1.5', color)} />
+      <CornerMark className={cn('-right-1.5 -top-1.5 rotate-90', color)} />
+      <CornerMark className={cn('-bottom-1.5 -right-1.5 rotate-180', color)} />
+      <CornerMark className={cn('-bottom-1.5 -left-1.5 -rotate-90', color)} />
+    </div>
   );
 }

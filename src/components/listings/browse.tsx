@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/sheet';
 import { ListingCard } from '@/components/listings/listing-card';
 import { Reveal } from '@/components/motion/reveal';
+import { ParcelFrame, TopoLines } from '@/components/site/topo';
 import { cn } from '@/lib/utils';
 import { LAND_TYPES } from '@/content';
 import { useStore, parsePrice, waLink } from '@/store';
@@ -54,28 +55,44 @@ function FilterRail({
     activeValue: string,
   ) => (
     <div>
-      <h3 className="text-[12px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+      <h3 className="flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-brass-strong">
+        <span className="h-0.5 w-5 bg-brass" aria-hidden="true" />
         {title}
       </h3>
-      <ul className="mt-3 space-y-0.5">
+      {/* Pafta indeksi: hairline ayraçlar, aktif satırda brass ölçüm çubuğu */}
+      <ul className="mt-3 border-t border-border">
         {items.map((it) => {
           const active = (it.value ?? '') === activeValue;
           return (
-            <li key={it.label}>
+            <li key={it.label} className="border-b border-border">
               <button
                 type="button"
                 onClick={() => onPick(title === 'İlçe' ? 'ilce' : 'tur', it.value)}
                 className={cn(
-                  'flex w-full items-center justify-between gap-3 rounded-sm px-2.5 py-2 text-left text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                  'relative flex w-full items-center justify-between gap-3 py-2.5 pl-4 pr-1 text-left text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
                   active
-                    ? 'bg-secondary font-semibold text-secondary-foreground'
-                    : 'text-foreground/75 hover:bg-muted hover:text-foreground',
+                    ? 'font-semibold text-foreground'
+                    : 'text-foreground/70 hover:text-foreground',
                 )}
                 aria-pressed={active}
               >
-                {it.label}
+                <span
+                  className={cn(
+                    'absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 bg-brass transition-opacity duration-200',
+                    active ? 'opacity-100' : 'opacity-0',
+                  )}
+                  aria-hidden="true"
+                />
+                <span className="truncate">{it.label}</span>
                 {typeof it.count === 'number' ? (
-                  <span className="nums text-[13px] text-muted-foreground">{it.count}</span>
+                  <span
+                    className={cn(
+                      'nums shrink-0 text-[13px] tabular-nums',
+                      active ? 'text-brass-strong' : 'text-muted-foreground',
+                    )}
+                  >
+                    {String(it.count).padStart(2, '0')}
+                  </span>
                 ) : null}
               </button>
             </li>
@@ -158,21 +175,32 @@ export function Browse() {
   return (
     <div className="bg-background py-10 sm:py-14">
       <div className="container">
-        {/* Sayfa başlığı — kadastro dili */}
+        {/* Sayfa başlığı — pafta kartuşu: topo filigran + parsel köşe işaretleri */}
         <Reveal immediate>
-          <p className="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-strong">
-            <span className="h-0.5 w-8 bg-brass" aria-hidden="true" />
-            İlan dizini
-          </p>
-          <h1 className="mt-4 font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            {title}
-          </h1>
+          <ParcelFrame>
+            <div className="relative overflow-hidden rounded-lg border border-border bg-card px-6 py-8 sm:px-9 sm:py-10">
+              <TopoLines className="inset-0 h-full w-full text-primary/[0.035]" />
+              <div className="relative">
+                <p className="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-strong">
+                  <span className="draw-dash h-0.5 w-8 bg-brass" aria-hidden="true" />
+                  İlan dizini
+                </p>
+                <h1 className="mt-4 font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                  {title}
+                </h1>
+                <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
+                  Kütahya merkez ve ilçelerindeki arazi kayıtları. İlçe ve türe
+                  göre süzün; her ilan gerçek fotoğraf ve net künye ile.
+                </p>
+              </div>
+            </div>
+          </ParcelFrame>
         </Reveal>
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[15rem_1fr] xl:grid-cols-[16rem_1fr]">
           {/* Sol ray (masaüstü) */}
           <aside className="hidden lg:block" aria-label="İlan filtreleri">
-            <div className="sticky top-28 border-t border-border pt-6">
+            <div className="sticky top-28">
               <FilterRail
                 districts={districts}
                 ilce={ilce}

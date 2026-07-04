@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import {
@@ -15,11 +15,23 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/motion/reveal';
+import { ParcelFrame, TopoLines } from '@/components/site/topo';
+import { useParallax } from '@/lib/parallax';
 import { cn } from '@/lib/utils';
 import { useStore, telLink, waLink } from '@/store';
 import type { MapMarker } from '@/LeafletMap';
 
 const LeafletMap = dynamic(() => import('@/LeafletMap'), { ssr: false });
+
+/** Bölüm başlığı — brass ölçüm çubuğu motifiyle tutarlı alan etiketi. */
+function FieldLabel({ children }: { children: ReactNode }) {
+  return (
+    <h2 className="flex items-center gap-2.5 font-heading text-lg font-semibold text-foreground">
+      <span className="h-4 w-0.5 shrink-0 bg-brass" aria-hidden="true" />
+      {children}
+    </h2>
+  );
+}
 
 export function ListingDetail({ id }: { id: string }) {
   const { content, hydrated } = useStore();
@@ -29,6 +41,8 @@ export function ListingDetail({ id }: { id: string }) {
   useEffect(() => {
     setPageUrl(window.location.href);
   }, []);
+  // Kapak görselinde ölçülü ken-burns/parallax (ana sayfadaki kartlarla aynı dil)
+  const coverRef = useParallax<HTMLImageElement>(14);
 
   const listing = content.listings.find((l) => l.id === id);
 
@@ -83,27 +97,31 @@ export function ListingDetail({ id }: { id: string }) {
         <div className="mt-6 grid gap-10 lg:grid-cols-[1.6fr_1fr]">
           {/* Sol: medya + açıklama */}
           <Reveal immediate className="min-w-0">
-            <div className="overflow-hidden rounded-lg border border-border bg-muted">
-              <div className="relative aspect-[16/10]">
-                {cover ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={cover}
-                    alt={listing.title}
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="grid h-full w-full place-items-center text-muted-foreground">
-                    <MapPin className="h-10 w-10" />
-                  </div>
-                )}
-                {listing.badge ? (
-                  <span className="absolute left-5 top-5 rounded-sm bg-background/90 px-3 py-1.5 text-[12px] font-semibold text-foreground backdrop-blur-sm">
-                    {listing.badge}
-                  </span>
-                ) : null}
+            {/* Kapak — ölçülmüş parsel çerçevesi: kadastro dili hero'dan gelir */}
+            <ParcelFrame>
+              <div className="overflow-hidden rounded-lg border border-border bg-muted">
+                <div className="relative aspect-[16/10]">
+                  {cover ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      ref={coverRef}
+                      src={cover}
+                      alt={listing.title}
+                      className="parallax-cover absolute inset-0 h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="grid h-full w-full place-items-center text-muted-foreground">
+                      <MapPin className="h-10 w-10" />
+                    </div>
+                  )}
+                  {listing.badge ? (
+                    <span className="absolute left-5 top-5 rounded-sm bg-background/90 px-3 py-1.5 text-[12px] font-semibold text-foreground backdrop-blur-sm">
+                      {listing.badge}
+                    </span>
+                  ) : null}
+                </div>
               </div>
-            </div>
+            </ParcelFrame>
 
             {images.length > 1 ? (
               <div className="mt-3 grid grid-cols-4 gap-3 sm:grid-cols-5">
@@ -135,9 +153,7 @@ export function ListingDetail({ id }: { id: string }) {
 
             {listing.description ? (
               <div className="mt-8">
-                <h2 className="font-heading text-lg font-semibold text-foreground">
-                  İlan açıklaması
-                </h2>
+                <FieldLabel>İlan açıklaması</FieldLabel>
                 <p className="mt-3 leading-relaxed text-foreground/85">
                   {listing.description}
                 </p>
@@ -146,9 +162,7 @@ export function ListingDetail({ id }: { id: string }) {
 
             {listing.highlights?.length > 0 ? (
               <div className="mt-8">
-                <h2 className="font-heading text-lg font-semibold text-foreground">
-                  Öne çıkanlar
-                </h2>
+                <FieldLabel>Öne çıkanlar</FieldLabel>
                 <ul className="mt-3 grid gap-2 sm:grid-cols-2">
                   {listing.highlights.map((h) => (
                     <li key={h} className="flex items-start gap-2 text-[15px] text-foreground/85">
@@ -162,9 +176,7 @@ export function ListingDetail({ id }: { id: string }) {
 
             {listing.droneVideo ? (
               <div className="mt-8">
-                <h2 className="font-heading text-lg font-semibold text-foreground">
-                  Drone ile havadan bakış
-                </h2>
+                <FieldLabel>Drone ile havadan bakış</FieldLabel>
                 <div className="mt-3 overflow-hidden rounded-lg border border-border bg-primary">
                   <video
                     src={listing.droneVideo}
@@ -180,7 +192,7 @@ export function ListingDetail({ id }: { id: string }) {
 
             <div className="mt-8">
               <div className="mb-3 flex items-center justify-between">
-                <h2 className="font-heading text-lg font-semibold text-foreground">Konum</h2>
+                <FieldLabel>Konum</FieldLabel>
                 <a
                   href={`https://www.google.com/maps?q=${listing.lat},${listing.lng}`}
                   target="_blank"
@@ -206,11 +218,15 @@ export function ListingDetail({ id }: { id: string }) {
           {/* Sağ: künye kartı — tapu dosyası dili */}
           <Reveal immediate>
             <div className="lg:sticky lg:top-28">
-              <div className="rounded-lg border border-border bg-card p-6 sm:p-7">
-                <p className="flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-brass-strong">
-                  <span className="h-0.5 w-6 bg-brass" aria-hidden="true" />
-                  {listing.type}
-                </p>
+              {/* Künye — tapu dosyası dili: parsel köşeleri + topo filigran */}
+              <ParcelFrame>
+                <div className="relative overflow-hidden rounded-lg border border-border bg-card p-6 sm:p-7">
+                  <TopoLines className="inset-0 h-full w-full text-primary/[0.03]" />
+                  <div className="relative">
+                    <p className="flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-brass-strong">
+                      <span className="h-0.5 w-6 bg-brass" aria-hidden="true" />
+                      {listing.type}
+                    </p>
                 <h1 className="mt-3 font-heading text-2xl font-bold leading-tight tracking-[-0.01em] text-foreground">
                   {listing.title}
                 </h1>
@@ -271,8 +287,10 @@ export function ListingDetail({ id }: { id: string }) {
                     <Share2 className="h-4 w-4" />
                     İlanı WhatsApp’tan paylaşın
                   </a>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </ParcelFrame>
             </div>
           </Reveal>
         </div>
