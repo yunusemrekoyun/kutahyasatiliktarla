@@ -38,17 +38,18 @@ function FieldLabel({ children }: { children: ReactNode }) {
 
 // Her bölüm ekranda FARKLI bir konumda durur (hep aynı köşe değil) ve o konuma
 // uygun bir yönden kayarak gelir. POS: yaslama sınıfı, DIR: geliş yönü (px).
+// Not: sağ-üst köşe kalıcı "dock" künyesine ayrıldı; bölümler oraya gelmez.
 const POS = [
-  'bottom-[12%] left-0', // A — alt-sol (büyük başlık)
-  'top-[21%] right-0', // B — üst-sağ
-  'top-[33%] left-[4%]', // C — orta-sol
+  'bottom-[12%] left-0', // A — alt-sol (bir kez gösterilip sağ-üste sabitlenir)
+  'top-[17%] left-0', // B — üst-sol
+  'top-[38%] left-[4%]', // C — orta-sol
   'bottom-[15%] right-0', // D — alt-sağ
-  'top-[44%] left-[26%]', // E — orta
+  'top-[45%] left-[27%]', // E — merkez
   'bottom-[13%] left-[34%]', // F — alt-orta
 ] as const;
 const DIRS = [
   { dx: 0, dy: 88 }, // A ← alttan
-  { dx: 100, dy: 0 }, // B ← sağdan
+  { dx: 0, dy: -84 }, // B ← üstten
   { dx: -100, dy: 0 }, // C ← soldan
   { dx: 96, dy: 0 }, // D ← sağdan
   { dx: 0, dy: -84 }, // E ← üstten
@@ -307,6 +308,42 @@ function DetailHero({
             ) : (
               <div className="absolute bottom-[12%] left-0">{titlePanel}</div>
             )}
+
+            {/* İlk kart bir kez gösterilir, sonra sağ-üstte şeffaf çerçevede
+                sabit kalır — kaydırma boyunca kompakt künye olarak görünür. */}
+            {scenic ? (
+              <div
+                className="dh-dock absolute right-0 top-[13%] z-30 w-fit max-w-[16rem]"
+                aria-hidden="true"
+              >
+                <div className="relative px-5 py-4">
+                  <div className="pointer-events-none absolute -inset-6 bg-[radial-gradient(closest-side,hsl(155_36%_4%/0.5),transparent)]" />
+                  <svg className="pointer-events-none absolute inset-0 h-full w-full overflow-visible">
+                    <rect
+                      x="0"
+                      y="0"
+                      width="100%"
+                      height="100%"
+                      rx="6"
+                      fill="none"
+                      stroke="hsl(36 74% 66%)"
+                      strokeWidth="1.5"
+                    />
+                  </svg>
+                  <div className="relative">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brass-ondark">
+                      {listing.type} · {listing.district}
+                    </p>
+                    <p className="mt-1.5 font-heading text-[17px] font-bold leading-tight text-white">
+                      {listing.title}
+                    </p>
+                    <p className="nums mt-2 font-heading text-xl font-bold text-white">
+                      {listing.price}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
 

@@ -496,6 +496,21 @@
     visibility: hidden;
     pointer-events: none;
   }
+  /* İlk kart bir kez gösterildikten sonra sağ-üstte şeffaf çerçevede sabitlenen
+     kompakt künye — sahne boyunca (kaydırdıkça) görünür kalır, sonda solar. */
+  .dh-dock {
+    opacity: clamp(
+      0,
+      min((var(--p, 0) - 0.13) / 0.04, (0.97 - var(--p, 0)) / 0.03),
+      1
+    );
+    transform: translate3d(
+      calc((1 - clamp(0, (var(--p, 0) - 0.13) / 0.05, 1)) * 22px),
+      calc((1 - clamp(0, (var(--p, 0) - 0.13) / 0.05, 1)) * -14px),
+      0
+    );
+    will-change: transform, opacity;
+  }
   @media (prefers-reduced-motion: reduce) {
     .detail-cover-in {
       animation: none;
