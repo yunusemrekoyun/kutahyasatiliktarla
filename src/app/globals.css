@@ -469,12 +469,20 @@
       ),
       1
     );
+    /* Her bölüm kendi yönünden (--dx, --dy) kayarak girer, ortada durur, karşı
+       yöne süzülüp geçer. Yön satır içi verilir (sağ/sol/alt/üst). */
     transform: translate3d(
-      0,
-      calc((0.5 - (var(--p, 0) - var(--a, 0)) / var(--span, 1)) * 42px),
+      calc((0.5 - (var(--p, 0) - var(--a, 0)) / var(--span, 1)) * var(--dx, 0px)),
+      calc((0.5 - (var(--p, 0) - var(--a, 0)) / var(--span, 1)) * var(--dy, 42px)),
       0
     );
     will-change: transform, opacity;
+  }
+  /* Metni saran survey-eskiz dikdörtgeni: bölüm belirirken kendini çizer
+     (kutu içeriğe göre otomatik boyutlanır; rect %100). Sahne dışında (mobil)
+     çizgisiz kalmasın diye statik tam-çizili. */
+  .dh-frame {
+    stroke-dashoffset: clamp(0, 1 - (var(--p, 0) - max(var(--a, 0), 0)) / 0.07, 1);
   }
   /* Başlangıç daveti + sonda "devam" ipucu */
   .dh-cue {

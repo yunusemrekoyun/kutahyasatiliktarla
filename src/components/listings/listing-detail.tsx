@@ -44,6 +44,16 @@ const PARCEL = [
   [690, 656],
 ] as const;
 
+// Her bölümün geliş yönü (px). Sağ/sol/alt dönüşümlü — her metin farklı yerden.
+const DIRS = [
+  { dx: 96, dy: 0 }, // sağdan
+  { dx: -96, dy: 0 }, // soldan
+  { dx: 0, dy: 78 }, // alttan
+  { dx: 84, dy: 0 }, // sağdan
+  { dx: -84, dy: 0 }, // soldan
+  { dx: 0, dy: 68 }, // alttan
+] as const;
+
 /**
  * İlan detay sinematik sahnesi — Apple ürün sayfası mantığı. Kapak arkada
  * sabit kalıp kaydırmaya tepki verirken (yaklaşır + kayar, parsel sınırı
@@ -72,23 +82,50 @@ function DetailHero({
       {text}
     </p>
   );
-  const factsPanel = (label: string, facts: { label: string; value: string }[]) => (
-    <div className="max-w-xl">
-      {eyebrow(label)}
-      <dl className="mt-6 grid grid-cols-2 gap-x-10 gap-y-7">
-        {facts.map((f) => (
-          <div key={f.label}>
-            <dt className="text-[12px] font-semibold uppercase tracking-[0.15em] text-white/55">
-              {f.label}
-            </dt>
-            <dd className="nums mt-1.5 font-heading text-2xl font-bold text-white lg:text-[1.75rem]">
-              {f.value}
-            </dd>
-          </div>
-        ))}
-      </dl>
+  // Metni saran survey-eskiz çerçevesi: içeriğe göre otomatik boyutlanır
+  // (w-fit + rect %100). Sahnedeyken kendini çizer, mobilde statik tam-çizili.
+  const framed = (node: ReactNode, maxW: string) => (
+    <div className={cn('relative w-fit px-6 py-5 sm:px-7 sm:py-6', maxW)}>
+      <svg
+        className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
+        aria-hidden="true"
+      >
+        <rect
+          className={scenic ? 'dh-frame' : undefined}
+          x="0"
+          y="0"
+          width="100%"
+          height="100%"
+          rx="6"
+          fill="none"
+          stroke="hsl(36 74% 66%)"
+          strokeWidth="1.5"
+          pathLength={1}
+          strokeDasharray={1}
+        />
+      </svg>
+      <div className="relative">{node}</div>
     </div>
   );
+  const factsPanel = (label: string, facts: { label: string; value: string }[]) =>
+    framed(
+      <>
+        {eyebrow(label)}
+        <dl className="mt-6 grid grid-cols-2 gap-x-10 gap-y-7">
+          {facts.map((f) => (
+            <div key={f.label}>
+              <dt className="text-[12px] font-semibold uppercase tracking-[0.15em] text-white/55">
+                {f.label}
+              </dt>
+              <dd className="nums mt-1.5 font-heading text-2xl font-bold text-white lg:text-[1.75rem]">
+                {f.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </>,
+      'max-w-xl',
+    );
 
   const specs = listing.specs ?? [];
   const keyFacts = [{ label: 'Alan', value: listing.area }, ...specs.slice(0, 3)];
@@ -96,8 +133,8 @@ function DetailHero({
   const highlights = (listing.highlights ?? []).slice(0, 5);
 
   // Bölüm A — tür/başlık/fiyat/CTA (tek h1; mobilde de tek gösterilen).
-  const titlePanel = (
-    <div className="max-w-2xl">
+  const titlePanel = framed(
+    <>
       {eyebrow(`${listing.type} · ${listing.district}`)}
       <h1 className="mt-5 font-heading text-4xl font-bold leading-[1.04] tracking-[-0.02em] text-white sm:text-5xl lg:text-[3.5rem]">
         {listing.title}
@@ -131,7 +168,8 @@ function DetailHero({
           </Button>
         </div>
       </div>
-    </div>
+    </>,
+    'max-w-2xl',
   );
 
   // Bölümler — boş olanlar elenir; --p ekseninde otomatik dağıtılır.
@@ -145,21 +183,22 @@ function DetailHero({
   if (listing.description) {
     chapters.push({
       key: 'D',
-      node: (
-        <div className="max-w-2xl">
+      node: framed(
+        <>
           {eyebrow('İlan açıklaması')}
           <p className="mt-6 text-[19px] leading-relaxed text-white/90 lg:text-[22px] lg:leading-relaxed">
             {listing.description}
           </p>
-        </div>
+        </>,
+        'max-w-2xl',
       ),
     });
   }
   if (highlights.length > 0) {
     chapters.push({
       key: 'E',
-      node: (
-        <div className="max-w-xl">
+      node: framed(
+        <>
           {eyebrow('Neden bu parsel')}
           <ul className="mt-6 grid gap-3.5">
             {highlights.map((h) => (
@@ -169,14 +208,15 @@ function DetailHero({
               </li>
             ))}
           </ul>
-        </div>
+        </>,
+        'max-w-xl',
       ),
     });
   }
   chapters.push({
     key: 'F',
-    node: (
-      <div className="max-w-xl">
+    node: framed(
+      <>
         {eyebrow('Konum')}
         <p className="mt-6 font-heading text-2xl font-bold text-white lg:text-3xl">
           {listing.location}
@@ -187,7 +227,8 @@ function DetailHero({
         <p className="mt-4 text-[15px] leading-relaxed text-white/60">
           Uydu görünümü, harita ve drone çekimi aşağıda.
         </p>
-      </div>
+      </>,
+      'max-w-xl',
     ),
   });
 
@@ -260,6 +301,7 @@ function DetailHero({
               chapters.map((ch, i) => {
                 const a = i === 0 ? -0.05 : i * slot + 0.008;
                 const b = (i + 1) * slot - 0.008;
+                const dir = DIRS[i % DIRS.length];
                 return (
                   <div
                     key={ch.key}
@@ -268,6 +310,8 @@ function DetailHero({
                       ['--a' as string]: a,
                       ['--b' as string]: b,
                       ['--span' as string]: b - a,
+                      ['--dx' as string]: `${dir.dx}px`,
+                      ['--dy' as string]: `${dir.dy}px`,
                     }}
                     aria-hidden={ch.primary ? undefined : true}
                   >
