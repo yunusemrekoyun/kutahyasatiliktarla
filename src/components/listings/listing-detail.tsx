@@ -36,14 +36,23 @@ function FieldLabel({ children }: { children: ReactNode }) {
   );
 }
 
-// Her bölümün geliş yönü (px). Sağ/sol/alt dönüşümlü — her metin farklı yerden.
+// Her bölüm ekranda FARKLI bir konumda durur (hep aynı köşe değil) ve o konuma
+// uygun bir yönden kayarak gelir. POS: yaslama sınıfı, DIR: geliş yönü (px).
+const POS = [
+  'bottom-[12%] left-0', // A — alt-sol (büyük başlık)
+  'top-[21%] right-0', // B — üst-sağ
+  'top-[33%] left-[4%]', // C — orta-sol
+  'bottom-[15%] right-0', // D — alt-sağ
+  'top-[44%] left-[26%]', // E — orta
+  'bottom-[13%] left-[34%]', // F — alt-orta
+] as const;
 const DIRS = [
-  { dx: 96, dy: 0 }, // sağdan
-  { dx: -96, dy: 0 }, // soldan
-  { dx: 0, dy: 78 }, // alttan
-  { dx: 84, dy: 0 }, // sağdan
-  { dx: -84, dy: 0 }, // soldan
-  { dx: 0, dy: 68 }, // alttan
+  { dx: 0, dy: 88 }, // A ← alttan
+  { dx: 100, dy: 0 }, // B ← sağdan
+  { dx: -100, dy: 0 }, // C ← soldan
+  { dx: 96, dy: 0 }, // D ← sağdan
+  { dx: 0, dy: -84 }, // E ← üstten
+  { dx: 0, dy: 88 }, // F ← alttan
 ] as const;
 
 /**
@@ -78,6 +87,11 @@ function DetailHero({
   // (w-fit + rect %100). Sahnedeyken kendini çizer, mobilde statik tam-çizili.
   const framed = (node: ReactNode, maxW: string) => (
     <div className={cn('relative w-fit px-6 py-5 sm:px-7 sm:py-6', maxW)}>
+      {/* Yumuşak yerel karartma — kutu ekranda nereye gelirse gelsin metin okunur */}
+      <div
+        className="pointer-events-none absolute -inset-8 bg-[radial-gradient(closest-side,hsl(155_36%_4%/0.5),transparent)]"
+        aria-hidden="true"
+      />
       <svg
         className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
         aria-hidden="true"
@@ -228,7 +242,6 @@ function DetailHero({
   // Sahne yüksekliği bölüm sayısına göre ölçeklenir → her bölüm uzun tutunur
   // (bir bölüm ≈ bir ekran boyu kaydırma görünür kalır).
   const sceneVh = 100 + N * 118;
-  const pos = 'absolute inset-x-0 bottom-14 lg:bottom-24';
   // Bölümleri [0, 0.9] aralığına dağıt; pencereler neredeyse bitişik (uzun tutuş,
   // aralarda yalnızca kısa bir "arazi nefesi").
   const slot = 0.9 / N;
@@ -273,7 +286,11 @@ function DetailHero({
                 return (
                   <div
                     key={ch.key}
-                    className={cn(pos, 'dh-chapter', ch.key === 'A' && 'dh-chA')}
+                    className={cn(
+                      'absolute dh-chapter',
+                      POS[i % POS.length],
+                      ch.key === 'A' && 'dh-chA',
+                    )}
                     style={{
                       ['--a' as string]: a,
                       ['--b' as string]: b,
@@ -288,7 +305,7 @@ function DetailHero({
                 );
               })
             ) : (
-              <div className={pos}>{titlePanel}</div>
+              <div className="absolute bottom-[12%] left-0">{titlePanel}</div>
             )}
           </div>
         </div>
