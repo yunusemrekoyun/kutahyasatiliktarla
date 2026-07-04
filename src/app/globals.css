@@ -448,6 +448,33 @@
       transform: none;
     }
   }
+  /* İlan detay sinematik parsel-hero — tek --p ile koreografi (scroll kilidi
+     yok, sticky + --p). Kapak yavaşça yaklaşır, başlık yukarı süzülüp solar,
+     parsel sınırı çizilir; sonra sahne içeriğe bırakır. Yalnızca transform/
+     opacity (GPU). Yalnızca masaüstü + hareket açıkken uygulanır. */
+  .dh-cover {
+    transform: scale(calc(1 + var(--p, 0) * 0.12))
+      translate3d(0, calc(var(--p, 0) * -16px), 0);
+    will-change: transform;
+  }
+  .dh-overlay {
+    transform: translate3d(0, calc(var(--p, 0) * -52px), 0);
+    opacity: clamp(0, 1 - (var(--p, 0) - 0.32) / 0.26, 1);
+    will-change: transform, opacity;
+  }
+  .dh-cue {
+    opacity: clamp(0, 1 - var(--p, 0) / 0.06, 1);
+  }
+  .dh-parcel {
+    stroke-dashoffset: calc(1 - clamp(0, (var(--p, 0) - 0.12) / 0.42, 1));
+  }
+  .dh-corner {
+    opacity: clamp(0, (var(--p, 0) - 0.52) / 0.16, 1);
+  }
+  [data-phase='card'] .dh-cover,
+  [data-phase='card'] .dh-overlay {
+    will-change: auto;
+  }
   @media (prefers-reduced-motion: reduce) {
     .detail-cover-in {
       animation: none;
