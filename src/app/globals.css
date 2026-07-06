@@ -540,12 +540,13 @@
   /* Mobil lite sahne (dh-m-*) — aynı --p mekaniği, kısaltılmış koreografi.
      Kart yüksekliği baştan ayrılır; satırlar YALNIZCA opacity/transform ile
      belirir (kaydırma sırasında layout hesaplaması yok). */
-  /* Yığın başta aşağıda durur (başlık masthead konumunda, kart ekran dışında);
-     kaydırdıkça yukarı süzülüp özet kartını açığa çıkarır. */
+  /* Yığın başta aşağıda durur (başlık masthead konumunda, kartın "Arazi özeti"
+     etiketi alt kenardan hafifçe görünür — kaydırma daveti); kaydırdıkça yukarı
+     süzülüp kartı açığa çıkarır. */
   .dh-m-stack {
     transform: translate3d(
       0,
-      calc((1 - clamp(0, var(--p, 0) / 0.22, 1)) * 16rem),
+      calc((1 - clamp(0, var(--p, 0) / 0.22, 1)) * 11rem),
       0
     );
     will-change: transform;

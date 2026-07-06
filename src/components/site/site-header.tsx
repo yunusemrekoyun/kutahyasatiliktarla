@@ -41,7 +41,7 @@ const navLinks = [
  * pirinç çizgi. Yastık ilk görünüşünde olduğu yerde belirir (snap), sonraki
  * geçişlerde öğeden öğeye akar.
  */
-function DesktopNav({ pathname, tur }: { pathname: string; tur: string | null }) {
+function DesktopNav({ pathname, tur, dark }: { pathname: string; tur: string | null; dark?: boolean }) {
   const navRef = useRef<HTMLElement>(null);
   const [pill, setPill] = useState({ left: 0, width: 0, on: false, snap: true });
 
@@ -69,7 +69,7 @@ function DesktopNav({ pathname, tur }: { pathname: string; tur: string | null })
         aria-hidden="true"
         style={{ transform: `translateX(${pill.left}px)`, width: pill.width }}
         className={cn(
-          'absolute inset-y-1.5 left-0 rounded-sm bg-secondary',
+          dark ? 'absolute inset-y-1.5 left-0 rounded-sm bg-white/10' : 'absolute inset-y-1.5 left-0 rounded-sm bg-secondary',
           pill.snap
             ? 'transition-opacity duration-200'
             : 'transition-[transform,width,opacity] duration-300 ease-out-quart',
@@ -86,7 +86,9 @@ function DesktopNav({ pathname, tur }: { pathname: string; tur: string | null })
             onMouseEnter={movePill}
             className={cn(
               'relative z-10 px-3 py-2 text-[15px] font-medium transition-colors duration-200',
-              active ? 'text-foreground' : 'text-foreground/70 hover:text-foreground',
+              dark
+                ? active ? 'text-white' : 'text-white/75 hover:text-white'
+                : active ? 'text-foreground' : 'text-foreground/70 hover:text-foreground',
             )}
           >
             {l.label}
@@ -104,9 +106,9 @@ function DesktopNav({ pathname, tur }: { pathname: string; tur: string | null })
 }
 
 /** useSearchParams statik sayfalarda Suspense ister; nav'ı burada sarıyoruz. */
-function DesktopNavWithParams({ pathname }: { pathname: string }) {
+function DesktopNavWithParams({ pathname, dark }: { pathname: string; dark?: boolean }) {
   const tur = useSearchParams().get('tur');
-  return <DesktopNav pathname={pathname} tur={tur} />;
+  return <DesktopNav pathname={pathname} tur={tur} dark={dark} />;
 }
 
 /**
@@ -132,6 +134,11 @@ export function SiteHeader() {
   // (misafir -> giriş yapmış) kabul ediliyor.
   const { data: session } = authClient.useSession();
   const user = session?.user ?? null;
+
+  // Koyu sinematik hero'lu rotalarda (ana sayfa, ilan detayı) kaydırma
+  // başlamadan header koyu-cam varyantına döner; ivory pill fotoğraf üstünde
+  // yapışkan etiket gibi durmasın. Kayınca mevcut ivory hâline geçer.
+  const dark = !stuck && (pathname === '/' || pathname.startsWith('/ilan/'));
 
   function handleSignOut() {
     authClient.signOut({ fetchOptions: { onSuccess: () => router.push('/') } });
@@ -195,15 +202,17 @@ export function SiteHeader() {
               'pointer-events-auto flex items-center justify-between gap-3 rounded-lg border pl-4 pr-3 transition-all duration-300 ease-out-quart lg:pl-5',
               stuck
                 ? 'h-14 border-border bg-background/85 shadow-soft-lg backdrop-blur-xl'
-                : 'h-16 border-border/70 bg-background/80 shadow-soft backdrop-blur-md',
+                : dark
+                  ? 'h-16 border-white/15 bg-[hsl(155_30%_7%_/_0.35)] shadow-soft backdrop-blur-md'
+                  : 'h-16 border-border/70 bg-background/80 shadow-soft backdrop-blur-md',
             )}
           >
             <Link href="/" aria-label={content.brand} className="shrink-0">
-              <Logo brand={content.brand} />
+              <Logo brand={content.brand} tone={dark ? 'light' : undefined} />
             </Link>
 
-            <Suspense fallback={<DesktopNav pathname={pathname} tur={null} />}>
-              <DesktopNavWithParams pathname={pathname} />
+            <Suspense fallback={<DesktopNav pathname={pathname} tur={null} dark={dark} />}>
+              <DesktopNavWithParams pathname={pathname} dark={dark} />
             </Suspense>
 
             <div className="hidden items-center gap-1.5 lg:flex">
@@ -224,7 +233,12 @@ export function SiteHeader() {
                     onClick={searchOpen ? undefined : openSearch}
                     aria-label="İlanlarda arayın"
                     aria-expanded={searchOpen}
-                    className="grid h-10 w-10 shrink-0 place-items-center rounded-sm text-foreground/70 transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className={cn(
+                      'grid h-10 w-10 shrink-0 place-items-center rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                      dark && !searchOpen
+                        ? 'text-white/80 hover:bg-white/10 hover:text-white'
+                        : 'text-foreground/70 hover:bg-secondary hover:text-foreground',
+                    )}
                   >
                     <Search className="h-[18px] w-[18px]" />
                   </button>
@@ -249,9 +263,14 @@ export function SiteHeader() {
               <a
                 href={telLink(phone)}
                 aria-label={`Telefon: ${phone}`}
-                className="flex items-center gap-2 rounded-sm px-3 py-2 text-[14px] font-semibold text-foreground/80 transition-colors hover:bg-secondary hover:text-foreground"
+                className={cn(
+                  'flex items-center gap-2 rounded-sm px-3 py-2 text-[14px] font-semibold transition-colors',
+                  dark
+                    ? 'text-white/85 hover:bg-white/10 hover:text-white'
+                    : 'text-foreground/80 hover:bg-secondary hover:text-foreground',
+                )}
               >
-                <Phone className="h-4 w-4 text-brass-strong" />
+                <Phone className={cn('h-4 w-4', dark ? 'text-brass-ondark' : 'text-brass-strong')} />
                 <span className="nums hidden xl:inline">{phone}</span>
               </a>
 
@@ -259,16 +278,26 @@ export function SiteHeader() {
                 <div className="flex items-center gap-1">
                   <Link
                     href="/hesap"
-                    className="flex items-center gap-2 rounded-sm px-3 py-2 text-[14px] font-semibold text-foreground/80 transition-colors hover:bg-secondary hover:text-foreground"
+                    className={cn(
+                      'flex items-center gap-2 rounded-sm px-3 py-2 text-[14px] font-semibold transition-colors',
+                      dark
+                        ? 'text-white/85 hover:bg-white/10 hover:text-white'
+                        : 'text-foreground/80 hover:bg-secondary hover:text-foreground',
+                    )}
                   >
-                    <User className="h-4 w-4 text-brass-strong" />
+                    <User className={cn('h-4 w-4', dark ? 'text-brass-ondark' : 'text-brass-strong')} />
                     Hesabım
                   </Link>
                   <button
                     type="button"
                     onClick={handleSignOut}
                     aria-label="Çıkış yap"
-                    className="grid h-9 w-9 place-items-center rounded-sm text-foreground/70 transition-colors hover:bg-secondary hover:text-foreground"
+                    className={cn(
+                      'grid h-9 w-9 place-items-center rounded-sm transition-colors',
+                      dark
+                        ? 'text-white/70 hover:bg-white/10 hover:text-white'
+                        : 'text-foreground/70 hover:bg-secondary hover:text-foreground',
+                    )}
                   >
                     <LogOut className="h-4 w-4" />
                   </button>
@@ -276,7 +305,12 @@ export function SiteHeader() {
               ) : (
                 <Link
                   href="/giris"
-                  className="rounded-sm px-3 py-2 text-[14px] font-semibold text-foreground/80 transition-colors hover:bg-secondary hover:text-foreground"
+                  className={cn(
+                    'rounded-sm px-3 py-2 text-[14px] font-semibold transition-colors',
+                    dark
+                      ? 'text-white/85 hover:bg-white/10 hover:text-white'
+                      : 'text-foreground/80 hover:bg-secondary hover:text-foreground',
+                  )}
                 >
                   Giriş Yap
                 </Link>
@@ -293,7 +327,12 @@ export function SiteHeader() {
                 <SheetTrigger asChild>
                   <button
                     aria-label="Menüyü açın"
-                    className="grid h-11 w-11 place-items-center rounded-sm border border-border text-foreground transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className={cn(
+                      'grid h-11 w-11 place-items-center rounded-sm border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                      dark
+                        ? 'border-white/25 text-white hover:bg-white/10'
+                        : 'border-border text-foreground hover:bg-secondary',
+                    )}
                   >
                     <Menu className="h-6 w-6" />
                   </button>

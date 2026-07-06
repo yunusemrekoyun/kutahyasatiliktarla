@@ -43,7 +43,7 @@ const FEATURE_ICONS: Record<string, LucideIcon> = {
 export function HowItWorks() {
   const { content } = useStore();
   return (
-    <section id="nasil-calisir" className="bg-background py-20 sm:py-28">
+    <section id="nasil-calisir" className="bg-background py-14 sm:py-28">
       <div className="container">
         <SectionHeading
           index="04"

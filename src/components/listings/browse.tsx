@@ -63,17 +63,22 @@ function FilterRail({
       <ul className="mt-3 border-t border-border">
         {items.map((it) => {
           const active = (it.value ?? '') === activeValue;
+          // Sıfır sonuçlu kategori: seçilebilir görünüp boş listeye götürmesin
+          const empty = it.count === 0 && !active;
           return (
             <li key={it.label} className="border-b border-border">
               <button
                 type="button"
                 onClick={() => onPick(title === 'İlçe' ? 'ilce' : 'tur', it.value)}
+                disabled={empty}
                 className={cn(
                   // Dokunma hedefi ≥44px; masaüstünde sıkı satır korunur
                   'relative flex w-full items-center justify-between gap-3 py-3 pl-4 pr-1 text-left text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring lg:py-2.5',
                   active
                     ? 'font-semibold text-foreground'
-                    : 'text-foreground/70 hover:text-foreground',
+                    : empty
+                      ? 'text-foreground/35'
+                      : 'text-foreground/70 hover:text-foreground',
                 )}
                 aria-pressed={active}
               >
@@ -89,7 +94,11 @@ function FilterRail({
                   <span
                     className={cn(
                       'nums shrink-0 text-[13px] tabular-nums',
-                      active ? 'text-brass-strong' : 'text-muted-foreground',
+                      active
+                        ? 'text-brass-strong'
+                        : empty
+                          ? 'text-muted-foreground/40'
+                          : 'text-muted-foreground',
                     )}
                   >
                     {String(it.count).padStart(2, '0')}

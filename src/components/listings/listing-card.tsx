@@ -25,7 +25,8 @@ export function ListingCard({
   return (
     <article
       className={cn(
-        'group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card transition-[transform,box-shadow,border-color] duration-300 ease-out-quart hover:-translate-y-1 hover:border-primary/25 hover:shadow-soft',
+        // Kalkma yalnız gerçek hover cihazlarında; dokunmatikte basınca hafif çökme
+        'group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card transition-[transform,box-shadow,border-color] duration-300 ease-out-quart active:scale-[0.99] [@media(hover:hover)]:hover:-translate-y-1 [@media(hover:hover)]:hover:border-primary/25 [@media(hover:hover)]:hover:shadow-soft',
         className,
       )}
     >
@@ -48,10 +49,6 @@ export function ListingCard({
             <MapPin className="h-8 w-8" />
           </div>
         )}
-        {/* Fiyat etiketi — marka yeşili: her fotoğrafta yüksek kontrast, sakin */}
-        <span className="nums absolute left-4 top-4 rounded-sm bg-primary px-3.5 py-2 font-heading text-[15px] font-bold leading-none text-primary-foreground shadow-soft sm:text-[16px]">
-          {listing.price}
-        </span>
         {/* Tür rozeti */}
         {listing.badge ? (
           <span className="absolute right-4 top-4 rounded-sm bg-background/90 px-3 py-1.5 text-[12px] font-semibold text-foreground backdrop-blur-sm">
@@ -71,6 +68,16 @@ export function ListingCard({
           <span className="nums">{listing.area}</span>
         </p>
 
+        {/* Fiyat gövdede — listede taranırken hizalı fiyat kolonu oluşturur;
+            fotoğraf rozetle değil manzarayla konuşur */}
+        <p className="nums mt-4 font-heading text-[21px] font-bold leading-none text-foreground">
+          <span className="sr-only">Fiyat: </span>
+          {listing.price}
+          <span className="nums ml-2 align-middle font-sans text-[13px] font-medium leading-none text-muted-foreground">
+            {listing.pricePerM2}
+          </span>
+        </p>
+
         <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
           <Link
             href={`/ilan/${listing.id}`}
@@ -79,13 +86,14 @@ export function ListingCard({
             Detayları Gör
             <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover/link:translate-x-0.5" />
           </Link>
+          {/* İkincil kanal: renk hiyerarşisi sakin, turkuaz yalnız ikonda */}
           <a
             href={wa}
             target="_blank"
             rel="noreferrer"
-            className="flex min-h-11 items-center gap-1.5 text-[14px] font-semibold text-whatsapp transition-colors hover:text-[hsl(173_77%_21%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="flex min-h-11 items-center gap-1.5 text-[14px] font-semibold text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <MessageCircle className="h-4 w-4" />
+            <MessageCircle className="h-4 w-4 text-whatsapp" />
             WhatsApp
           </a>
         </div>

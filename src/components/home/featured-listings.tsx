@@ -20,7 +20,7 @@ export function FeaturedListings() {
   if (cards.length === 0) return null;
 
   return (
-    <section id="ilanlar" className="bg-background py-20 sm:py-28">
+    <section id="ilanlar" className="bg-background py-14 sm:py-28">
       <div className="container">
         <SectionHeading
           index="02"

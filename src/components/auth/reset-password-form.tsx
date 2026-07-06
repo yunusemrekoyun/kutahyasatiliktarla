@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Lock } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -59,15 +60,19 @@ export function ResetPasswordForm({
         <Label htmlFor="password" className={fieldLabelClass()}>
           Yeni Şifre
         </Label>
-        <Input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          minLength={8}
-          autoComplete="new-password"
-        />
+        <div className="relative">
+          <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={8}
+            autoComplete="new-password"
+            className="h-12 bg-white pl-10"
+          />
+        </div>
       </div>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       <Button type="submit" variant="brass" size="lg" className="w-full" disabled={loading}>

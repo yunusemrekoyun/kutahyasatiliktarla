@@ -36,7 +36,7 @@ export function SearchBand({ districts }: { districts: string[] }) {
   }
 
   return (
-    <section aria-label="İlan arama" className="bg-background py-16 sm:py-20">
+    <section aria-label="İlan arama" className="bg-background py-12 sm:py-20">
       <div className="container">
         <SectionHeading
           index="01"

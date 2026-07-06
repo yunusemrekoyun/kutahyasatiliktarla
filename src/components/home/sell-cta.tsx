@@ -15,7 +15,7 @@ export function SellCta() {
       className="relative overflow-hidden bg-primary"
     >
       <TopoLines className="inset-0 h-full w-full text-white/[0.05]" />
-      <div className="container relative flex flex-col items-start justify-between gap-8 py-16 sm:py-20 md:flex-row md:items-center">
+      <div className="container relative flex flex-col items-start justify-between gap-8 py-12 sm:py-20 md:flex-row md:items-center">
         <Reveal className="max-w-2xl">
           <p className="text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-ondark">
             Satıcılar için

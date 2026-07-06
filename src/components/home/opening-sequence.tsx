@@ -65,7 +65,7 @@ function HeroCopy({
           </Button>
         </div>
       </div>
-      <div className="mt-14 grid max-w-2xl grid-cols-2 gap-x-8 gap-y-6 border-t border-white/15 pt-8 sm:grid-cols-4">
+      <div className="mt-10 grid max-w-2xl grid-cols-2 gap-x-8 gap-y-5 border-t border-white/15 pt-7 sm:mt-14 sm:gap-y-6 sm:grid-cols-4 sm:pt-8">
         {stats.map((s) => (
           <div key={s.label}>
             <div className="nums font-heading text-3xl font-bold leading-none text-white">
@@ -433,7 +433,7 @@ export function OpeningSequence() {
                               aria-hidden="true"
                               loading="lazy"
                               decoding="async"
-                              className="h-full w-full object-cover brightness-90 saturate-[.85]"
+                              className="h-full w-full object-cover brightness-[.55] saturate-[.6]"
                             />
                           </div>
                         ))}
@@ -441,12 +441,15 @@ export function OpeningSequence() {
                     );
                   })}
                 </div>
-                {/* Okunurluk scrim'i — akan duvar üstünde metin net kalır */}
-                <div className="absolute inset-0 bg-[hsl(154_40%_9%_/_0.55)]" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[hsl(155_36%_5%_/_0.9)] via-[hsl(155_32%_7%_/_0.55)] via-[55%] to-[hsl(155_34%_8%_/_0.35)]" />
+                {/* Okunurluk scrim'i — duvar dekoratif katman, metin her satırda
+                    sabit kontrasta oturur (masaüstü scenic'teki sol-ağırlıklı dil) */}
+                <div className="absolute inset-0 bg-[hsl(154_40%_9%_/_0.72)]" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[hsl(155_36%_5%_/_0.9)] via-[hsl(155_32%_7%_/_0.45)] via-[55%] to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[hsl(155_36%_5%_/_0.92)] via-[hsl(155_32%_7%_/_0.5)] via-[55%] to-[hsl(155_34%_8%_/_0.3)]" />
                 <TopoLines className="inset-0 h-full w-full text-white/[0.05]" />
               </div>
-              <div className="container relative pb-16 pt-28">
+              {/* Alt boşluk: sabit aksiyon barı istatistikleri örtmesin */}
+              <div className="container relative pb-[calc(var(--action-bar-h)+1.25rem)] pt-28">
                 <HeroCopy
                   badge={content.hero.badge}
                   titleLine1={content.hero.titleLine1}
@@ -460,7 +463,7 @@ export function OpeningSequence() {
 
             {/* Vitrin slider'ı — masaüstündeki ok/geçiş mekaniğinin mobil
                 karşılığı: oklar + swipe + sayaç, kart geçişte yandan süzülür. */}
-            <div className="bg-background py-14 sm:py-16">
+            <div className="bg-background py-10 sm:py-16">
               <div className="container">
                 <div className="mb-5 flex items-center justify-between gap-4">
                   <p className="flex min-w-0 items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-brass-strong">

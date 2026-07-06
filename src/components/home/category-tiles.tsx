@@ -16,7 +16,7 @@ import type { District } from '@/content';
 export function CategoryTiles({ districts }: { districts: District[] }) {
   const { content } = useStore();
   return (
-    <section id="bolgeler" className="bg-muted py-20 sm:py-28">
+    <section id="bolgeler" className="bg-muted py-14 sm:py-28">
       <div className="container">
         <SectionHeading
           index="03"
@@ -31,10 +31,10 @@ export function CategoryTiles({ districts }: { districts: District[] }) {
               <Reveal delay={i * 60}>
                 <Link
                   href={`/ilanlar?ilce=${encodeURIComponent(d.name)}`}
-                  className="group grid w-full grid-cols-[2.5rem_1fr_auto] items-center gap-x-4 py-6 text-left transition-colors duration-200 hover:bg-card sm:grid-cols-[3.5rem_1fr_auto_auto] sm:gap-x-6 sm:px-4 sm:py-7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                  className="group grid w-full grid-cols-[2.25rem_1fr_auto] items-baseline gap-x-3 py-6 text-left transition-colors duration-200 hover:bg-card sm:grid-cols-[3.5rem_1fr_auto_auto] sm:gap-x-6 sm:px-4 sm:py-7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                 >
                   <span
-                    className="nums font-heading text-sm font-bold text-brass-strong"
+                    className="nums font-heading text-[15px] font-bold text-brass-strong"
                     aria-hidden="true"
                   >
                     {String(i + 1).padStart(2, '0')}
@@ -51,7 +51,7 @@ export function CategoryTiles({ districts }: { districts: District[] }) {
                   <span className="nums hidden text-[14px] font-semibold text-muted-foreground sm:block">
                     <CountUp value={d.count} />
                   </span>
-                  <ArrowRight className="h-5 w-5 justify-self-end text-brass-strong transition-transform duration-300 ease-out-quart group-hover:translate-x-1.5" />
+                  <ArrowRight className="h-5 w-5 justify-self-end self-center text-brass-strong transition-transform duration-300 ease-out-quart group-hover:translate-x-1.5" />
                 </Link>
               </Reveal>
             </li>

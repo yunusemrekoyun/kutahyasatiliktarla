@@ -23,16 +23,18 @@ export function MobileActionBar() {
             Hemen Ara
           </a>
         </Button>
+        {/* WhatsApp palet hiyerarşisinde: çam çerçeve, turkuaz yalnız ikonda */}
         <Button
           asChild
-          className="h-12 gap-2 bg-whatsapp text-base text-white hover:bg-whatsapp/90"
+          variant="outline"
+          className="h-12 gap-2 border-primary/30 bg-card text-base text-primary hover:border-primary/50"
         >
           <a
             href={waLink(content.contact.whatsapp, 'Merhaba, Kütahya’da arazi arıyorum, bilgi alabilir miyim?')}
             target="_blank"
             rel="noreferrer"
           >
-            <MessageCircle className="size-5" />
+            <MessageCircle className="size-5 text-whatsapp" />
             WhatsApp
           </a>
         </Button>

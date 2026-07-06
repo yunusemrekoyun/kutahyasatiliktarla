@@ -9,7 +9,6 @@ import {
   CircleCheck,
   ExternalLink,
   MapPin,
-  Maximize,
   MessageCircle,
   Phone,
   Share2,
@@ -264,7 +263,7 @@ function DetailHero({
       aria-label="İlan tanıtımı"
       className={cn('bg-primary -mt-20 lg:-mt-24', (scenic || lite) && 'relative')}
       // lite: kısaltılmış mobil sahne — ~1.1 ekran boyu kaydırma (--p 0→1)
-      style={scenic ? { height: `${sceneVh}vh` } : lite ? { height: '210svh' } : undefined}
+      style={scenic ? { height: `${sceneVh}vh` } : lite ? { height: '185svh' } : undefined}
     >
       <div
         ref={rootRef}
@@ -353,7 +352,7 @@ function DetailHero({
                     opacity/transform ile belirir (kaydırırken layout yok). */}
                 <div className="dh-m-card mt-6" aria-hidden="true">
                   <div className="rounded-[1.5rem] bg-white/[0.06] p-1.5 shadow-[0_26px_60px_-26px_rgba(3,14,9,0.9)] ring-1 ring-white/10">
-                    <div className="rounded-[1.15rem] bg-[hsl(154_30%_6%/0.86)] px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]">
+                    <div className="rounded-[1.15rem] bg-[hsl(154_30%_6%/0.94)] px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]">
                       <span className="inline-block rounded-full bg-brass/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-brass-ondark">
                         Arazi özeti
                       </span>
@@ -363,10 +362,10 @@ function DetailHero({
                           return (
                             <div
                               key={s.label}
-                              className="dh-m-row flex items-baseline justify-between gap-4 border-t border-white/[0.07] py-[9px] first:border-t-0"
+                              className="dh-m-row flex items-baseline justify-between gap-4 border-t border-white/[0.14] py-[9px] first:border-t-0"
                               style={{ ['--a' as string]: a }}
                             >
-                              <dt className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/50">
+                              <dt className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/75">
                                 {s.label}
                               </dt>
                               <dd className="nums text-right text-[13.5px] font-semibold text-white">
@@ -430,7 +429,7 @@ function DetailHero({
                 aria-hidden="true"
               >
                 <div className="rounded-[1.5rem] bg-white/[0.06] p-1.5 shadow-[0_26px_60px_-26px_rgba(3,14,9,0.9)] ring-1 ring-white/10">
-                  <div className="rounded-[1.15rem] bg-[hsl(154_30%_6%/0.86)] px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]">
+                  <div className="rounded-[1.15rem] bg-[hsl(154_30%_6%/0.94)] px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]">
                     <span className="inline-block rounded-full bg-brass/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-brass-ondark">
                       Arazi özeti
                     </span>
@@ -440,10 +439,10 @@ function DetailHero({
                         return (
                           <div
                             key={s.label}
-                            className="dh-sum flex items-baseline justify-between gap-4 border-t border-white/[0.07] py-[9px] first:border-t-0"
+                            className="dh-sum flex items-baseline justify-between gap-4 border-t border-white/[0.14] py-[9px] first:border-t-0"
                             style={{ ['--a' as string]: a }}
                           >
-                            <dt className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/50">
+                            <dt className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/75">
                               {s.label}
                             </dt>
                             <dd className="nums text-right text-[13.5px] font-semibold text-white">
@@ -715,16 +714,18 @@ export function ListingDetail({ id }: { id: string }) {
                   </div>
                 </div>
 
+                {/* Dar ekranda etiket üstte, değer altta sola yaslı — uzun
+                    değerler sağ hizada tırtıklı kırılmasın */}
                 <dl className="mt-2 divide-y divide-border">
                   {specs.map((s) => (
-                    <div key={s.label} className="flex items-baseline justify-between gap-4 py-2.5">
-                      <dt className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                        {s.label === 'Alan' ? (
-                          <Maximize className="h-4 w-4 text-brass-strong" aria-hidden="true" />
-                        ) : null}
+                    <div
+                      key={s.label}
+                      className="flex flex-col items-start gap-1 py-2.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
+                    >
+                      <dt className="text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                         {s.label}
                       </dt>
-                      <dd className="nums text-right text-[15px] font-semibold text-foreground">
+                      <dd className="nums text-left text-[15px] font-semibold text-foreground sm:text-right">
                         {s.value}
                       </dd>
                     </div>
