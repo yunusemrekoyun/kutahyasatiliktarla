@@ -1,32 +1,11 @@
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import { auth } from '../src/lib/auth';
-import { defaultContent, type LandType } from '../src/content';
+import { slugify } from '../src/lib/slugify';
+import { TYPE_MAP } from '../src/lib/mappers';
+import { defaultContent } from '../src/content';
 
 const prisma = new PrismaClient();
-
-const TYPE_MAP: Record<LandType, 'tarla' | 'arsa' | 'bag_bahce' | 'koy_ici'> = {
-  Tarla: 'tarla',
-  Arsa: 'arsa',
-  'Bağ / Bahçe': 'bag_bahce',
-  'Köy İçi': 'koy_ici',
-};
-
-function slugify(s: string): string {
-  // Türkçe harfleri lowercase'den ÖNCE değiştiriyoruz — JS'in locale-insensitive
-  // toLowerCase()'ı 'İ'yi 'i' + birleşik nokta işaretine çeviriyor, bu da bozuk
-  // slug'a yol açıyor (örn. "İmar" -> "i-mar").
-  return s
-    .replace(/[İIı]/g, 'i')
-    .replace(/[Ğğ]/g, 'g')
-    .replace(/[Şş]/g, 's')
-    .replace(/[Öö]/g, 'o')
-    .replace(/[Üü]/g, 'u')
-    .replace(/[Çç]/g, 'c')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-}
 
 async function ensureAdmin() {
   const email = process.env.SEED_ADMIN_EMAIL ?? 'admin@kutahyasatiliktarla.com';
@@ -142,19 +121,27 @@ async function seedContent(adminId: string) {
     await prisma.media.deleteMany({ where: { listingId: listing.id } });
     await prisma.media.createMany({
       data: [
-        ...l.images.map((url) => ({
+        ...l.images.map((url, i) => ({
           listingId: listing.id,
           type: 'image' as const,
           variants: [{ width: 1200, format: 'source', url }],
+          position: i,
         })),
         {
           listingId: listing.id,
           type: 'video' as const,
           variants: [{ width: 0, format: 'mp4', url: l.droneVideo }],
+          position: l.images.length,
         },
       ],
     });
   }
+
+  // Seed'in aktif ilanlarına yayın tarihi (sıralama/JSON-LD için)
+  await prisma.listing.updateMany({
+    where: { status: 'aktif', publishedAt: null },
+    data: { publishedAt: new Date() },
+  });
 
   // content.ts'teki articles'ın stabil bir id'si yok (slug title'dan türetiliyor) —
   // Stat/Feature ile aynı desen: upsert yerine tam yeniden yazım.
@@ -187,7 +174,12 @@ async function main() {
 }
 
 main()
-  .then(() => prisma.$disconnect())
+  .then(async () => {
+    await prisma.$disconnect();
+    // auth import zinciri BullMQ/ioredis bağlantısı açıyor; açık soket event
+    // loop'u sonsuza dek canlı tutuyor — işi bitince açıkça çık.
+    process.exit(0);
+  })
   .catch(async (e) => {
     console.error(e);
     await prisma.$disconnect();

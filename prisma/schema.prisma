@@ -96,10 +96,17 @@ enum ListingType {
 enum ListingStatus {
   taslak
   incelemede
+  cekimBekliyor
   aktif
   kiralandi
   satildi
   pasif
+  reddedildi
+}
+
+enum PriceRequestStatus {
+  bekliyor
+  uygulandi
   reddedildi
 }
 
@@ -147,23 +154,44 @@ model Listing {
   pricePerM2     String
   currency       String         @default("TRY")
   badge          String?
-  lat            Float
-  lng            Float
+  // Üye başvuruda koordinat girmez; admin yayına alırken zorunlu kılınır (zod).
+  lat            Float?
+  lng            Float?
   tags           String[]
   description    String         @db.Text
   highlights     String[]
-  specs          Json
+  specs          Json           @default("[]")
   status         ListingStatus  @default(taslak)
   droneRequested Boolean        @default(false)
+  // Reddedilen başvuruda üyeye gösterilen neden; yeniden gönderimde temizlenir.
+  rejectReason   String?        @db.Text
+  publishedAt    DateTime?
   viewCount      Int            @default(0)
   media          Media[]
   conversations  Conversation[]
+  priceRequests  ListingPriceRequest[]
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
   @@index([status])
   @@index([district])
   @@index([purpose])
+}
+
+// Yayındaki ilan için üyenin fiyat güncelleme talebi — admin uygular/reddeder;
+// tarihçe kalır ("doğrulanmış fiyat" vaadinin kaydı).
+model ListingPriceRequest {
+  id             String             @id @default(cuid())
+  listingId      String
+  listing        Listing            @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  requestedPrice String
+  note           String?            @db.Text
+  status         PriceRequestStatus @default(bekliyor)
+  createdAt      DateTime           @default(now())
+  resolvedAt     DateTime?
+
+  @@index([listingId])
+  @@index([status])
 }
 
 model Media {
@@ -174,6 +202,8 @@ model Media {
   originalDeleted Boolean   @default(false)
   variants        Json
   poster          String?
+  // Galeri sırası — admin serbestçe sıralar (PDD şartı)
+  position        Int       @default(0)
   createdAt       DateTime  @default(now())
 
   @@index([listingId])
@@ -183,6 +213,7 @@ model Lead {
   id          String     @id @default(cuid())
   name        String
   phone       String
+  email       String?
   budget      String?
   district    String?
   purpose     String?
