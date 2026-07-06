@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Leaf,
-  LogIn,
+  LogOut,
   ArrowLeft,
   Save,
   Plus,
@@ -17,11 +17,7 @@ import {
 } from 'lucide-react';
 import { useStore } from './store';
 import { defaultContent, LAND_TYPES, type SiteContent, type LandType } from './content';
-
-// NOTE: Bu basit bir giriş kapısıdır — gerçek güvenlik değildir (şifre tarayıcı
-// paketinde görünür). Yayına alırken gerçek kullanıcı doğrulaması (backend) eklenmeli.
-const ADMIN_PASSWORD = 'changeme';
-const SESSION_KEY = 'kst_admin_auth';
+import { authClient } from '@/lib/auth-client';
 
 function uid(prefix: string) {
   return `${prefix}_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
@@ -97,18 +93,9 @@ export default function Admin() {
   const { content, hydrated, saveContent, resetContent, leads, clearLeads } =
     useStore();
   const router = useRouter();
-  const [authed, setAuthed] = useState(false);
-  const [pw, setPw] = useState('');
-  const [pwErr, setPwErr] = useState(false);
-
   const [draft, setDraft] = useState<SiteContent>(() =>
     structuredClone(content)
   );
-
-  // sessionStorage is unavailable during SSR — read the auth flag after mount.
-  useEffect(() => {
-    setAuthed(sessionStorage.getItem(SESSION_KEY) === '1');
-  }, []);
 
   // Re-sync the editable draft once persisted content hydrates from storage.
   useEffect(() => {
@@ -120,18 +107,12 @@ export default function Admin() {
   const [openListing, setOpenListing] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  function login(e: FormEvent) {
-    e.preventDefault();
-    if (pw === ADMIN_PASSWORD) {
-      sessionStorage.setItem(SESSION_KEY, '1');
-      setAuthed(true);
-    } else {
-      setPwErr(true);
-    }
-  }
-
   function goSite() {
     router.push('/');
+  }
+
+  function signOut() {
+    authClient.signOut({ fetchOptions: { onSuccess: () => router.push('/') } });
   }
 
   function save() {
@@ -175,59 +156,6 @@ export default function Admin() {
     reader.readAsText(file);
   }
 
-  if (!authed) {
-    return (
-      <div className="min-h-screen grid place-items-center bg-[#1f2a1d] px-4">
-        <form
-          onSubmit={login}
-          className="w-full max-w-sm rounded-[2rem] bg-[#FAF7EF] p-8 shadow-2xl"
-        >
-          <div className="flex items-center gap-2 text-[#1f2a1d]">
-            <span className="grid place-items-center w-10 h-10 rounded-full bg-[#3d5638] text-[#FAF7EF]">
-              <Leaf size={20} />
-            </span>
-            <span className="font-semibold text-lg">Yönetim Girişi</span>
-          </div>
-          <p className="mt-3 text-sm text-[#4b5b47]">
-            İçeriği düzenlemek için şifrenizi girin.
-          </p>
-          <input
-            type="password"
-            value={pw}
-            autoFocus
-            onChange={(e) => {
-              setPw(e.target.value);
-              setPwErr(false);
-            }}
-            placeholder="Şifre"
-            className="mt-5 w-full rounded-xl border border-[#D9E3D5] bg-white px-4 py-3 text-[#1f2a1d] outline-none focus:border-[#3d5638]"
-          />
-          {pwErr && (
-            <p className="mt-2 text-sm text-red-600">Şifre hatalı, tekrar deneyin.</p>
-          )}
-          <button
-            type="submit"
-            className="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#3d5638] hover:bg-[#2d4228] text-[#FAF7EF] px-4 py-3 transition-colors"
-          >
-            <LogIn size={18} />
-            Giriş Yap
-          </button>
-          <button
-            type="button"
-            onClick={goSite}
-            className="mt-3 w-full text-center text-sm text-[#4b5b47] hover:text-[#1f2a1d]"
-          >
-            ← Siteye dön
-          </button>
-          <p className="mt-5 text-[11px] leading-relaxed text-[#8A6A43]">
-            Demo şifre: <b>changeme</b> · Yayına alırken bunu değiştirip gerçek giriş
-            sistemi ekleyeceğiz.
-          </p>
-        </form>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-[#F4EFE6]">
       {/* Top bar */}
@@ -246,6 +174,13 @@ export default function Admin() {
             >
               <ArrowLeft size={15} />
               <span className="hidden sm:inline">Siteye Dön</span>
+            </button>
+            <button
+              onClick={signOut}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#FAF7EF]/30 px-3 py-1.5 text-sm hover:bg-[#FAF7EF]/10 transition-colors"
+            >
+              <LogOut size={15} />
+              <span className="hidden sm:inline">Çıkış Yap</span>
             </button>
             <button
               onClick={save}
