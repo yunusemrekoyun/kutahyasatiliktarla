@@ -1,10 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { ArrowRight, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/motion/reveal';
 import { TopoLines } from '@/components/site/topo';
-import { useStore, telLink, waLink } from '@/store';
+import { useStore, telLink } from '@/store';
 
 export function SellCta() {
   const { content } = useStore();
@@ -36,14 +37,10 @@ export function SellCta() {
               size="lg"
               className="h-[52px] px-8 text-[15px]"
             >
-              <a
-                href={waLink(content.contact.whatsapp, 'Merhaba, arazimi ilana vermek istiyorum.')}
-                target="_blank"
-                rel="noreferrer"
-              >
+              <Link href="/ilan-ver">
                 İlanımı Ücretsiz Ver
                 <ArrowRight className="size-5" />
-              </a>
+              </Link>
             </Button>
             <Button
               asChild

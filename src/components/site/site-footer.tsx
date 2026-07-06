@@ -36,7 +36,7 @@ export function SiteFooter() {
             {[
               { href: '#ilanlar', label: 'İlanlar' },
               { href: '#nasil-calisir', label: 'Nasıl Çalışır' },
-              { href: '/#ilan-ver', label: 'İlan Ver' },
+              { href: '/ilan-ver', label: 'İlan Ver' },
               { href: '/', label: 'Ana Sayfa' },
             ].map((l) => (
               <li key={l.href + l.label}>
@@ -105,8 +105,24 @@ export function SiteFooter() {
       </div>
 
       <div className="relative border-t border-white/10">
-        <div className="container flex flex-col items-center justify-between gap-2 py-6 text-sm text-primary-foreground/55 sm:flex-row">
+        <div className="container flex flex-col items-center justify-between gap-3 py-6 text-sm text-primary-foreground/55 sm:flex-row">
           <p>© {new Date().getFullYear()} {content.brand}. Tüm hakları saklıdır.</p>
+          <nav aria-label="Yasal bağlantılar" className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-[13px]">
+            {[
+              { key: 'kvkk', label: 'KVKK' },
+              { key: 'gizlilik', label: 'Gizlilik' },
+              { key: 'cerez', label: 'Çerezler' },
+              { key: 'kosullar', label: 'Kullanım Koşulları' },
+            ].map((l) => (
+              <Link
+                key={l.key}
+                href={`/yasal/${l.key}`}
+                className="py-1 text-primary-foreground/55 transition-colors hover:text-white"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
           <p className="nums text-[11px] font-semibold uppercase tracking-[0.22em] text-primary-foreground/55">
             39.42° K · 29.98° D · Kütahya
           </p>

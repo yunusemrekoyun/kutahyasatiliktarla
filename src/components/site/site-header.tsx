@@ -317,7 +317,7 @@ export function SiteHeader() {
               )}
 
               <Button asChild variant="brass" size="sm" className="h-10 px-5">
-                <a href="/#ilan-ver">İlan Ver</a>
+                <Link href="/ilan-ver">İlan Ver</Link>
               </Button>
             </div>
 
@@ -378,7 +378,7 @@ export function SiteHeader() {
                   <div className="flex flex-col gap-3 px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-2">
                     <SheetClose asChild>
                       <Button asChild variant="brass" size="lg" className="h-12 text-base">
-                        <a href="/#ilan-ver">İlan Ver</a>
+                        <Link href="/ilan-ver">İlan Ver</Link>
                       </Button>
                     </SheetClose>
                     <Button asChild variant="outline" size="lg" className="h-12 text-base">
