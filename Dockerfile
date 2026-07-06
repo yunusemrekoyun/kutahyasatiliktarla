@@ -9,6 +9,9 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
+# deps aşamasında şema olmadığından Prisma client üretilmemiş (stub) kalıyor;
+# şema burada mevcut — client'ı build'den önce üret.
+RUN npx prisma generate
 RUN STANDALONE=1 npm run build
 
 FROM node:22-alpine AS runner
