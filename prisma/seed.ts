@@ -1,0 +1,195 @@
+import 'dotenv/config';
+import { PrismaClient } from '@prisma/client';
+import { auth } from '../src/lib/auth';
+import { defaultContent, type LandType } from '../src/content';
+
+const prisma = new PrismaClient();
+
+const TYPE_MAP: Record<LandType, 'tarla' | 'arsa' | 'bag_bahce' | 'koy_ici'> = {
+  Tarla: 'tarla',
+  Arsa: 'arsa',
+  'Bağ / Bahçe': 'bag_bahce',
+  'Köy İçi': 'koy_ici',
+};
+
+function slugify(s: string): string {
+  // Türkçe harfleri lowercase'den ÖNCE değiştiriyoruz — JS'in locale-insensitive
+  // toLowerCase()'ı 'İ'yi 'i' + birleşik nokta işaretine çeviriyor, bu da bozuk
+  // slug'a yol açıyor (örn. "İmar" -> "i-mar").
+  return s
+    .replace(/[İIı]/g, 'i')
+    .replace(/[Ğğ]/g, 'g')
+    .replace(/[Şş]/g, 's')
+    .replace(/[Öö]/g, 'o')
+    .replace(/[Üü]/g, 'u')
+    .replace(/[Çç]/g, 'c')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
+async function ensureAdmin() {
+  const email = process.env.SEED_ADMIN_EMAIL ?? 'admin@kutahyasatiliktarla.com';
+  const password = process.env.SEED_ADMIN_PASSWORD ?? 'changeme';
+
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) return existing;
+
+  // better-auth'un kendi server API'si üzerinden oluştur — şifre hash'ini
+  // elle üretmeye çalışmak yerine resmi/desteklenen yol budur.
+  await auth.api.signUpEmail({ body: { email, password, name: 'Admin' } });
+
+  return prisma.user.update({
+    where: { email },
+    data: { emailVerified: true, role: 'admin' },
+  });
+}
+
+async function seedContent(adminId: string) {
+  const c = defaultContent;
+
+  await prisma.siteContent.upsert({
+    where: { id: 1 },
+    create: {
+      id: 1,
+      brand: c.brand,
+      heroBadge: c.hero.badge,
+      heroTitleLine1: c.hero.titleLine1,
+      heroTitleAccent: c.hero.titleAccent,
+      heroSubtitle: c.hero.subtitle,
+      sections: c.sections,
+      contactPhone: c.contact.phone,
+      contactWhatsapp: c.contact.whatsapp,
+      contactEmail: c.contact.email,
+    },
+    update: {
+      brand: c.brand,
+      heroBadge: c.hero.badge,
+      heroTitleLine1: c.hero.titleLine1,
+      heroTitleAccent: c.hero.titleAccent,
+      heroSubtitle: c.hero.subtitle,
+      sections: c.sections,
+      contactPhone: c.contact.phone,
+      contactWhatsapp: c.contact.whatsapp,
+      contactEmail: c.contact.email,
+    },
+  });
+
+  await prisma.stat.deleteMany();
+  await prisma.stat.createMany({
+    data: c.stats.map((s, i) => ({ value: s.value, label: s.label, position: i })),
+  });
+
+  await prisma.feature.deleteMany();
+  await prisma.feature.createMany({
+    data: c.features.map((f, i) => ({
+      iconKey: f.iconKey,
+      title: f.title,
+      text: f.text,
+      position: i,
+    })),
+  });
+
+  for (const [i, d] of c.districts.entries()) {
+    await prisma.district.upsert({
+      where: { name: d.name },
+      create: { name: d.name, count: d.count, text: d.text, position: i },
+      update: { count: d.count, text: d.text, position: i },
+    });
+  }
+
+  for (const l of c.listings) {
+    const listing = await prisma.listing.upsert({
+      where: { slug: l.id },
+      create: {
+        slug: l.id,
+        ownerId: adminId,
+        title: l.title,
+        purpose: 'satilik',
+        type: TYPE_MAP[l.type],
+        location: l.location,
+        district: l.district,
+        area: l.area,
+        price: l.price,
+        pricePerM2: l.pricePerM2,
+        badge: l.badge,
+        lat: l.lat,
+        lng: l.lng,
+        tags: l.tags,
+        description: l.description,
+        highlights: l.highlights,
+        specs: l.specs,
+        status: 'aktif',
+      },
+      update: {
+        title: l.title,
+        type: TYPE_MAP[l.type],
+        location: l.location,
+        district: l.district,
+        area: l.area,
+        price: l.price,
+        pricePerM2: l.pricePerM2,
+        badge: l.badge,
+        lat: l.lat,
+        lng: l.lng,
+        tags: l.tags,
+        description: l.description,
+        highlights: l.highlights,
+        specs: l.specs,
+      },
+    });
+
+    await prisma.media.deleteMany({ where: { listingId: listing.id } });
+    await prisma.media.createMany({
+      data: [
+        ...l.images.map((url) => ({
+          listingId: listing.id,
+          type: 'image' as const,
+          variants: [{ width: 1200, format: 'source', url }],
+        })),
+        {
+          listingId: listing.id,
+          type: 'video' as const,
+          variants: [{ width: 0, format: 'mp4', url: l.droneVideo }],
+        },
+      ],
+    });
+  }
+
+  // content.ts'teki articles'ın stabil bir id'si yok (slug title'dan türetiliyor) —
+  // Stat/Feature ile aynı desen: upsert yerine tam yeniden yazım.
+  await prisma.blogPost.deleteMany();
+  await prisma.blogPost.createMany({
+    data: c.articles.map((a) => ({
+      title: a.title,
+      slug: slugify(a.title),
+      category: a.category,
+      body: a.text,
+      status: 'yayinda',
+      source: 'manuel',
+    })),
+  });
+
+  const legalKeys = ['kvkk', 'gizlilik', 'cerez', 'kosullar', 'iys'] as const;
+  for (const key of legalKeys) {
+    await prisma.legalDoc.upsert({
+      where: { key },
+      create: { key, title: key.toUpperCase(), body: 'İçerik yakında eklenecektir.' },
+      update: {},
+    });
+  }
+}
+
+async function main() {
+  const admin = await ensureAdmin();
+  await seedContent(admin.id);
+  console.log('[seed] tamamlandı — admin:', admin.email);
+}
+
+main()
+  .then(() => prisma.$disconnect())
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

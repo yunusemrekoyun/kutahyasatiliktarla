@@ -1,0 +1,282 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- better-auth çekirdek modelleri ----------
+// id alanlarına @default YOK — better-auth adapter id'yi kendisi üretip yazıyor.
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // better-auth "admin" plugin alanları
+  role       String?   @default("user")
+  banned     Boolean?  @default(false)
+  banReason  String?
+  banExpires DateTime?
+
+  sessions      Session[]
+  accounts      Account[]
+  listings      Listing[]
+  buyerThreads  Conversation[] @relation("buyer")
+  sellerThreads Conversation[] @relation("seller")
+  messages      Message[]
+
+  @@map("user")
+}
+
+model Session {
+  id             String   @id
+  expiresAt      DateTime
+  token          String   @unique
+  ipAddress      String?
+  userAgent      String?
+  impersonatedBy String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
+
+// ---------- PDD §6 iş varlıkları ----------
+
+enum ListingPurpose {
+  satilik
+  kiralik
+}
+
+enum ListingType {
+  tarla
+  arsa
+  bag_bahce
+  koy_ici
+}
+
+enum ListingStatus {
+  taslak
+  incelemede
+  aktif
+  kiralandi
+  satildi
+  pasif
+  reddedildi
+}
+
+enum MediaType {
+  image
+  video
+}
+
+enum LeadStatus {
+  yeni
+  okundu
+  donuldu
+}
+
+enum BlogStatus {
+  taslak
+  yayinda
+}
+
+enum BlogSource {
+  ai
+  manuel
+}
+
+enum LegalDocKey {
+  kvkk
+  gizlilik
+  cerez
+  kosullar
+  iys
+}
+
+model Listing {
+  id             String         @id @default(cuid())
+  ownerId        String
+  owner          User           @relation(fields: [ownerId], references: [id])
+  slug           String         @unique
+  title          String
+  purpose        ListingPurpose @default(satilik)
+  type           ListingType
+  location       String
+  district       String
+  area           String
+  price          String
+  pricePerM2     String
+  currency       String         @default("TRY")
+  badge          String?
+  lat            Float
+  lng            Float
+  tags           String[]
+  description    String         @db.Text
+  highlights     String[]
+  specs          Json
+  status         ListingStatus  @default(taslak)
+  droneRequested Boolean        @default(false)
+  viewCount      Int            @default(0)
+  media          Media[]
+  conversations  Conversation[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([status])
+  @@index([district])
+  @@index([purpose])
+}
+
+model Media {
+  id              String    @id @default(cuid())
+  listingId       String
+  listing         Listing   @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  type            MediaType
+  originalDeleted Boolean   @default(false)
+  variants        Json
+  poster          String?
+  createdAt       DateTime  @default(now())
+
+  @@index([listingId])
+}
+
+model Lead {
+  id          String     @id @default(cuid())
+  name        String
+  phone       String
+  budget      String?
+  district    String?
+  purpose     String?
+  note        String?    @db.Text
+  status      LeadStatus @default(yeni)
+  kvkkConsent Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+
+  @@index([status])
+}
+
+// Alıcı↔satıcı basit platform-içi mesajlaşma (PDD §5.2 kilitli karar)
+model Conversation {
+  id        String    @id @default(cuid())
+  listingId String?
+  listing   Listing?  @relation(fields: [listingId], references: [id])
+  buyerId   String
+  buyer     User      @relation("buyer", fields: [buyerId], references: [id])
+  sellerId  String
+  seller    User      @relation("seller", fields: [sellerId], references: [id])
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([buyerId])
+  @@index([sellerId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation(fields: [senderId], references: [id])
+  body           String       @db.Text
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId])
+}
+
+model BlogPost {
+  id        String     @id @default(cuid())
+  title     String
+  slug      String     @unique
+  category  String
+  body      String     @db.Text
+  status    BlogStatus @default(taslak)
+  source    BlogSource @default(manuel)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model LegalDoc {
+  key       LegalDocKey @id
+  title     String
+  body      String      @db.Text
+  updatedAt DateTime    @updatedAt
+}
+
+// content.ts yapısı korunuyor — düz tablo (District/Feature/Stat), tekil satır (SiteContent)
+model SiteContent {
+  id              Int      @id
+  brand           String
+  heroBadge       String
+  heroTitleLine1  String
+  heroTitleAccent String
+  heroSubtitle    String
+  sections        Json
+  contactPhone    String
+  contactWhatsapp String
+  contactEmail    String
+  updatedAt       DateTime @updatedAt
+}
+
+model Stat {
+  id       String @id @default(cuid())
+  value    String
+  label    String
+  position Int    @default(0)
+}
+
+model District {
+  id       String @id @default(cuid())
+  name     String @unique
+  count    String
+  text     String
+  position Int    @default(0)
+}
+
+model Feature {
+  id       String @id @default(cuid())
+  iconKey  String
+  title    String
+  text     String
+  position Int    @default(0)
+}
