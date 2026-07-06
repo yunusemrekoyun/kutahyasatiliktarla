@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import { getServerSession } from '@/lib/get-session';
-import { StoreProvider } from '@/legacy/admin-store';
+import { prisma } from '@/lib/prisma';
+import { AdminShell } from '@/components/admin/admin-shell';
 
 function UnauthorizedScreen() {
   return (
@@ -33,6 +34,20 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     return <UnauthorizedScreen />;
   }
 
-  // GEÇİCİ: eski panel localStorage store'una bağlı; panel DB'ye bağlanınca kalkacak.
-  return <StoreProvider>{children}</StoreProvider>;
+  const [brandRow, newLeadCount, reviewCount, priceRequestCount] = await Promise.all([
+    prisma.siteContent.findUnique({ where: { id: 1 }, select: { brand: true } }),
+    prisma.lead.count({ where: { status: 'yeni' } }),
+    prisma.listing.count({ where: { status: 'incelemede' } }),
+    prisma.listingPriceRequest.count({ where: { status: 'bekliyor' } }),
+  ]);
+
+  return (
+    <AdminShell
+      brand={brandRow?.brand ?? 'Kütahya Satılık Tarla'}
+      newLeadCount={newLeadCount}
+      reviewCount={reviewCount + priceRequestCount}
+    >
+      {children}
+    </AdminShell>
+  );
 }
