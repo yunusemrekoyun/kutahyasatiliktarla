@@ -22,7 +22,7 @@ import { ListingCard } from '@/components/listings/listing-card';
 import { Reveal } from '@/components/motion/reveal';
 import { ParcelFrame, TopoLines } from '@/components/site/topo';
 import { cn } from '@/lib/utils';
-import { LAND_TYPES } from '@/content';
+import { LAND_TYPES, type Listing } from '@/content';
 import { useStore, parsePrice, waLink } from '@/store';
 
 const SORTS = [
@@ -134,7 +134,7 @@ function FilterRail({
   );
 }
 
-export function Browse() {
+export function Browse({ listings }: { listings: Listing[] }) {
   const { content } = useStore();
   const router = useRouter();
   const pathname = usePathname();
@@ -161,10 +161,10 @@ export function Browse() {
 
   const districts = content.districts.map((d) => d.name);
   const countBy = (key: 'district' | 'type', value: string) =>
-    content.listings.filter((l) => l[key] === value).length;
+    listings.filter((l) => l[key] === value).length;
 
   const visible = useMemo(() => {
-    const filtered = content.listings.filter((l) => {
+    const filtered = listings.filter((l) => {
       if (ilce && l.district !== ilce) return false;
       if (tur && l.type !== tur) return false;
       if (q) {
@@ -178,7 +178,7 @@ export function Browse() {
     if (sirala === 'fiyat-azalan') sorted.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
     if (sirala === 'alan-buyuk') sorted.sort((a, b) => areaNum(b.area) - areaNum(a.area));
     return sorted;
-  }, [content.listings, ilce, tur, q, sirala]);
+  }, [listings, ilce, tur, q, sirala]);
 
   const chips = [
     ilce ? { key: 'ilce', label: ilce } : null,

@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { defaultContent, type SiteContent } from './content';
+import { defaultContent, type SiteContent } from '../content';
 
 const CONTENT_KEY = 'kst_content_v1';
 const LEADS_KEY = 'kst_leads_v1';

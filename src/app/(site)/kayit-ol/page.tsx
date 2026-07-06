@@ -3,7 +3,7 @@ import { AuthCard } from '@/components/auth/auth-card';
 import { SignUpForm } from '@/components/auth/sign-up-form';
 
 export const metadata: Metadata = {
-  title: 'Kayıt Ol — Kütahya Satılık Tarla',
+  title: 'Kayıt Ol',
 };
 
 export default function Page() {

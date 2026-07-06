@@ -15,7 +15,7 @@ import {
   ChevronDown,
   Inbox,
 } from 'lucide-react';
-import { useStore } from './store';
+import { useStore } from './legacy/admin-store';
 import { defaultContent, LAND_TYPES, type SiteContent, type LandType } from './content';
 import { authClient } from '@/lib/auth-client';
 

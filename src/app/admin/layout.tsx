@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import { getServerSession } from '@/lib/get-session';
+import { StoreProvider } from '@/legacy/admin-store';
 
 function UnauthorizedScreen() {
   return (
@@ -32,5 +33,6 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     return <UnauthorizedScreen />;
   }
 
-  return <>{children}</>;
+  // GEÇİCİ: eski panel localStorage store'una bağlı; panel DB'ye bağlanınca kalkacak.
+  return <StoreProvider>{children}</StoreProvider>;
 }

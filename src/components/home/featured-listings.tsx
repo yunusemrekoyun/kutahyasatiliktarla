@@ -7,15 +7,16 @@ import { ListingCard } from '@/components/listings/listing-card';
 import { SectionHeading } from '@/components/site/section-heading';
 import { Reveal } from '@/components/motion/reveal';
 import { useStore } from '@/store';
+import type { Listing } from '@/content';
 
 /**
  * Vitrin grid'i: açılış sekansındaki öne çıkan ilanın ardından gelen diğer
  * parseller ve tüm ilanlara kapı. Filtreleme/gezinme /ilanlar sayfasında.
  */
-export function FeaturedListings() {
+export function FeaturedListings({ listings }: { listings: Listing[] }) {
   const { content } = useStore();
   // İlk ilan açılış sekansında sunulur; grid sonraki üç parseli gösterir.
-  const cards = content.listings.slice(1, 4);
+  const cards = listings.slice(1, 4);
 
   if (cards.length === 0) return null;
 

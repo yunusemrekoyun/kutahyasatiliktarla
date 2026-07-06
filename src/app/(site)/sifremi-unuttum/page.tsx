@@ -3,7 +3,7 @@ import { AuthCard } from '@/components/auth/auth-card';
 import { RequestResetForm } from '@/components/auth/request-reset-form';
 
 export const metadata: Metadata = {
-  title: 'Şifremi Unuttum — Kütahya Satılık Tarla',
+  title: 'Şifremi Unuttum',
 };
 
 export default function Page() {

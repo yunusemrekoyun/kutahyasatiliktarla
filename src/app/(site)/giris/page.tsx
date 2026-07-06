@@ -3,7 +3,7 @@ import { AuthCard } from '@/components/auth/auth-card';
 import { SignInForm } from '@/components/auth/sign-in-form';
 
 export const metadata: Metadata = {
-  title: 'Giriş Yap — Kütahya Satılık Tarla',
+  title: 'Giriş Yap',
 };
 
 export default async function Page({

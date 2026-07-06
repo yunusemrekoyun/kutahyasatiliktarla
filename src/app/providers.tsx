@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, type ReactNode } from 'react';
-import { StoreProvider } from '../store';
 
 export function Providers({ children }: { children: ReactNode }) {
   // PWA: register the service worker in production for offline shell + install.
@@ -19,5 +18,5 @@ export function Providers({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  return <StoreProvider>{children}</StoreProvider>;
+  return <>{children}</>;
 }

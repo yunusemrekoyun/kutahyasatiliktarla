@@ -485,8 +485,8 @@ function DetailHero({
   );
 }
 
-export function ListingDetail({ id }: { id: string }) {
-  const { content, hydrated } = useStore();
+export function ListingDetail({ listing }: { listing: Listing }) {
+  const { content } = useStore();
   const [idx, setIdx] = useState(0);
   // Paylaşım linki istemcide üretilir (canonical domain varsayımı yok)
   const [pageUrl, setPageUrl] = useState('');
@@ -497,26 +497,6 @@ export function ListingDetail({ id }: { id: string }) {
   const coverRef = useParallax<HTMLDivElement>(14);
   // Küçük resme tıklanınca kapak yumuşak geçer; ilk yüklemede (LCP) sabit.
   const [interacted, setInteracted] = useState(false);
-
-  const listing = content.listings.find((l) => l.id === id);
-
-  if (!listing) {
-    // localStorage yüklenmeden "bulunamadı" göstermeyelim
-    if (!hydrated) return <div className="min-h-[50vh]" aria-hidden="true" />;
-    return (
-      <div className="container py-24 text-center">
-        <h1 className="font-heading text-2xl font-bold text-foreground">
-          İlan bulunamadı
-        </h1>
-        <p className="mx-auto mt-3 max-w-md leading-relaxed text-muted-foreground">
-          Aradığınız ilan yayından kaldırılmış ya da bağlantı hatalı olabilir.
-        </p>
-        <Button asChild className="mt-8">
-          <Link href="/ilanlar">Tüm ilanlara dönün</Link>
-        </Button>
-      </div>
-    );
-  }
 
   const images = listing.images ?? [];
   const cover = images[Math.min(idx, Math.max(images.length - 1, 0))];

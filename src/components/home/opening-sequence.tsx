@@ -18,6 +18,7 @@ import { ShowcaseListing } from '@/components/listings/showcase-listing';
 import { useScrollScene } from '@/lib/use-scroll-scene';
 import { cn } from '@/lib/utils';
 import { useStore, telLink, waLink } from '@/store';
+import type { Listing } from '@/content';
 
 const HERO_IMG =
   'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2400&q=80';
@@ -87,13 +88,12 @@ function HeroCopy({
  * kaydırınca sayfa normal akışına döner. Kaydırma kilitlenmez (sticky + --p).
  * Mobil/reduced-motion: normal hero + sabit vitrin kartı.
  */
-export function OpeningSequence() {
+export function OpeningSequence({ listings }: { listings: Listing[] }) {
   const { sectionRef, rootRef, mode, scenic } = useScrollScene<HTMLElement, HTMLDivElement>();
   // Ana sayfa lite açılışı zaman+etkileşim tabanlı: --p yazılır ama lite DOM'u
   // --p tüketen sınıf kullanmaz (op-m-* marquee'leri salt zaman tabanlıdır).
   const lite = mode === 'lite';
   const { content } = useStore();
-  const listings = content.listings;
   const phone = content.contact.phone;
   // Dokunmatik kaydırma (swipe) — vitrin slider'ı için basit delta ölçümü.
   const touchX = useRef<number | null>(null);

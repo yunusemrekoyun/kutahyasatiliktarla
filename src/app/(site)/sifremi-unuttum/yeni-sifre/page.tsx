@@ -3,7 +3,7 @@ import { AuthCard } from '@/components/auth/auth-card';
 import { ResetPasswordForm } from '@/components/auth/reset-password-form';
 
 export const metadata: Metadata = {
-  title: 'Yeni Şifre Belirle — Kütahya Satılık Tarla',
+  title: 'Yeni Şifre Belirle',
 };
 
 export default async function Page({
