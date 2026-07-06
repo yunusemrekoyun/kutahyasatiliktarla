@@ -57,10 +57,11 @@ export function ShowcaseListing({ listing }: { listing: Listing }) {
         ))}
       </div>
 
-      <article className="group grid overflow-hidden rounded-lg border border-border bg-card lg:grid-cols-[1.55fr_1fr]">
+      {/* Tablette (md) de yan yana vitrin düzeni — dikey yığın yalnızca telefonda */}
+      <article className="group grid overflow-hidden rounded-lg border border-border bg-card md:grid-cols-[1.4fr_1fr] lg:grid-cols-[1.55fr_1fr]">
         <Link
           href={`/ilan/${listing.id}`}
-          className="relative block aspect-[16/10] w-full overflow-hidden bg-muted text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset lg:aspect-auto lg:min-h-[26rem]"
+          className="relative block aspect-[16/10] w-full overflow-hidden bg-muted text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset md:aspect-auto md:min-h-[22rem] lg:min-h-[26rem]"
           aria-label={`${listing.badge ? `${listing.badge}: ` : ''}${listing.title} detaylarını açın`}
         >
           {cover ? (
@@ -83,7 +84,7 @@ export function ShowcaseListing({ listing }: { listing: Listing }) {
           ) : null}
         </Link>
 
-        <div className="flex flex-col p-6 sm:p-8 lg:border-l lg:border-dashed lg:border-border">
+        <div className="flex flex-col p-6 sm:p-8 md:border-l md:border-dashed md:border-border">
           <p className="flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-brass-strong">
             <span className="draw-dash h-0.5 w-6 bg-brass" aria-hidden="true" />
             Öne çıkan parsel

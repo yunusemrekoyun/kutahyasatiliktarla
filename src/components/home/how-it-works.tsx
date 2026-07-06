@@ -59,8 +59,9 @@ export function HowItWorks() {
             <li key={s.title} className="relative">
               <Reveal delay={i * 120}>
                 {i < steps.length - 1 ? (
+                  // md'de (dar 3 kolon) left-32 ikon bloğuyla örtüşmüyor — hat lg'de
                   <span
-                    className="draw-dash absolute left-32 top-6 hidden h-px bg-primary/25 md:block"
+                    className="draw-dash absolute left-32 top-6 hidden h-px bg-primary/25 lg:block"
                     style={{ right: '-2rem' }}
                     aria-hidden="true"
                   />

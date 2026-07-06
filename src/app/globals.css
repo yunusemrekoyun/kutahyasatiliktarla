@@ -49,6 +49,11 @@
     --ease-out-quart: cubic-bezier(0.23, 1, 0.32, 1);
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-in-out-quint: cubic-bezier(0.77, 0, 0.175, 1);
+
+    /* Mobil sabit alt aksiyon barının yüksekliği (safe-area HARİÇ): 1px kenar
+       + 12px üst + 48px buton + 12px alt. Layout alt boşluğu ve bar bundan
+       beslenir — tek doğruluk kaynağı. */
+    --action-bar-h: 73px;
   }
 
   * {
@@ -58,6 +63,11 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    /* Dekoratif taşmalar (marquee duvarı, sahne kaymaları) mobilde layout
+       viewport'u genişletip yatay kaydırma açmasın. clip (hidden değil):
+       scroll konteyneri oluşturmaz, sticky bozulmaz. body değil html:
+       viewport genişlemesi kök seviyede kesilmeli. */
+    overflow-x: clip;
   }
 
   body {
@@ -67,6 +77,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    /* html'dekiyle birlikte: body'nin kendi taşması viewport'a yayılmasın */
+    overflow-x: clip;
   }
 
   h1, h2, h3, h4 {
@@ -352,9 +364,19 @@
   .op-row-r {
     animation: op-marquee-r var(--dur, 72s) linear infinite;
   }
+  /* Mobil lite duvarı — aynı marquee, ama data-phase duraklatmasından ve
+     --p'den bağımsız (ana sayfa lite açılışı salt zaman tabanlı). */
+  .op-m-row-l {
+    animation: op-marquee-l var(--dur, 72s) linear infinite;
+  }
+  .op-m-row-r {
+    animation: op-marquee-r var(--dur, 72s) linear infinite;
+  }
   @media (prefers-reduced-motion: reduce) {
     .op-row-l,
-    .op-row-r {
+    .op-row-r,
+    .op-m-row-l,
+    .op-m-row-r {
       animation: none;
     }
   }
@@ -515,6 +537,34 @@
     opacity: var(--sg);
     overflow: hidden;
   }
+  /* Mobil lite sahne (dh-m-*) — aynı --p mekaniği, kısaltılmış koreografi.
+     Kart yüksekliği baştan ayrılır; satırlar YALNIZCA opacity/transform ile
+     belirir (kaydırma sırasında layout hesaplaması yok). */
+  /* Yığın başta aşağıda durur (başlık masthead konumunda, kart ekran dışında);
+     kaydırdıkça yukarı süzülüp özet kartını açığa çıkarır. */
+  .dh-m-stack {
+    transform: translate3d(
+      0,
+      calc((1 - clamp(0, var(--p, 0) / 0.22, 1)) * 16rem),
+      0
+    );
+    will-change: transform;
+  }
+  .dh-m-title {
+    transform: translate3d(0, calc(var(--p, 0) * -10px), 0);
+    will-change: transform;
+  }
+  .dh-m-card {
+    --cg: clamp(0, (var(--p, 0) - 0.08) / 0.07, 1);
+    opacity: var(--cg);
+    transform: translate3d(0, calc((1 - var(--cg)) * 24px), 0);
+    will-change: transform, opacity;
+  }
+  .dh-m-row {
+    --sg: clamp(0, (var(--p, 0) - var(--a, 0)) / 0.05, 1);
+    opacity: var(--sg);
+    transform: translate3d(0, calc((1 - var(--sg)) * 10px), 0);
+  }
   /* İlk kart bir kez gösterildikten sonra sağ-üstte şeffaf çerçevede sabitlenen
      kompakt bilgi — sahne boyunca (kaydırdıkça) görünür kalır, sonda solar. */
   .dh-dock {
@@ -674,4 +724,13 @@
 .leaflet-control-zoom a {
   color: hsl(154 42% 15%);
   border-color: hsl(40 20% 82%) !important;
+}
+/* Dokunmatikte zoom düğmeleri 44px hedefe büyür (Leaflet varsayılanı ~26px) */
+@media (pointer: coarse) {
+  .leaflet-control-zoom a {
+    width: 44px !important;
+    height: 44px !important;
+    line-height: 44px !important;
+    font-size: 20px;
+  }
 }

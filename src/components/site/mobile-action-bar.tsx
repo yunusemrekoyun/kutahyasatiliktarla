@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import { MessageCircle, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useStore, telLink, waLink } from '@/store';
@@ -7,6 +8,9 @@ import { useStore, telLink, waLink } from '@/store';
 /** Mobilde her an elin altında: büyük Ara + WhatsApp butonları. */
 export function MobileActionBar() {
   const { content } = useStore();
+  const pathname = usePathname();
+  // İlan detayında ilana özel bar (DetailActionBar) var — çifte bar olmasın.
+  if (pathname.startsWith('/ilan/')) return null;
   return (
     <div
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 p-3 backdrop-blur-md lg:hidden"

@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+export type SceneMode = 'scenic' | 'lite' | 'static';
+
 /**
  * Kaydırmaya bağlı "sahne" primitifi (hero ile aynı mekanik). Uzun bir bölüm
  * (sectionRef) içinde yapışkan (sticky) bir görsel; bölümün fazladan
@@ -10,9 +12,12 @@ import { useEffect, useRef, useState } from 'react';
  * kart evresinde arka plan animasyonlarını durdurmak için. CSS tüm dönüşümü
  * --p'den sürer (transform/opacity, GPU). Kaydırma asla ele geçirilmez.
  *
- * `scenic` yalnızca masaüstünde ve reduced-motion kapalıyken true olur; ekran
- * boyutu / hareket tercihi değişince yeniden değerlendirilir. scenic false ise
- * çağıran bileşen sabit (statik) sürümü render etmelidir.
+ * Üç mod:
+ * - `scenic`: ≥1024px ve reduced-motion kapalı — tam masaüstü koreografisi.
+ * - `lite`:   <1024px ve reduced-motion kapalı — aynı --p mekaniği çalışır,
+ *             çağıran bileşen kısaltılmış/sadeleştirilmiş mobil sahneyi render eder.
+ * - `static`: reduced-motion açık — sabit sürüm; --p hiç yazılmaz.
+ * Ekran boyutu / hareket tercihi değişince yeniden değerlendirilir.
  */
 export function useScrollScene<
   S extends HTMLElement = HTMLElement,
@@ -20,7 +25,9 @@ export function useScrollScene<
 >() {
   const sectionRef = useRef<S>(null);
   const rootRef = useRef<R>(null);
-  const [scenic, setScenic] = useState(false);
+  // SSR ve ilk client render'da 'static' → hydration uyumsuzluğu yok; mount
+  // sonrası gerçek mod hesaplanır.
+  const [mode, setMode] = useState<SceneMode>('static');
 
   useEffect(() => {
     const desktop = window.matchMedia('(min-width: 1024px)');
@@ -30,9 +37,13 @@ export function useScrollScene<
     const setup = () => {
       teardown();
       teardown = () => {};
-      const ok = desktop.matches && !reduce.matches;
-      setScenic(ok);
-      if (!ok) return;
+      const next: SceneMode = reduce.matches
+        ? 'static'
+        : desktop.matches
+          ? 'scenic'
+          : 'lite';
+      setMode(next);
+      if (next === 'static') return;
 
       const section = sectionRef.current;
       const root = rootRef.current;
@@ -75,5 +86,5 @@ export function useScrollScene<
     };
   }, []);
 
-  return { sectionRef, rootRef, scenic };
+  return { sectionRef, rootRef, mode, scenic: mode === 'scenic' };
 }

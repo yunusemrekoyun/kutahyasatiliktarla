@@ -11,7 +11,7 @@ import {
 } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Menu, Phone, Search } from 'lucide-react';
+import { LogOut, Menu, Phone, Search, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils';
 import { Logo } from './logo';
 import { LAND_TYPES } from '@/content';
 import { useStore, telLink } from '@/store';
+import { authClient } from '@/lib/auth-client';
 
 /** Kategori-öncelikli gezinme: tıkla ve doğrudan ilanlara gir. */
 const navLinks = [
@@ -126,6 +127,16 @@ export function SiteHeader() {
   const lastY = useRef(0);
   const phone = content.contact.phone;
 
+  // Bilerek yalnızca client-side okunuyor (bkz. (site)/layout.tsx'teki not) —
+  // site-genelinde statik üretimi korumak için kısa bir hydration flicker'ı
+  // (misafir -> giriş yapmış) kabul ediliyor.
+  const { data: session } = authClient.useSession();
+  const user = session?.user ?? null;
+
+  function handleSignOut() {
+    authClient.signOut({ fetchOptions: { onSuccess: () => router.push('/') } });
+  }
+
   useEffect(() => {
     // İlk konumda "hidden" hesaplama: sayfa kaydırılmış açılırsa (derin
     // bağlantı, yenileme) header görünür başlar; gizlenme yalnızca gerçek
@@ -172,11 +183,13 @@ export function SiteHeader() {
       <div
         inert={hidden}
         className={cn(
-          'pointer-events-none fixed inset-x-0 top-0 z-50 transition-transform duration-500 ease-out-quart',
+          // z-40: modal/sheet/dialog (z-50) her zaman kabuğun üstünde kalır
+          'pointer-events-none fixed inset-x-0 top-0 z-40 transition-transform duration-500 ease-out-quart',
           hidden && '-translate-y-[130%]',
         )}
       >
-        <div className="container pt-3 lg:pt-4">
+        {/* Çentikli cihazlarda safe-area kadar aşağıdan başlar */}
+        <div className="container pt-[calc(0.75rem+env(safe-area-inset-top))] lg:pt-[calc(1rem+env(safe-area-inset-top))]">
           <div
             className={cn(
               'pointer-events-auto flex items-center justify-between gap-3 rounded-lg border pl-4 pr-3 transition-all duration-300 ease-out-quart lg:pl-5',
@@ -242,6 +255,33 @@ export function SiteHeader() {
                 <span className="nums hidden xl:inline">{phone}</span>
               </a>
 
+              {user ? (
+                <div className="flex items-center gap-1">
+                  <Link
+                    href="/hesap"
+                    className="flex items-center gap-2 rounded-sm px-3 py-2 text-[14px] font-semibold text-foreground/80 transition-colors hover:bg-secondary hover:text-foreground"
+                  >
+                    <User className="h-4 w-4 text-brass-strong" />
+                    Hesabım
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleSignOut}
+                    aria-label="Çıkış yap"
+                    className="grid h-9 w-9 place-items-center rounded-sm text-foreground/70 transition-colors hover:bg-secondary hover:text-foreground"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/giris"
+                  className="rounded-sm px-3 py-2 text-[14px] font-semibold text-foreground/80 transition-colors hover:bg-secondary hover:text-foreground"
+                >
+                  Giriş Yap
+                </Link>
+              )}
+
               <Button asChild variant="brass" size="sm" className="h-10 px-5">
                 <a href="/#ilan-ver">İlan Ver</a>
               </Button>
@@ -258,11 +298,32 @@ export function SiteHeader() {
                     <Menu className="h-6 w-6" />
                   </button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[86%] max-w-sm p-0">
+                <SheetContent side="right" className="w-[86%] max-w-sm overflow-y-auto p-0">
                   <SheetTitle className="sr-only">Menü</SheetTitle>
                   <div className="bg-primary px-6 py-6">
                     <Logo brand={content.brand} tone="light" />
                   </div>
+                  {/* Masaüstündeki aramanın mobil karşılığı */}
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const v = q.trim();
+                      if (!v) return;
+                      setOpen(false);
+                      setQ('');
+                      router.push(`/ilanlar?q=${encodeURIComponent(v)}`);
+                    }}
+                    className="flex items-center gap-2 border-b border-border px-6 py-4"
+                  >
+                    <Search className="h-5 w-5 shrink-0 text-brass-strong" aria-hidden="true" />
+                    <input
+                      value={q}
+                      onChange={(e) => setQ(e.target.value)}
+                      placeholder="İlan ara"
+                      aria-label="İlanlarda arayın"
+                      className="h-11 w-full bg-transparent text-base font-medium text-foreground outline-none placeholder:text-muted-foreground"
+                    />
+                  </form>
                   <nav aria-label="Ana menü" className="flex flex-col px-6 py-4">
                     {navLinks.map((l) => (
                       <SheetClose asChild key={l.href}>
@@ -275,7 +336,7 @@ export function SiteHeader() {
                       </SheetClose>
                     ))}
                   </nav>
-                  <div className="flex flex-col gap-3 px-6 pt-2">
+                  <div className="flex flex-col gap-3 px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-2">
                     <SheetClose asChild>
                       <Button asChild variant="brass" size="lg" className="h-12 text-base">
                         <a href="/#ilan-ver">İlan Ver</a>
@@ -287,6 +348,42 @@ export function SiteHeader() {
                         {phone}
                       </a>
                     </Button>
+                    {user ? (
+                      <>
+                        <SheetClose asChild>
+                          <Button asChild variant="outline" size="lg" className="h-12 text-base">
+                            <Link href="/hesap">
+                              <User className="size-5" />
+                              Hesabım
+                            </Link>
+                          </Button>
+                        </SheetClose>
+                        <SheetClose asChild>
+                          <Button
+                            variant="ghost"
+                            size="lg"
+                            className="h-12 text-base"
+                            onClick={handleSignOut}
+                          >
+                            <LogOut className="size-5" />
+                            Çıkış Yap
+                          </Button>
+                        </SheetClose>
+                      </>
+                    ) : (
+                      <>
+                        <SheetClose asChild>
+                          <Button asChild variant="outline" size="lg" className="h-12 text-base">
+                            <Link href="/giris">Giriş Yap</Link>
+                          </Button>
+                        </SheetClose>
+                        <SheetClose asChild>
+                          <Button asChild variant="ghost" size="lg" className="h-12 text-base">
+                            <Link href="/kayit-ol">Kayıt Ol</Link>
+                          </Button>
+                        </SheetClose>
+                      </>
+                    )}
                   </div>
                 </SheetContent>
               </Sheet>

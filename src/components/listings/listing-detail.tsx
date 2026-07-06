@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Reveal } from '@/components/motion/reveal';
+import { DetailActionBar } from '@/components/listings/detail-action-bar';
 import { ParcelFrame, TopoLines } from '@/components/site/topo';
 import { useParallax } from '@/lib/parallax';
 import { useScrollScene } from '@/lib/use-scroll-scene';
@@ -76,7 +77,8 @@ function DetailHero({
   phone: string;
   wa: string;
 }) {
-  const { sectionRef, rootRef, scenic } = useScrollScene<HTMLElement, HTMLDivElement>();
+  const { sectionRef, rootRef, mode, scenic } = useScrollScene<HTMLElement, HTMLDivElement>();
+  const lite = mode === 'lite';
   const poster = listing.images?.[0];
 
   const eyebrow = (text: string) => (
@@ -151,7 +153,7 @@ function DetailHero({
   const titlePanel = framed(
     <>
       {eyebrow(`${listing.type} · ${listing.district}`)}
-      <h1 className="mt-5 font-heading text-4xl font-bold leading-[1.04] tracking-[-0.02em] text-white sm:text-5xl lg:text-[3.5rem]">
+      <h1 className="mt-5 font-heading text-4xl font-bold leading-[1.04] tracking-[-0.02em] text-white sm:text-5xl lg:text-[3rem] xl:text-[3.5rem]">
         {listing.title}
       </h1>
       <p className="mt-4 flex flex-wrap items-center gap-2 text-[16px] text-white/85">
@@ -184,7 +186,8 @@ function DetailHero({
         </div>
       </div>
     </>,
-    'max-w-2xl',
+    // 1024-1280'de sağ dock'la çakışmasın diye bir kademe dar; xl'de genişler.
+    'max-w-xl xl:max-w-2xl',
   );
 
   // Bölümler — boş olanlar elenir; --p ekseninde otomatik dağıtılır.
@@ -259,18 +262,23 @@ function DetailHero({
     <section
       ref={sectionRef}
       aria-label="İlan tanıtımı"
-      className={cn('bg-primary -mt-20 lg:-mt-24', scenic && 'relative')}
-      style={scenic ? { height: `${sceneVh}vh` } : undefined}
+      className={cn('bg-primary -mt-20 lg:-mt-24', (scenic || lite) && 'relative')}
+      // lite: kısaltılmış mobil sahne — ~1.1 ekran boyu kaydırma (--p 0→1)
+      style={scenic ? { height: `${sceneVh}vh` } : lite ? { height: '210svh' } : undefined}
     >
       <div
         ref={rootRef}
         className={cn(
           'overflow-hidden bg-primary',
-          scenic ? 'sticky top-0 h-screen' : 'relative min-h-[82svh]',
+          scenic && 'sticky top-0 h-screen',
+          lite && 'sticky top-0 h-[100svh]',
+          // static: KESİN yükseklik — min-h altında h-full zinciri 0'a çöküyor
+          // ve başlık paneli ekran dışına kayıyordu (mobil "boş kapak" bug'ı).
+          mode === 'static' && 'relative h-[82svh]',
         )}
       >
         {/* Kapak — arkada kalır, kaydırınca yaklaşır + hafif kayar (dh-cover) */}
-        <div className={cn('absolute inset-0', scenic && 'dh-cover')}>
+        <div className={cn('absolute inset-0', (scenic || lite) && 'dh-cover')}>
           {poster ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={poster} alt={listing.title} className="h-full w-full object-cover" />
@@ -313,6 +321,76 @@ function DetailHero({
                   </div>
                 );
               })
+            ) : lite ? (
+              /* Mobil lite sahne — masthead dilinde başlık bloğu hemen görünür
+                 (ilk ekran asla boş değil); kaydırdıkça yığın yukarı süzülür,
+                 "Arazi özeti" kartı satır satır dolar. CTA'lar sahnede değil,
+                 alttaki sabit ilan barında (başparmak erişimi). */
+              <div className="dh-m-stack absolute inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))]">
+                <div className="dh-m-title">
+                  {eyebrow(`${listing.type} · ${listing.district}`)}
+                  <h1 className="mt-3 font-heading text-[2rem] font-bold leading-[1.06] tracking-[-0.02em] text-white sm:text-4xl">
+                    {listing.title}
+                  </h1>
+                  <p className="mt-3 flex flex-wrap items-center gap-2 text-[15px] text-white/85">
+                    <MapPin className="h-4 w-4 shrink-0 text-brass-ondark" />
+                    {listing.location}
+                    <span aria-hidden="true" className="text-white/30">·</span>
+                    <span className="nums">{listing.area}</span>
+                  </p>
+                  <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span className="nums font-heading text-3xl font-bold leading-none text-white">
+                      <span className="sr-only">Fiyat: </span>
+                      {listing.price}
+                    </span>
+                    <span className="nums text-[13px] text-white/70">{listing.pricePerM2}</span>
+                  </div>
+                  <span className="mt-4 block h-0.5 w-14 bg-brass" aria-hidden="true" />
+                </div>
+
+                {/* Biriken tapu kaydı — masaüstündeki double-bezel kartın mobil
+                    karşılığı. Yükseklik baştan ayrılır; satırlar yalnızca
+                    opacity/transform ile belirir (kaydırırken layout yok). */}
+                <div className="dh-m-card mt-6" aria-hidden="true">
+                  <div className="rounded-[1.5rem] bg-white/[0.06] p-1.5 shadow-[0_26px_60px_-26px_rgba(3,14,9,0.9)] ring-1 ring-white/10">
+                    <div className="rounded-[1.15rem] bg-[hsl(154_30%_6%/0.86)] px-5 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]">
+                      <span className="inline-block rounded-full bg-brass/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-brass-ondark">
+                        Arazi özeti
+                      </span>
+                      <dl className="mt-3">
+                        {summary.map((s, i) => {
+                          const a = 0.18 + 0.6 * (i / Math.max(summary.length - 1, 1));
+                          return (
+                            <div
+                              key={s.label}
+                              className="dh-m-row flex items-baseline justify-between gap-4 border-t border-white/[0.07] py-[9px] first:border-t-0"
+                              style={{ ['--a' as string]: a }}
+                            >
+                              <dt className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/50">
+                                {s.label}
+                              </dt>
+                              <dd className="nums text-right text-[13.5px] font-semibold text-white">
+                                {s.value}
+                              </dd>
+                            </div>
+                          );
+                        })}
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sahne sonunda klasik içeriğe davet */}
+                <div
+                  className="dh-cue-end mt-5 flex flex-col items-center gap-1 text-white/70"
+                  aria-hidden="true"
+                >
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.22em]">
+                    Tüm detaylar için kaydırın
+                  </span>
+                  <ChevronDown className="hint-float h-4 w-4" />
+                </div>
+              </div>
             ) : (
               <div className="absolute bottom-[12%] left-0">{titlePanel}</div>
             )}
@@ -321,7 +399,7 @@ function DetailHero({
                 sabit kalır — kaydırma boyunca kompakt bilgi olarak görünür. */}
             {scenic ? (
               <div
-                className="dh-dock absolute right-0 top-[14%] z-30 w-[21rem] max-w-[44vw] text-right"
+                className="dh-dock absolute right-0 top-[14%] z-30 w-[19rem] max-w-[44vw] text-right xl:w-[21rem]"
                 aria-hidden="true"
               >
                 {/* Kalıcı başlık (masthead): kutu değil — büyük başlık öne çıkar,
@@ -332,7 +410,7 @@ function DetailHero({
                   <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brass-ondark">
                     {listing.type} · {listing.district}
                   </p>
-                  <p className="mt-3 font-heading text-[27px] font-bold leading-[1.08] tracking-[-0.015em] text-white lg:text-[31px]">
+                  <p className="mt-3 font-heading text-[27px] font-bold leading-[1.08] tracking-[-0.015em] text-white xl:text-[31px]">
                     {listing.title}
                   </p>
                   <span className="mt-4 ml-auto block h-0.5 w-14 bg-brass" aria-hidden="true" />
@@ -348,7 +426,7 @@ function DetailHero({
                 radius, iç highlight). Blur yok (kaydıran zemin üstünde perf). */}
             {scenic ? (
               <div
-                className="dh-summary absolute right-0 top-[42%] z-30 w-[18rem] max-w-[38vw]"
+                className="dh-summary absolute right-0 top-[42%] z-30 w-[16rem] max-w-[38vw] xl:w-[18rem]"
                 aria-hidden="true"
               >
                 <div className="rounded-[1.5rem] bg-white/[0.06] p-1.5 shadow-[0_26px_60px_-26px_rgba(3,14,9,0.9)] ring-1 ring-white/10">
@@ -460,6 +538,7 @@ export function ListingDetail({ id }: { id: string }) {
   return (
     <>
       <DetailHero listing={listing} phone={content.contact.phone} wa={wa} />
+      <DetailActionBar listing={listing} phone={content.contact.phone} wa={wa} />
       <div className="bg-background py-10 sm:py-14">
         <div className="container">
         {/* Kırıntı */}
@@ -600,7 +679,7 @@ export function ListingDetail({ id }: { id: string }) {
                   center={[listing.lat, listing.lng]}
                   zoom={13}
                   fitBounds={false}
-                  className="h-72 w-full"
+                  className="h-64 w-full sm:h-80 lg:h-96"
                 />
               </div>
             </Reveal>

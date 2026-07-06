@@ -22,6 +22,63 @@ import { useStore, telLink, waLink } from '@/store';
 const HERO_IMG =
   'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2400&q=80';
 
+/** Hero metin bloğu — rozet + başlık + altyazı + CTA'lar + istatistikler.
+ * Scenic, lite ve statik dalların üçü de aynı kaynaktan beslenir. */
+function HeroCopy({
+  badge,
+  titleLine1,
+  titleAccent,
+  subtitle,
+  phone,
+  stats,
+}: {
+  badge: string;
+  titleLine1: string;
+  titleAccent: string;
+  subtitle: string;
+  phone: string;
+  stats: { value: string; label: string }[];
+}) {
+  return (
+    <>
+      <div className="max-w-2xl">
+        <p className="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-ondark">
+          <span className="h-0.5 w-8 bg-brass-ondark" aria-hidden="true" />
+          {badge}
+        </p>
+        <h1 className="mt-6 font-heading text-4xl font-bold leading-[1.05] tracking-[-0.02em] text-white sm:text-5xl lg:text-[3.75rem]">
+          {titleLine1} <span className="text-brass-ondark">{titleAccent}</span>
+        </h1>
+        <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/90">{subtitle}</p>
+        <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+          <Button asChild variant="brass" size="lg" className="h-[52px] px-8 text-base">
+            <Link href="/ilanlar">
+              İlanları Görün
+              <ArrowRight className="size-5" />
+            </Link>
+          </Button>
+          <Button asChild variant="outlineOnDark" size="lg" className="h-[52px] px-8 text-base">
+            <a href={telLink(phone)}>
+              <Phone className="size-5" />
+              {phone}
+            </a>
+          </Button>
+        </div>
+      </div>
+      <div className="mt-14 grid max-w-2xl grid-cols-2 gap-x-8 gap-y-6 border-t border-white/15 pt-8 sm:grid-cols-4">
+        {stats.map((s) => (
+          <div key={s.label}>
+            <div className="nums font-heading text-3xl font-bold leading-none text-white">
+              {s.value}
+            </div>
+            <div className="mt-2 text-[13px] leading-snug text-white/75">{s.label}</div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
 /**
  * Açılış sekansı: hero → öne çıkan ilan tek kesintisiz morph. Kaydırdıkça
  * hero görseli fildişi matte ile çerçevelenip küçülür, ilan fotoğrafına
@@ -31,10 +88,15 @@ const HERO_IMG =
  * Mobil/reduced-motion: normal hero + sabit vitrin kartı.
  */
 export function OpeningSequence() {
-  const { sectionRef, rootRef, scenic } = useScrollScene<HTMLElement, HTMLDivElement>();
+  const { sectionRef, rootRef, mode, scenic } = useScrollScene<HTMLElement, HTMLDivElement>();
+  // Ana sayfa lite açılışı zaman+etkileşim tabanlı: --p yazılır ama lite DOM'u
+  // --p tüketen sınıf kullanmaz (op-m-* marquee'leri salt zaman tabanlıdır).
+  const lite = mode === 'lite';
   const { content } = useStore();
   const listings = content.listings;
   const phone = content.contact.phone;
+  // Dokunmatik kaydırma (swipe) — vitrin slider'ı için basit delta ölçümü.
+  const touchX = useRef<number | null>(null);
 
   const first = listings[0];
   const firstCover = first?.images?.[0] ?? HERO_IMG;
@@ -240,43 +302,14 @@ export function OpeningSequence() {
             {/* Hero metni — çerçeveleme başlayınca çıkar */}
             <div className="op-hero absolute inset-0 z-10 flex items-center">
               <div className="container">
-                <div className="max-w-2xl">
-                  <p className="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-ondark">
-                    <span className="h-0.5 w-8 bg-brass-ondark" aria-hidden="true" />
-                    {content.hero.badge}
-                  </p>
-                  <h1 className="mt-6 font-heading text-4xl font-bold leading-[1.05] tracking-[-0.02em] text-white sm:text-5xl lg:text-[3.75rem]">
-                    {content.hero.titleLine1}{' '}
-                    <span className="text-brass-ondark">{content.hero.titleAccent}</span>
-                  </h1>
-                  <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/90">
-                    {content.hero.subtitle}
-                  </p>
-                  <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                    <Button asChild variant="brass" size="lg" className="h-[52px] px-8 text-base">
-                      <Link href="/ilanlar">
-                        İlanları Görün
-                        <ArrowRight className="size-5" />
-                      </Link>
-                    </Button>
-                    <Button asChild variant="outlineOnDark" size="lg" className="h-[52px] px-8 text-base">
-                      <a href={telLink(phone)}>
-                        <Phone className="size-5" />
-                        {phone}
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-                <div className="mt-14 grid max-w-2xl grid-cols-2 gap-x-8 gap-y-6 border-t border-white/15 pt-8 sm:grid-cols-4">
-                  {stats.map((s) => (
-                    <div key={s.label}>
-                      <div className="nums font-heading text-3xl font-bold leading-none text-white">
-                        {s.value}
-                      </div>
-                      <div className="mt-2 text-[13px] leading-snug text-white/75">{s.label}</div>
-                    </div>
-                  ))}
-                </div>
+                <HeroCopy
+                  badge={content.hero.badge}
+                  titleLine1={content.hero.titleLine1}
+                  titleAccent={content.hero.titleAccent}
+                  subtitle={content.hero.subtitle}
+                  phone={phone}
+                  stats={stats}
+                />
               </div>
             </div>
 
@@ -369,9 +402,117 @@ export function OpeningSequence() {
               <ChevronDown className="hint-float h-5 w-5" />
             </div>
           </div>
+        ) : lite && active ? (
+          <>
+            {/* Lite hero — masaüstü açılışının mobil karşılığı: ilan duvarı
+                marquee'si arka planda akar (salt zaman tabanlı), önünde hero
+                metni. Scroll bağı yok; morph yerine akan duvar + slider. */}
+            <div className="relative flex min-h-[100svh] items-center overflow-hidden bg-primary">
+              <div className="absolute inset-0" aria-hidden="true">
+                <div className="flex h-full flex-col justify-center gap-3">
+                  {wallRows.map((tiles, r) => {
+                    const size = r === 1 ? 'h-36 w-52' : 'h-28 w-40';
+                    return (
+                      <div
+                        key={r}
+                        className={cn('op-row', r === 1 ? 'op-m-row-r' : 'op-m-row-l')}
+                        style={{ ['--dur' as string]: `${[84, 110, 72][r]}s` }}
+                      >
+                        {[...tiles, ...tiles].map((src, i) => (
+                          <div
+                            key={i}
+                            className={cn(
+                              'relative mr-3 shrink-0 overflow-hidden rounded-md after:absolute after:inset-0 after:bg-primary/25',
+                              size,
+                            )}
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={src}
+                              alt=""
+                              aria-hidden="true"
+                              loading="lazy"
+                              decoding="async"
+                              className="h-full w-full object-cover brightness-90 saturate-[.85]"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
+                {/* Okunurluk scrim'i — akan duvar üstünde metin net kalır */}
+                <div className="absolute inset-0 bg-[hsl(154_40%_9%_/_0.55)]" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[hsl(155_36%_5%_/_0.9)] via-[hsl(155_32%_7%_/_0.55)] via-[55%] to-[hsl(155_34%_8%_/_0.35)]" />
+                <TopoLines className="inset-0 h-full w-full text-white/[0.05]" />
+              </div>
+              <div className="container relative pb-16 pt-28">
+                <HeroCopy
+                  badge={content.hero.badge}
+                  titleLine1={content.hero.titleLine1}
+                  titleAccent={content.hero.titleAccent}
+                  subtitle={content.hero.subtitle}
+                  phone={phone}
+                  stats={stats}
+                />
+              </div>
+            </div>
+
+            {/* Vitrin slider'ı — masaüstündeki ok/geçiş mekaniğinin mobil
+                karşılığı: oklar + swipe + sayaç, kart geçişte yandan süzülür. */}
+            <div className="bg-background py-14 sm:py-16">
+              <div className="container">
+                <div className="mb-5 flex items-center justify-between gap-4">
+                  <p className="flex min-w-0 items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-brass-strong">
+                    <span className="h-0.5 w-6 shrink-0 bg-brass" aria-hidden="true" />
+                    Öne çıkan parsel
+                    <span className="nums normal-case tracking-normal text-muted-foreground">
+                      {idx + 1} / {listings.length}
+                    </span>
+                  </p>
+                  {listings.length > 1 ? (
+                    <div className="flex shrink-0 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => go(-1)}
+                        aria-label="Önceki ilan"
+                        className="grid h-11 w-11 place-items-center rounded-full bg-primary text-white shadow-soft transition hover:bg-[hsl(154_46%_11%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      >
+                        <ChevronLeft className="h-5 w-5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => go(1)}
+                        aria-label="Sonraki ilan"
+                        className="grid h-11 w-11 place-items-center rounded-full bg-primary text-white shadow-soft transition hover:bg-[hsl(154_46%_11%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      >
+                        <ChevronRight className="h-5 w-5" />
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
+                <div
+                  onTouchStart={(e) => {
+                    touchX.current = e.touches[0]?.clientX ?? null;
+                  }}
+                  onTouchEnd={(e) => {
+                    const startX = touchX.current;
+                    touchX.current = null;
+                    if (startX == null) return;
+                    const dx = (e.changedTouches[0]?.clientX ?? startX) - startX;
+                    if (Math.abs(dx) > 48) go(dx < 0 ? 1 : -1);
+                  }}
+                >
+                  <div key={idx} className="op-fade" style={{ ['--sdir' as string]: `${dir * 22}px` }}>
+                    <ShowcaseListing listing={active} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
         ) : (
           <>
-            {/* Fallback: normal hero + sabit vitrin kartı */}
+            {/* Fallback (reduced-motion / SSR ilk boyama): normal hero + sabit vitrin */}
             <div className="relative flex min-h-[42rem] items-center overflow-hidden bg-primary lg:min-h-[48rem]">
               <div className="absolute inset-0 -z-10">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -382,43 +523,14 @@ export function OpeningSequence() {
                 <TopoLines className="inset-0 h-full w-full text-white/[0.06]" />
               </div>
               <div className="container pb-20 pt-32 lg:pb-24 lg:pt-40">
-                <div className="max-w-2xl">
-                  <p className="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-ondark">
-                    <span className="h-0.5 w-8 bg-brass-ondark" aria-hidden="true" />
-                    {content.hero.badge}
-                  </p>
-                  <h1 className="mt-6 font-heading text-4xl font-bold leading-[1.05] tracking-[-0.02em] text-white sm:text-5xl lg:text-[3.75rem]">
-                    {content.hero.titleLine1}{' '}
-                    <span className="text-brass-ondark">{content.hero.titleAccent}</span>
-                  </h1>
-                  <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/90">
-                    {content.hero.subtitle}
-                  </p>
-                  <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                    <Button asChild variant="brass" size="lg" className="h-[52px] px-8 text-base">
-                      <Link href="/ilanlar">
-                        İlanları Görün
-                        <ArrowRight className="size-5" />
-                      </Link>
-                    </Button>
-                    <Button asChild variant="outlineOnDark" size="lg" className="h-[52px] px-8 text-base">
-                      <a href={telLink(phone)}>
-                        <Phone className="size-5" />
-                        {phone}
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-                <div className="mt-14 grid max-w-2xl grid-cols-2 gap-x-8 gap-y-6 border-t border-white/15 pt-8 sm:grid-cols-4">
-                  {stats.map((s) => (
-                    <div key={s.label}>
-                      <div className="nums font-heading text-3xl font-bold leading-none text-white">
-                        {s.value}
-                      </div>
-                      <div className="mt-2 text-[13px] leading-snug text-white/75">{s.label}</div>
-                    </div>
-                  ))}
-                </div>
+                <HeroCopy
+                  badge={content.hero.badge}
+                  titleLine1={content.hero.titleLine1}
+                  titleAccent={content.hero.titleAccent}
+                  subtitle={content.hero.subtitle}
+                  phone={phone}
+                  stats={stats}
+                />
               </div>
             </div>
             {mounted && first ? (

@@ -49,7 +49,7 @@ export function ListingCard({
           </div>
         )}
         {/* Fiyat etiketi — marka yeşili: her fotoğrafta yüksek kontrast, sakin */}
-        <span className="nums absolute left-4 top-4 rounded-sm bg-primary px-3.5 py-2 font-heading text-[16px] font-bold leading-none text-primary-foreground shadow-soft">
+        <span className="nums absolute left-4 top-4 rounded-sm bg-primary px-3.5 py-2 font-heading text-[15px] font-bold leading-none text-primary-foreground shadow-soft sm:text-[16px]">
           {listing.price}
         </span>
         {/* Tür rozeti */}
@@ -61,7 +61,7 @@ export function ListingCard({
       </Link>
 
       <div className="flex flex-1 flex-col p-6">
-        <h3 className="font-heading text-[19px] font-semibold leading-snug tracking-[-0.01em] text-foreground">
+        <h3 className="font-heading text-[18px] font-semibold leading-snug tracking-[-0.01em] text-foreground sm:text-[19px]">
           {listing.title}
         </h3>
         <p className="mt-2 flex items-center gap-1.5 text-[14px] text-muted-foreground">

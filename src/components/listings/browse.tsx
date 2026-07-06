@@ -69,7 +69,8 @@ function FilterRail({
                 type="button"
                 onClick={() => onPick(title === 'İlçe' ? 'ilce' : 'tur', it.value)}
                 className={cn(
-                  'relative flex w-full items-center justify-between gap-3 py-2.5 pl-4 pr-1 text-left text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
+                  // Dokunma hedefi ≥44px; masaüstünde sıkı satır korunur
+                  'relative flex w-full items-center justify-between gap-3 py-3 pl-4 pr-1 text-left text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring lg:py-2.5',
                   active
                     ? 'font-semibold text-foreground'
                     : 'text-foreground/70 hover:text-foreground',
@@ -143,6 +144,12 @@ export function Browse() {
     router.replace(`${pathname}${p.size ? `?${p.toString()}` : ''}`, { scroll: false });
   }
 
+  function clearFilters() {
+    const p = new URLSearchParams(searchParams.toString());
+    ['ilce', 'tur', 'q'].forEach((k) => p.delete(k));
+    router.replace(`${pathname}${p.size ? `?${p.toString()}` : ''}`, { scroll: false });
+  }
+
   const districts = content.districts.map((d) => d.name);
   const countBy = (key: 'district' | 'type', value: string) =>
     content.listings.filter((l) => l[key] === value).length;
@@ -197,9 +204,9 @@ export function Browse() {
           </ParcelFrame>
         </Reveal>
 
-        <div className="mt-10 grid gap-10 lg:grid-cols-[15rem_1fr] xl:grid-cols-[16rem_1fr]">
-          {/* Sol ray (masaüstü) */}
-          <aside className="hidden lg:block" aria-label="İlan filtreleri">
+        {/* Tablette (md) de kalıcı filtre rayı — Sheet yalnızca telefonda */}
+        <div className="mt-10 grid gap-8 md:grid-cols-[13rem_1fr] lg:grid-cols-[15rem_1fr] lg:gap-10 xl:grid-cols-[16rem_1fr]">
+          <aside className="hidden md:block" aria-label="İlan filtreleri">
             <div className="sticky top-28">
               <FilterRail
                 districts={districts}
@@ -223,7 +230,7 @@ export function Browse() {
                     key={c.key}
                     type="button"
                     onClick={() => setParam(c.key, null)}
-                    className="flex items-center gap-1.5 rounded-sm bg-secondary px-2.5 py-1 text-[13px] font-semibold text-secondary-foreground transition-colors hover:bg-[hsl(150_16%_85%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="flex min-h-9 items-center gap-1.5 rounded-sm bg-secondary px-3 py-1.5 text-[13px] font-semibold text-secondary-foreground transition-colors hover:bg-[hsl(150_16%_85%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     aria-label={`${c.label} filtresini kaldırın`}
                   >
                     {c.label}
@@ -236,35 +243,52 @@ export function Browse() {
                 {/* Mobil: filtre paneli */}
                 <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
                   <SheetTrigger asChild>
-                    <Button variant="outline" size="sm" className="lg:hidden">
+                    <Button variant="outline" className="relative h-11 md:hidden">
                       <SlidersHorizontal className="h-4 w-4" />
                       Filtrele
+                      {chips.length > 0 ? (
+                        <span className="nums absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-brass px-1 text-[11px] font-bold text-brass-foreground">
+                          {chips.length}
+                        </span>
+                      ) : null}
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="w-[86%] max-w-sm overflow-y-auto p-6">
-                    <SheetTitle className="font-heading text-lg font-semibold">
-                      Filtreler
-                    </SheetTitle>
-                    <div className="mt-6">
-                      <FilterRail
-                        districts={districts}
-                        ilce={ilce}
-                        tur={tur}
-                        countBy={countBy}
-                        onPick={(key, value) => setParam(key, value)}
-                      />
+                  <SheetContent side="left" className="flex w-[86%] max-w-sm flex-col p-0">
+                    <div className="flex-1 overflow-y-auto p-6">
+                      <SheetTitle className="font-heading text-lg font-semibold">
+                        Filtreler
+                      </SheetTitle>
+                      <div className="mt-6">
+                        <FilterRail
+                          districts={districts}
+                          ilce={ilce}
+                          tur={tur}
+                          countBy={countBy}
+                          onPick={(key, value) => setParam(key, value)}
+                        />
+                      </div>
                     </div>
-                    <SheetClose asChild>
-                      <Button className="mt-8 h-12 w-full">
-                        {visible.length} ilanı göster
-                      </Button>
-                    </SheetClose>
+                    {/* Onay her an elin altında: alta sabit, listeyle kaymaz */}
+                    <div className="border-t border-border bg-background p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+                      <SheetClose asChild>
+                        <Button className="h-12 w-full">{visible.length} ilanı göster</Button>
+                      </SheetClose>
+                      {chips.length > 0 ? (
+                        <button
+                          type="button"
+                          onClick={clearFilters}
+                          className="mt-1 inline-flex min-h-11 w-full items-center justify-center text-[14px] font-semibold text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                          Filtreleri temizle
+                        </button>
+                      ) : null}
+                    </div>
                   </SheetContent>
                 </Sheet>
 
                 <Select value={sirala} onValueChange={(v) => setParam('sirala', v === 'one-cikan' ? null : v)}>
                   <SelectTrigger
-                    className="h-9 w-auto gap-2 rounded-sm border-input bg-card text-[14px] font-medium"
+                    className="h-11 w-auto gap-2 rounded-sm border-input bg-card text-[14px] font-medium lg:h-9"
                     aria-label="Sıralama"
                   >
                     <SelectValue />

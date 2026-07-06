@@ -18,7 +18,8 @@ export function SiteFooter() {
       {/* Filigran: pafta motifi — koyu bantların ortak dili */}
       <TopoLines className="inset-0 h-full w-full text-white/[0.04]" />
 
-      <div className="container relative grid gap-12 py-16 sm:py-20 lg:grid-cols-[1.4fr_1fr_1fr_1.3fr]">
+      {/* Tablette 2 kolon ara adım — tek sütun yalnızca telefonda */}
+      <div className="container relative grid gap-12 py-16 sm:grid-cols-2 sm:py-20 lg:grid-cols-[1.4fr_1fr_1fr_1.3fr]">
         <div>
           <Logo brand={content.brand} tone="light" />
           <p className="mt-5 max-w-xs text-[15px] leading-relaxed text-primary-foreground/60">
@@ -31,7 +32,7 @@ export function SiteFooter() {
           <h3 className="rule-brass rule-brass-sm font-heading text-[16px] font-semibold text-white">
             Kurumsal
           </h3>
-          <ul className="mt-6 space-y-2.5 text-[15px]">
+          <ul className="mt-6 space-y-1 text-[15px]">
             {[
               { href: '#ilanlar', label: 'İlanlar' },
               { href: '#nasil-calisir', label: 'Nasıl Çalışır' },
@@ -41,7 +42,7 @@ export function SiteFooter() {
               <li key={l.href + l.label}>
                 <a
                   href={l.href}
-                  className="text-primary-foreground/65 transition-colors hover:text-white"
+                  className="inline-block py-1.5 text-primary-foreground/65 transition-colors hover:text-white"
                 >
                   {l.label}
                 </a>
@@ -54,12 +55,12 @@ export function SiteFooter() {
           <h3 className="rule-brass rule-brass-sm font-heading text-[16px] font-semibold text-white">
             Bölgeler
           </h3>
-          <ul className="mt-6 space-y-2.5 text-[15px]">
+          <ul className="mt-6 space-y-1 text-[15px]">
             {content.districts.slice(0, 6).map((d) => (
               <li key={d.name}>
                 <Link
                   href={`/ilanlar?ilce=${encodeURIComponent(d.name)}`}
-                  className="text-primary-foreground/65 transition-colors hover:text-white"
+                  className="inline-block py-1.5 text-primary-foreground/65 transition-colors hover:text-white"
                 >
                   {d.name}
                 </Link>
@@ -78,19 +79,19 @@ export function SiteFooter() {
           >
             {phone}
           </a>
-          <div className="mt-5 flex flex-col gap-2.5 text-[15px]">
+          <div className="mt-5 flex flex-col gap-1 text-[15px]">
             <a
               href={waLink(whatsapp, 'Merhaba, bilgi almak istiyorum.')}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-2.5 text-primary-foreground/65 transition-colors hover:text-white"
+              className="flex min-h-10 items-center gap-2.5 text-primary-foreground/65 transition-colors hover:text-white"
             >
               <MessageCircle className="h-4 w-4" />
               WhatsApp’tan yazın
             </a>
             <a
               href={`mailto:${email}`}
-              className="flex items-center gap-2.5 text-primary-foreground/65 transition-colors hover:text-white"
+              className="flex min-h-10 items-center gap-2.5 text-primary-foreground/65 transition-colors hover:text-white"
             >
               <Mail className="h-4 w-4" />
               {email}
