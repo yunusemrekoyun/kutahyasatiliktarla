@@ -11,9 +11,10 @@ services:
     container_name: kst-dev-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: kst_dev
-      POSTGRES_PASSWORD: changeme
-      POSTGRES_DB: kutahyasatiliktarla_dev
+      # Değerler proje kökündeki .env'den okunur (compose interpolation)
+      POSTGRES_USER: ${DEV_DB_USER:-kst_dev}
+      POSTGRES_PASSWORD: ${DEV_DB_PASSWORD:?DEV_DB_PASSWORD .env dosyasinda tanimli olmali}
+      POSTGRES_DB: ${DEV_DB_NAME:-kutahyasatiliktarla_dev}
     # Host'ta 5432 başka bir lokal proje tarafından kullanılıyor -> 5433'e alındı.
     ports:
       - '127.0.0.1:5433:5432'

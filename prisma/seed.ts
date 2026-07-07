@@ -9,7 +9,8 @@ const prisma = new PrismaClient();
 
 async function ensureAdmin() {
   const email = process.env.SEED_ADMIN_EMAIL ?? 'admin@kutahyasatiliktarla.com';
-  const password = process.env.SEED_ADMIN_PASSWORD ?? 'changeme';
+  const password = process.env.SEED_ADMIN_PASSWORD;
+  if (!password) throw new Error('SEED_ADMIN_PASSWORD tanımlı değil (.env).');
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) return existing;
