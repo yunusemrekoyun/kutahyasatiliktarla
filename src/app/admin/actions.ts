@@ -25,9 +25,9 @@ export async function approveListing(listingId: string): Promise<ActionResult> {
 
   const listing = await prisma.listing.findUnique({
     where: { id: listingId },
-    select: { title: true, owner: { select: { email: true } } },
+    select: { title: true, owner: { select: { id: true, email: true } } },
   });
-  if (listing) await notifyOwnerApproved(listing.owner.email, listing.title);
+  if (listing) await notifyOwnerApproved(listing.owner, listing.title);
   return actionOk;
 }
 
@@ -51,9 +51,9 @@ export async function rejectListing(
 
   const listing = await prisma.listing.findUnique({
     where: { id: listingId },
-    select: { title: true, owner: { select: { email: true } } },
+    select: { title: true, owner: { select: { id: true, email: true } } },
   });
-  if (listing) await notifyOwnerRejected(listing.owner.email, listing.title, reason);
+  if (listing) await notifyOwnerRejected(listing.owner, listing.title, reason);
   return actionOk;
 }
 
@@ -71,7 +71,7 @@ export async function applyPriceRequest(requestId: string): Promise<ActionResult
           slug: true,
           title: true,
           area: true,
-          owner: { select: { email: true } },
+          owner: { select: { id: true, email: true } },
         },
       },
     },
@@ -100,7 +100,7 @@ export async function applyPriceRequest(requestId: string): Promise<ActionResult
   updateTag(TAGS.listings);
   updateTag(TAGS.listing(request.listing.slug));
   await notifyOwnerPriceApplied(
-    request.listing.owner.email,
+    request.listing.owner,
     request.listing.title,
     request.requestedPrice,
   );
@@ -113,7 +113,7 @@ export async function rejectPriceRequest(requestId: string): Promise<ActionResul
   const request = await prisma.listingPriceRequest.findUnique({
     where: { id: requestId },
     include: {
-      listing: { select: { title: true, owner: { select: { email: true } } } },
+      listing: { select: { title: true, owner: { select: { id: true, email: true } } } },
     },
   });
   if (!request || request.status !== 'bekliyor') {
@@ -124,6 +124,6 @@ export async function rejectPriceRequest(requestId: string): Promise<ActionResul
     where: { id: requestId },
     data: { status: 'reddedildi', resolvedAt: new Date() },
   });
-  await notifyOwnerPriceRejected(request.listing.owner.email, request.listing.title);
+  await notifyOwnerPriceRejected(request.listing.owner, request.listing.title);
   return actionOk;
 }

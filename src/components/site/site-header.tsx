@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { Logo } from './logo';
+import { NotificationBell } from './notification-bell';
 import { LAND_TYPES } from '@/content';
 import { useStore, telLink } from '@/store';
 import { authClient } from '@/lib/auth-client';
@@ -276,6 +277,7 @@ export function SiteHeader() {
 
               {user ? (
                 <div className="flex items-center gap-1">
+                  <NotificationBell dark={dark} />
                   <Link
                     href="/hesap"
                     className={cn(

@@ -14,24 +14,33 @@ const NAV = [
   { href: '/admin/rehber', label: 'Rehber' },
   { href: '/admin/hukuki', label: 'Hukuki' },
   { href: '/admin/talepler', label: 'Talepler' },
+  { href: '/admin/sikayetler', label: 'Şikayetler' },
 ] as const;
 
 export function AdminShell({
   brand,
   newLeadCount,
   reviewCount,
+  complaintCount,
   children,
 }: {
   brand: string;
   newLeadCount: number;
   reviewCount: number;
+  complaintCount: number;
   children: ReactNode;
 }) {
   const pathname = usePathname();
   const router = useRouter();
 
   const badgeFor = (href: string) =>
-    href === '/admin/talepler' ? newLeadCount : href === '/admin' ? reviewCount : 0;
+    href === '/admin/talepler'
+      ? newLeadCount
+      : href === '/admin/sikayetler'
+        ? complaintCount
+        : href === '/admin'
+          ? reviewCount
+          : 0;
 
   return (
     <div className="min-h-screen bg-[#F4EFE6]">

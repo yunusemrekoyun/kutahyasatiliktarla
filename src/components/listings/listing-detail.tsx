@@ -20,6 +20,7 @@ import { ParcelFrame, TopoLines } from '@/components/site/topo';
 import { useParallax } from '@/lib/parallax';
 import { useScrollScene } from '@/lib/use-scroll-scene';
 import { imgSrcSet, thumbUrl } from '@/lib/img';
+import { MessageCta } from './message-cta';
 import { cn } from '@/lib/utils';
 import { useStore, telLink, waLink } from '@/store';
 import type { Listing } from '@/content';
@@ -171,10 +172,11 @@ function DetailHero({
           <div className="nums mt-2 text-[14px] text-white/70">{listing.pricePerM2}</div>
         </div>
         <div className="flex flex-wrap gap-3">
-          <Button asChild variant="brass" size="lg" className="h-[52px] gap-2 px-7 text-base">
+          <MessageCta slug={listing.id} className="h-[52px] gap-2 px-7 text-base" />
+          <Button asChild variant="outlineOnDark" size="lg" className="h-[52px] gap-2 px-7 text-base">
             <a href={wa} target="_blank" rel="noreferrer">
               <MessageCircle className="size-5" />
-              WhatsApp’tan Bilgi Al
+              WhatsApp
             </a>
           </Button>
           <Button asChild variant="outlineOnDark" size="lg" className="h-[52px] gap-2 px-7 text-base">
@@ -722,6 +724,7 @@ export function ListingDetail({ listing }: { listing: Listing }) {
                 </dl>
 
                 <div className="mt-6 flex flex-col gap-3">
+                  <MessageCta slug={listing.id} className="h-12 w-full gap-2 text-base" />
                   <Button
                     asChild
                     size="lg"

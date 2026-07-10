@@ -30,6 +30,8 @@ model User {
   buyerThreads  Conversation[] @relation("buyer")
   sellerThreads Conversation[] @relation("seller")
   messages      Message[]
+  complaints    Complaint[]
+  notifications Notification[]
 
   @@map("user")
 }
@@ -253,6 +255,43 @@ model Message {
   createdAt      DateTime     @default(now())
 
   @@index([conversationId])
+}
+
+enum ComplaintStatus {
+  acik
+  kapatildi
+}
+
+// Şikayet: admin yazışmayı OKUYAMAZ (v0.5 kararı) — kullanıcı gerekçe +
+// ekran görüntüleriyle bildirir, admin yalnızca bunları görür.
+model Complaint {
+  id             String          @id @default(cuid())
+  reporterId     String
+  reporter       User            @relation(fields: [reporterId], references: [id])
+  conversationId String?
+  listingId      String?
+  reason         String          @db.Text
+  // /m/sikayet/... altına yüklenen ekran görüntüsü URL'leri (en çok 3)
+  images         String[]
+  status         ComplaintStatus @default(acik)
+  createdAt      DateTime        @default(now())
+  resolvedAt     DateTime?
+
+  @@index([status])
+}
+
+// Site içi zil bildirimi — e-postanın ikizi (mesaj, moderasyon, fiyat...)
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String?
+  href      String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, readAt])
 }
 
 model BlogPost {

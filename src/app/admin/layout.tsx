@@ -34,18 +34,21 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     return <UnauthorizedScreen />;
   }
 
-  const [brandRow, newLeadCount, reviewCount, priceRequestCount] = await Promise.all([
-    prisma.siteContent.findUnique({ where: { id: 1 }, select: { brand: true } }),
-    prisma.lead.count({ where: { status: 'yeni' } }),
-    prisma.listing.count({ where: { status: 'incelemede' } }),
-    prisma.listingPriceRequest.count({ where: { status: 'bekliyor' } }),
-  ]);
+  const [brandRow, newLeadCount, reviewCount, priceRequestCount, complaintCount] =
+    await Promise.all([
+      prisma.siteContent.findUnique({ where: { id: 1 }, select: { brand: true } }),
+      prisma.lead.count({ where: { status: 'yeni' } }),
+      prisma.listing.count({ where: { status: 'incelemede' } }),
+      prisma.listingPriceRequest.count({ where: { status: 'bekliyor' } }),
+      prisma.complaint.count({ where: { status: 'acik' } }),
+    ]);
 
   return (
     <AdminShell
       brand={brandRow?.brand ?? 'Kütahya Satılık Tarla'}
       newLeadCount={newLeadCount}
       reviewCount={reviewCount + priceRequestCount}
+      complaintCount={complaintCount}
     >
       {children}
     </AdminShell>

@@ -94,7 +94,7 @@ export async function saveListing(
 
   let slug: string;
   let publishedNow = false;
-  let ownerEmail: string | null = null;
+  let owner: { id: string; email: string } | null = null;
 
   if (listingId) {
     const existing = await prisma.listing.findUnique({
@@ -110,7 +110,7 @@ export async function saveListing(
     slug = existing.slug;
     publishedNow = d.status === 'aktif' && !existing.publishedAt;
     if (publishedNow && existing.owner.id !== session.user.id) {
-      ownerEmail = existing.owner.email;
+      owner = existing.owner;
     }
 
     const id = listingId;
@@ -148,8 +148,8 @@ export async function saveListing(
   updateTag(TAGS.listings);
   updateTag(TAGS.listing(slug));
 
-  if (publishedNow && ownerEmail) {
-    await notifyOwnerPublished(ownerEmail, d.title, slug);
+  if (publishedNow && owner) {
+    await notifyOwnerPublished(owner, d.title, slug);
   }
 
   redirect(`/admin/ilanlar?kayit=${listingId}`);

@@ -1,6 +1,7 @@
 // Uygulama olaylarının e-posta bildirimleri — hepsi kuyruk üzerinden.
 // Kuyruk/Redis hatası asıl akışı (başvuru, moderasyon) DÜŞÜRMEZ: try/catch.
 import { prisma } from './prisma';
+import { pushNotification } from './notifications';
 import { emailQueue, type EmailJobData } from './queue';
 
 async function adminAddress(): Promise<string | null> {
@@ -66,10 +67,51 @@ export async function notifyAdminPriceRequest(title: string, requestedPrice: str
   });
 }
 
-export async function notifyOwnerApproved(to: string, title: string) {
+/** E-posta + zil ikilisinin alıcısı */
+export type Recipient = { id: string; email: string };
+
+/** Şikayet bildirimi — admin'e; yazışma içeriği İLETİLMEZ. */
+export async function notifyComplaintAdmin(reporterName: string, reason: string) {
+  const to = await adminAddress();
+  if (!to) return;
   await enqueue({
     kind: 'notify',
     to,
+    subject: 'Yeni şikayet',
+    heading: 'Yeni şikayet',
+    body: `${reporterName} bir görüşmeyi şikayet etti:\n\n${reason.slice(0, 500)}`,
+    ctaUrl: siteUrl('/admin/sikayetler'),
+    ctaLabel: 'Şikayeti Görüntüle',
+  });
+}
+
+/** Yeni sohbet başlatıldığında karşı tarafa tek e-posta (devamı zilde). */
+export async function notifyNewMessage(
+  to: string,
+  senderName: string,
+  listingTitle: string,
+  path: string,
+) {
+  await enqueue({
+    kind: 'notify',
+    to,
+    subject: 'Yeni mesajınız var',
+    heading: 'Yeni mesajınız var',
+    body: `${senderName}, "${listingTitle}" ilanı hakkında size mesaj gönderdi.`,
+    ctaUrl: siteUrl(path),
+    ctaLabel: 'Mesajı Görüntüle',
+  });
+}
+
+export async function notifyOwnerApproved(owner: Recipient, title: string) {
+  await pushNotification(owner.id, {
+    title: 'Başvurunuz onaylandı',
+    body: `"${title}" için ekibimiz çekim planlayacak.`,
+    href: '/hesap/ilanlarim',
+  });
+  await enqueue({
+    kind: 'notify',
+    to: owner.email,
     subject: 'Başvurunuz onaylandı',
     heading: 'Başvurunuz onaylandı',
     body: `"${title}" başvurunuz onaylandı. Ekibimiz fotoğraf ve drone çekimi için sizinle iletişime geçecek; çekim tamamlanınca ilanınız yayına alınacak.`,
@@ -78,10 +120,15 @@ export async function notifyOwnerApproved(to: string, title: string) {
   });
 }
 
-export async function notifyOwnerRejected(to: string, title: string, reason: string) {
+export async function notifyOwnerRejected(owner: Recipient, title: string, reason: string) {
+  await pushNotification(owner.id, {
+    title: 'Başvurunuz yayınlanamadı',
+    body: reason,
+    href: '/hesap/ilanlarim',
+  });
   await enqueue({
     kind: 'notify',
-    to,
+    to: owner.email,
     subject: 'Başvurunuz hakkında',
     heading: 'Başvurunuz yayınlanamadı',
     body: `"${title}" başvurunuz şu nedenle reddedildi:\n\n${reason}\n\nBilgileri düzeltip yeniden gönderebilirsiniz.`,
@@ -90,10 +137,15 @@ export async function notifyOwnerRejected(to: string, title: string, reason: str
   });
 }
 
-export async function notifyOwnerPublished(to: string, title: string, slug: string) {
+export async function notifyOwnerPublished(owner: Recipient, title: string, slug: string) {
+  await pushNotification(owner.id, {
+    title: 'İlanınız yayında',
+    body: `"${title}" yayına alındı.`,
+    href: `/ilan/${slug}`,
+  });
   await enqueue({
     kind: 'notify',
-    to,
+    to: owner.email,
     subject: 'İlanınız yayında',
     heading: 'İlanınız yayında',
     body: `"${title}" ilanınız yayına alındı. Alıcılar artık ilanınızı görüntüleyebilir.`,
@@ -102,20 +154,30 @@ export async function notifyOwnerPublished(to: string, title: string, slug: stri
   });
 }
 
-export async function notifyOwnerPriceApplied(to: string, title: string, newPrice: string) {
+export async function notifyOwnerPriceApplied(owner: Recipient, title: string, newPrice: string) {
+  await pushNotification(owner.id, {
+    title: 'Fiyatınız güncellendi',
+    body: `"${title}" için yeni fiyat: ${newPrice}.`,
+    href: '/hesap/ilanlarim',
+  });
   await enqueue({
     kind: 'notify',
-    to,
+    to: owner.email,
     subject: 'Fiyat güncellendi',
     heading: 'Fiyatınız güncellendi',
     body: `"${title}" ilanınızın fiyatı ${newPrice} olarak güncellendi.`,
   });
 }
 
-export async function notifyOwnerPriceRejected(to: string, title: string) {
+export async function notifyOwnerPriceRejected(owner: Recipient, title: string) {
+  await pushNotification(owner.id, {
+    title: 'Fiyat talebiniz uygulanamadı',
+    body: `"${title}" için ilettiğiniz talep uygulanmadı.`,
+    href: '/hesap/ilanlarim',
+  });
   await enqueue({
     kind: 'notify',
-    to,
+    to: owner.email,
     subject: 'Fiyat talebiniz hakkında',
     heading: 'Fiyat talebiniz uygulanamadı',
     body: `"${title}" ilanınız için ilettiğiniz fiyat güncelleme talebi uygulanmadı. Detay için bizimle iletişime geçebilirsiniz.`,

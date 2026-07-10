@@ -89,6 +89,12 @@ export default async function Page({
                 </Link>
               </Button>
             ) : null}
+            <Button asChild variant="outline">
+              <Link href="/hesap/mesajlar">
+                Mesajlarım
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
           </div>
         </div>
 
@@ -97,7 +103,6 @@ export default async function Page({
             Yakında hesabınızda
           </h2>
           <ul className="mt-3 space-y-2 text-[14px] leading-relaxed text-muted-foreground">
-            <li>· Satıcılarla platform içi mesajlaşma</li>
             <li>· Favori ilanlar</li>
             <li>· Kayıtlı arama uyarıları</li>
           </ul>
