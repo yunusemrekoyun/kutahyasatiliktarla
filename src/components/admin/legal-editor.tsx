@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { updateLegalDoc } from '@/app/admin/hukuki/actions';
 import { ActionForm } from './action-form';
-import { AdminInput, AdminTextarea, Field } from './ui';
+import { AdminInput, Field } from './ui';
+import { RichEditor } from './rich-editor';
 import { cn } from '@/lib/utils';
 
 export function LegalDocEditor({
@@ -47,8 +48,8 @@ export function LegalDocEditor({
               <Field label="Belge başlığı">
                 <AdminInput name="title" defaultValue={title} required />
               </Field>
-              <Field label="Metin (paragraflar boş satırla ayrılır)">
-                <AdminTextarea name="body" rows={12} defaultValue={body} required />
+              <Field label="Metin">
+                <RichEditor name="body" initialHtml={body} minHeight="20rem" />
               </Field>
             </div>
           </ActionForm>

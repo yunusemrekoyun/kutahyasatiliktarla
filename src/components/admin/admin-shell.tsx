@@ -15,6 +15,7 @@ const NAV = [
   { href: '/admin/hukuki', label: 'Hukuki' },
   { href: '/admin/talepler', label: 'Talepler' },
   { href: '/admin/sikayetler', label: 'Şikayetler' },
+  { href: '/admin/uyeler', label: 'Üyeler' },
 ] as const;
 
 export function AdminShell({

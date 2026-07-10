@@ -6,6 +6,7 @@ import { TYPE_MAP } from '../src/lib/mappers';
 import { deriveStructured } from '../src/lib/structured-specs';
 import { parsePrice } from '../src/lib/format';
 import { defaultContent } from '../src/content';
+import { LEGAL_DEFAULTS } from '../src/lib/legal-defaults';
 
 const prisma = new PrismaClient();
 
@@ -169,10 +170,11 @@ async function seedContent(adminId: string) {
 
   const legalKeys = ['kvkk', 'gizlilik', 'cerez', 'kosullar', 'iys'] as const;
   for (const key of legalKeys) {
+    const draft = LEGAL_DEFAULTS[key];
     await prisma.legalDoc.upsert({
       where: { key },
-      create: { key, title: key.toUpperCase(), body: 'İçerik yakında eklenecektir.' },
-      update: {},
+      create: { key, title: draft.title, body: draft.body },
+      update: {}, // admin düzenlemeleri seed'le ezilmez
     });
   }
 }

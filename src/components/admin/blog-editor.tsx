@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { ChevronDown, Trash2 } from 'lucide-react';
 import { deleteBlogPost, saveBlogPost } from '@/app/admin/rehber/actions';
 import { ActionForm } from './action-form';
-import { AdminInput, AdminSelect, AdminTextarea, Field, dangerBtn } from './ui';
+import { AdminInput, AdminSelect, Field, dangerBtn } from './ui';
+import { RichEditor } from './rich-editor';
 import { cn } from '@/lib/utils';
 
 export type BlogPostRow = {
@@ -34,7 +35,7 @@ function PostFields({ post }: { post?: BlogPostRow }) {
         </Field>
       </div>
       <Field label="Metin">
-        <AdminTextarea name="body" rows={5} defaultValue={post?.body} required />
+        <RichEditor name="body" initialHtml={post?.body ?? ''} minHeight="12rem" />
       </Field>
     </div>
   );

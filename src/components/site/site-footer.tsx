@@ -37,6 +37,7 @@ export function SiteFooter() {
               { href: '#ilanlar', label: 'İlanlar' },
               { href: '#nasil-calisir', label: 'Nasıl Çalışır' },
               { href: '/ilan-ver', label: 'İlan Ver' },
+              { href: '/rehber', label: 'Arazi Rehberi' },
               { href: '/', label: 'Ana Sayfa' },
             ].map((l) => (
               <li key={l.href + l.label}>

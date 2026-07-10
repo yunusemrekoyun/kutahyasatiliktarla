@@ -6,6 +6,7 @@ import { requireAdmin } from '@/lib/auth-guards';
 import { TAGS } from '@/lib/cache-tags';
 import { slugify } from '@/lib/slugify';
 import { actionError, actionOk, type ActionResult } from '@/lib/action-result';
+import { sanitizeRichHtml } from '@/lib/sanitize';
 
 /** Rehber yazısı kaydı — id null ise yeni yazı. Slug başlıktan üretilir,
  * çakışırsa kısa ek alır; mevcut yazının slug'ı değişmez (SEO). */
@@ -18,7 +19,7 @@ export async function saveBlogPost(
 
   const title = String(formData.get('title') ?? '').trim().slice(0, 160);
   const category = String(formData.get('category') ?? '').trim().slice(0, 60);
-  const body = String(formData.get('body') ?? '').trim().slice(0, 20_000);
+  const body = sanitizeRichHtml(String(formData.get('body') ?? '').slice(0, 100_000)).trim();
   const status = formData.get('status') === 'yayinda' ? 'yayinda' : 'taslak';
 
   const fieldErrors: Record<string, string[]> = {};

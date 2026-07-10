@@ -3,6 +3,7 @@ import { unstable_cache } from 'next/cache';
 import { defaultContent, type Listing } from '@/content';
 import { TAGS } from './cache-tags';
 import { assembleChrome, mapListingRow, type SiteChrome } from './mappers';
+import { slugify } from './slugify';
 import { prisma } from './prisma';
 
 /**
@@ -140,5 +141,80 @@ export async function getLegalDoc(key: string) {
   } catch (e) {
     logDbFallback(`legal:${key}`, e);
     return null;
+  }
+}
+
+export type GuidePost = {
+  slug: string;
+  title: string;
+  category: string;
+  body: string;
+  createdAt: Date | null;
+};
+
+const stripHtml = (html: string) => html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+
+/** Rehber özeti (kart metni) — HTML gövdeden düz metin kırpar. */
+export function guideSnippet(body: string, max = 180): string {
+  const text = stripHtml(body);
+  return text.length > max ? `${text.slice(0, max).trimEnd()}…` : text;
+}
+
+function fallbackPosts(): GuidePost[] {
+  return defaultContent.articles.map((a) => ({
+    slug: slugify(a.title),
+    title: a.title,
+    category: a.category,
+    body: a.text,
+    createdAt: null,
+  }));
+}
+
+const loadGuidePosts = unstable_cache(
+  async (): Promise<GuidePost[]> =>
+    (
+      await prisma.blogPost.findMany({
+        where: { status: 'yayinda' },
+        orderBy: { createdAt: 'desc' },
+      })
+    ).map((p) => ({
+      slug: p.slug,
+      title: p.title,
+      category: p.category,
+      body: p.body,
+      createdAt: p.createdAt,
+    })),
+  ['guide-posts'],
+  { tags: [TAGS.articles], revalidate: 300 },
+);
+
+export async function getGuidePosts(): Promise<GuidePost[]> {
+  try {
+    return await loadGuidePosts();
+  } catch (e) {
+    logDbFallback('guide-posts', e);
+    return fallbackPosts();
+  }
+}
+
+export async function getGuidePost(slug: string): Promise<GuidePost | null> {
+  const load = unstable_cache(
+    async () => prisma.blogPost.findUnique({ where: { slug } }),
+    ['guide-post', slug],
+    { tags: [TAGS.articles], revalidate: 3600 },
+  );
+  try {
+    const post = await load();
+    if (!post || post.status !== 'yayinda') return null;
+    return {
+      slug: post.slug,
+      title: post.title,
+      category: post.category,
+      body: post.body,
+      createdAt: post.createdAt,
+    };
+  } catch (e) {
+    logDbFallback('guide-post', e);
+    return fallbackPosts().find((p) => p.slug === slug) ?? null;
   }
 }

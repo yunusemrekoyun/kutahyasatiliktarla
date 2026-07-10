@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getLegalDoc } from '@/lib/data';
+import { isRichHtml } from '@/lib/sanitize';
 
 export const dynamicParams = true;
 
@@ -46,13 +47,21 @@ export default async function Page({ params }: { params: Promise<{ key: string }
       <h1 className="mt-4 font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
         {title}
       </h1>
-      <div className="mt-8 space-y-4 text-[16px] leading-relaxed text-foreground/85">
-        {body.split(/\n{2,}/).map((p, i) => (
-          <p key={i} className="whitespace-pre-line">
-            {p}
-          </p>
-        ))}
-      </div>
+      {isRichHtml(body) ? (
+        <div
+          className="rich-body mt-8 text-[16px] leading-relaxed text-foreground/85"
+          // Gövde kaydedilirken sunucuda sanitize edilir (sanitizeRichHtml)
+          dangerouslySetInnerHTML={{ __html: body }}
+        />
+      ) : (
+        <div className="mt-8 space-y-4 text-[16px] leading-relaxed text-foreground/85">
+          {body.split(/\n{2,}/).map((p, i) => (
+            <p key={i} className="whitespace-pre-line">
+              {p}
+            </p>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
