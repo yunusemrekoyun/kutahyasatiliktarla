@@ -17,10 +17,12 @@ ENV NEXT_PUBLIC_BETTER_AUTH_URL=$NEXT_PUBLIC_BETTER_AUTH_URL
 RUN npx prisma generate
 RUN STANDALONE=1 npm run build
 
-# BullMQ e-posta worker'ı; aynı zamanda migrate/seed "toolbox"u
+# BullMQ e-posta + medya worker'ı; aynı zamanda migrate/seed "toolbox"u
 # (standalone runner'da npm/npx yok — prisma CLI ve tsx burada yaşar).
 FROM node:22-alpine AS worker
 WORKDIR /app
+# Video poster kareleri için ffmpeg (görsel varyantları sharp ile üretilir)
+RUN apk add --no-cache ffmpeg
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules

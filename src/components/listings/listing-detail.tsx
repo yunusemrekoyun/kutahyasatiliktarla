@@ -19,6 +19,7 @@ import { DetailActionBar } from '@/components/listings/detail-action-bar';
 import { ParcelFrame, TopoLines } from '@/components/site/topo';
 import { useParallax } from '@/lib/parallax';
 import { useScrollScene } from '@/lib/use-scroll-scene';
+import { imgSrcSet, thumbUrl } from '@/lib/img';
 import { cn } from '@/lib/utils';
 import { useStore, telLink, waLink } from '@/store';
 import type { Listing } from '@/content';
@@ -280,7 +281,13 @@ function DetailHero({
         <div className={cn('absolute inset-0', (scenic || lite) && 'dh-cover')}>
           {poster ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={poster} alt={listing.title} className="h-full w-full object-cover" />
+            <img
+              src={poster}
+              srcSet={imgSrcSet(poster)}
+              sizes="100vw"
+              alt={listing.title}
+              className="h-full w-full object-cover"
+            />
           ) : null}
         </div>
 
@@ -544,6 +551,8 @@ export function ListingDetail({ listing }: { listing: Listing }) {
                       <img
                         key={idx}
                         src={cover}
+                        srcSet={imgSrcSet(cover)}
+                        sizes="(min-width: 1024px) 60vw, 100vw"
                         alt={listing.title}
                         className={cn(
                           'absolute inset-0 h-full w-full object-cover',
@@ -585,7 +594,7 @@ export function ListingDetail({ listing }: { listing: Listing }) {
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={src}
+                        src={thumbUrl(src) ?? src}
                         alt=""
                         loading="lazy"
                         className="absolute inset-0 h-full w-full object-cover"
@@ -632,7 +641,7 @@ export function ListingDetail({ listing }: { listing: Listing }) {
                     controls
                     playsInline
                     preload="metadata"
-                    poster={images[0]}
+                    poster={listing.dronePoster || images[0]}
                     className="aspect-video h-auto w-full object-cover"
                   />
                 </div>

@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { STATUS_LABELS, TYPE_LABELS } from '@/lib/mappers';
 import type { ListingStatus } from '@prisma/client';
 import { Card, StatusPill, primaryBtn } from '@/components/admin/ui';
+import { thumbUrl } from '@/lib/img';
 import { cn } from '@/lib/utils';
 
 const FILTERS: { value: string; label: string }[] = [
@@ -84,8 +85,9 @@ export default async function AdminListingsPage({
         ) : (
           <div className="space-y-3">
             {listings.map((l) => {
-              const cover =
-                (l.media[0]?.variants as { url?: string }[] | null)?.[0]?.url ?? null;
+              const cover = thumbUrl(
+                (l.media[0]?.variants as { url?: string }[] | null)?.[0]?.url ?? null,
+              );
               return (
                 <Link
                   key={l.id}

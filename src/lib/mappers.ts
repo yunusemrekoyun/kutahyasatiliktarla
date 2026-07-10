@@ -64,12 +64,17 @@ function firstVariantUrl(m: Media): string {
   return variants[0]?.url ?? '';
 }
 
-/** Medyayı galeri sırasına dizer (position, sonra createdAt — eski kayıtlar
- * position=0 default'uyla toleranslı kalır). */
+/** Medyayı galeri sırasına dizer: yüklenen dosyalar (çekim görselleri) her
+ * zaman harici URL görsellerinin önünde; kendi içlerinde position, sonra
+ * createdAt. Kaydet'teki media-sync position'ları da bu kurala oturtur —
+ * bu sıralama kaydedilmemiş aradaki pencerede de kapağı doğru seçer. */
 function sortMedia(media: Media[]): Media[] {
+  const uploaded = (m: Media) => (firstVariantUrl(m).startsWith('/m/') ? 0 : 1);
   return [...media].sort(
     (a, b) =>
-      a.position - b.position || a.createdAt.getTime() - b.createdAt.getTime(),
+      uploaded(a) - uploaded(b) ||
+      a.position - b.position ||
+      a.createdAt.getTime() - b.createdAt.getTime(),
   );
 }
 
@@ -94,6 +99,7 @@ export function mapListingRow(row: DbListing & { media: Media[] }): Listing {
     lng: row.lng ?? 0,
     tags: row.tags,
     droneVideo: video ? firstVariantUrl(video) : '',
+    dronePoster: video?.poster ?? undefined,
     images,
     description: row.description,
     highlights: row.highlights,

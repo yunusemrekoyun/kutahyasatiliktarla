@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ArrowRight, MapPin, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { imgSrcSet } from '@/lib/img';
 import { useParallax } from '@/lib/parallax';
 import { useStore, waLink } from '@/store';
 import type { Listing } from '@/content';
@@ -40,6 +41,8 @@ export function ListingCard({
           <img
             ref={coverRef}
             src={cover}
+            srcSet={imgSrcSet(cover)}
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             alt={listing.title}
             loading="lazy"
             className="parallax-cover absolute inset-0 h-full w-full object-cover"

@@ -7,6 +7,7 @@ import { getServerSession } from '@/lib/get-session';
 import { getSiteChrome } from '@/lib/data';
 import { STATUS_LABELS, TYPE_LABELS } from '@/lib/mappers';
 import { parsePrice } from '@/lib/format';
+import { thumbUrl } from '@/lib/img';
 import { Button } from '@/components/ui/button';
 import { SectionHeading } from '@/components/site/section-heading';
 import { MyListingCard, type MyListing } from '@/components/account/my-listing-card';
@@ -46,8 +47,9 @@ export default async function Page({
 
   const listings: MyListing[] = rows.map((row) => {
     const s = STATUS_LABELS[row.status];
-    const cover =
-      (row.media[0]?.variants as { url?: string }[] | null)?.[0]?.url ?? null;
+    const cover = thumbUrl(
+      (row.media[0]?.variants as { url?: string }[] | null)?.[0]?.url ?? null,
+    );
     return {
       id: row.id,
       slug: row.slug,

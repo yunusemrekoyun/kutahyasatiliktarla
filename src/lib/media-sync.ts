@@ -4,47 +4,64 @@ const MAX_MEDIA = 25; // PDD: ilan başına en fazla 25 medya öğesi
 
 type Tx = Prisma.TransactionClient;
 
-/** Admin'in girdiği görsel URL listesi + drone video URL'ini Media satırlarıyla
- * senkronlar: URL bazlı diff (variants[0].url anahtar), position = satır sırası.
- * Faz 3'te gerçek upload aynı satır modelini devralacak (variants değişir,
- * position kalır). $transaction içinde çağrılmalı. */
+const isUploaded = (url: string) => url.startsWith('/m/');
+
+/** Admin formundaki HARİCİ görsel URL listesi + video URL'ini Media satırlarıyla
+ * senkronlar. YALNIZCA harici (URL ile girilmiş) satırları yönetir — yüklenen
+ * dosyalar (/m/ altı) galeri yöneticisine aittir, buradan asla silinmez/taşınmaz.
+ * Harici görseller yüklenenlerin ARKASINA sıralanır. $transaction içinde çağrılmalı. */
 export async function syncListingMedia(
   tx: Tx,
   listingId: string,
   imageUrls: string[],
   videoUrl?: string,
 ) {
-  const images = imageUrls.map((u) => u.trim()).filter(Boolean);
+  const images = imageUrls
+    .map((u) => u.trim())
+    .filter(Boolean)
+    .filter((u) => !isUploaded(u)); // /m/ URL'i elle girilirse yok say — yönetimi galeride
   const video = videoUrl?.trim() || null;
-  const total = images.length + (video ? 1 : 0);
+
+  const existing = await tx.media.findMany({
+    where: { listingId },
+    orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+  });
+  const urlOf = (m: (typeof existing)[number]) =>
+    ((m.variants as { url?: string }[] | null)?.[0]?.url ?? '').trim();
+
+  const uploadedImages = existing.filter(
+    (m) => m.type === 'image' && isUploaded(urlOf(m)),
+  );
+  const externalImages = existing.filter(
+    (m) => m.type === 'image' && !isUploaded(urlOf(m)),
+  );
+  const uploadedVideo =
+    existing.find((m) => m.type === 'video' && isUploaded(urlOf(m))) ?? null;
+  const externalVideo =
+    existing.find((m) => m.type === 'video' && !isUploaded(urlOf(m))) ?? null;
+
+  const total =
+    uploadedImages.length + images.length + (uploadedVideo || video ? 1 : 0);
   if (total > MAX_MEDIA) {
     throw new Error(`En fazla ${MAX_MEDIA} medya öğesi eklenebilir (şu an ${total}).`);
   }
 
-  const existing = await tx.media.findMany({ where: { listingId } });
-  const urlOf = (m: (typeof existing)[number]) =>
-    ((m.variants as { url?: string }[] | null)?.[0]?.url ?? '').trim();
-
-  const existingImages = new Map(
-    existing.filter((m) => m.type === 'image').map((m) => [urlOf(m), m]),
-  );
-  const existingVideo = existing.find((m) => m.type === 'video') ?? null;
-
-  // Listeden çıkarılan görseller silinir
+  // Listeden çıkarılan HARİCİ görseller silinir (yüklenenlere dokunulmaz)
   const keep = new Set(images);
-  const toDelete = [...existingImages.entries()]
-    .filter(([url]) => !keep.has(url))
-    .map(([, m]) => m.id);
+  const byUrl = new Map(externalImages.map((m) => [urlOf(m), m]));
+  const toDelete = externalImages.filter((m) => !keep.has(urlOf(m))).map((m) => m.id);
   if (toDelete.length) {
     await tx.media.deleteMany({ where: { id: { in: toDelete } } });
   }
 
-  // Sıra + yeni eklemeler
+  // Harici görseller yüklenenlerin arkasından başlar
+  const offset = uploadedImages.length;
   for (const [i, url] of images.entries()) {
-    const current = existingImages.get(url);
+    const current = byUrl.get(url);
+    const position = offset + i;
     if (current) {
-      if (current.position !== i) {
-        await tx.media.update({ where: { id: current.id }, data: { position: i } });
+      if (current.position !== position) {
+        await tx.media.update({ where: { id: current.id }, data: { position } });
       }
     } else {
       await tx.media.create({
@@ -52,20 +69,23 @@ export async function syncListingMedia(
           listingId,
           type: 'image',
           variants: [{ width: 0, format: 'source', url }],
-          position: i,
+          position,
         },
       });
     }
   }
 
-  // Video: tek satır — güncelle / oluştur / kaldır
-  if (video) {
-    if (existingVideo) {
+  // Video: yüklenen video varsa alan yönetilmez (galeriden silinmeli);
+  // yoksa harici URL tek satır olarak güncellenir/oluşturulur/kaldırılır.
+  if (uploadedVideo) return;
+  const videoPosition = offset + images.length;
+  if (video && !isUploaded(video)) {
+    if (externalVideo) {
       await tx.media.update({
-        where: { id: existingVideo.id },
+        where: { id: externalVideo.id },
         data: {
           variants: [{ width: 0, format: 'mp4', url: video }],
-          position: images.length,
+          position: videoPosition,
         },
       });
     } else {
@@ -74,11 +94,11 @@ export async function syncListingMedia(
           listingId,
           type: 'video',
           variants: [{ width: 0, format: 'mp4', url: video }],
-          position: images.length,
+          position: videoPosition,
         },
       });
     }
-  } else if (existingVideo) {
-    await tx.media.delete({ where: { id: existingVideo.id } });
+  } else if (externalVideo) {
+    await tx.media.delete({ where: { id: externalVideo.id } });
   }
 }

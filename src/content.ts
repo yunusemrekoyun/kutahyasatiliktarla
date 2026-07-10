@@ -20,6 +20,7 @@ export type Listing = {
   lng: number;
   tags: string[];
   droneVideo: string;
+  dronePoster?: string;
   images: string[];
   description: string;
   highlights: string[];

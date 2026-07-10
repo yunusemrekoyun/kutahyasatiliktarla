@@ -16,6 +16,8 @@ import {
   tagsToStr,
   type Spec,
 } from '@/components/admin/listing-form-helpers';
+import { MediaManager } from '@/components/admin/media-manager';
+import { thumbUrl } from '@/lib/img';
 import { saveListing } from '../actions';
 
 export default async function EditListingPage({
@@ -37,10 +39,43 @@ export default async function EditListingPage({
   });
   if (!listing) notFound();
 
+  type Variant = { width?: number; format?: string; url?: string };
+  const variantsOf = (m: (typeof listing.media)[number]) =>
+    (m.variants as Variant[] | null) ?? [];
   const urlOf = (m: (typeof listing.media)[number]) =>
-    ((m.variants as { url?: string }[] | null)?.[0]?.url ?? '').trim();
-  const images = listing.media.filter((m) => m.type === 'image').map(urlOf).filter(Boolean);
-  const video = listing.media.find((m) => m.type === 'video');
+    (variantsOf(m)[0]?.url ?? '').trim();
+  const isUploaded = (m: (typeof listing.media)[number]) => urlOf(m).startsWith('/m/');
+
+  // Textarea yalnızca HARİCİ URL'leri yönetir; yüklenenler galeri yöneticisinde
+  const images = listing.media
+    .filter((m) => m.type === 'image' && !isUploaded(m))
+    .map(urlOf)
+    .filter(Boolean);
+  const video = listing.media.find((m) => m.type === 'video' && !isUploaded(m));
+
+  // Galeri görünümü: yüklenenler önce (mapper'daki sortMedia kuralıyla aynı)
+  const sortedMedia = [...listing.media].sort(
+    (a, b) => (isUploaded(a) ? 0 : 1) - (isUploaded(b) ? 0 : 1) || a.position - b.position,
+  );
+  const mediaItems = sortedMedia.map((m) => {
+    const variants = variantsOf(m);
+    const primary = urlOf(m);
+    const uploaded = primary.startsWith('/m/');
+    return {
+      id: m.id,
+      type: m.type as 'image' | 'video',
+      previewUrl:
+        m.type === 'video'
+          ? (m.poster ?? null)
+          : (thumbUrl(primary) ?? null),
+      processing:
+        uploaded &&
+        (m.type === 'image'
+          ? !variants.some((v) => v.format === 'webp')
+          : !m.poster),
+      external: !uploaded,
+    };
+  });
 
   const defaults: ListingFormDefaults = {
     title: listing.title,
@@ -97,6 +132,10 @@ export default async function EditListingPage({
             sayfasından sonuçlandırın)
           </p>
         ) : null}
+      </Card>
+
+      <Card title="Galeri">
+        <MediaManager listingId={listing.id} items={mediaItems} />
       </Card>
 
       <Card title={listing.title}>

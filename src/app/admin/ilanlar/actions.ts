@@ -9,6 +9,7 @@ import { TYPE_MAP } from '@/lib/mappers';
 import { formatArea, formatPricePerM2, formatTRY } from '@/lib/format';
 import { uniqueListingSlug } from '@/lib/slugify';
 import { syncListingMedia } from '@/lib/media-sync';
+import { removeListingDir } from '@/lib/media-store';
 import { notifyOwnerPublished } from '@/lib/notify';
 import {
   actionError,
@@ -55,6 +56,21 @@ export async function saveListing(
   const parsed = parseForm(formData);
   if (!parsed.success) return zodToActionResult(parsed.error);
   const d = parsed.data;
+
+  // Yayın şartı: en az bir görsel — yüklenen dosyalar VEYA formdaki harici URL'ler
+  if (d.status === 'aktif') {
+    const uploadedImages = listingId
+      ? await prisma.media.count({ where: { listingId, type: 'image' } })
+      : 0;
+    if (uploadedImages + d.images.length === 0) {
+      return {
+        ok: false,
+        fieldErrors: {
+          images: ['Yayına almak için en az bir görsel yükleyin veya URL girin.'],
+        },
+      };
+    }
+  }
 
   const data = {
     title: d.title,
@@ -147,6 +163,7 @@ export async function deleteListing(listingId: string): Promise<ActionResult> {
   });
   if (!existing) return actionError('İlan bulunamadı.');
   await prisma.listing.delete({ where: { id: listingId } });
+  await removeListingDir(listingId); // yüklenen dosyalar diskte kalmasın
   updateTag(TAGS.listings);
   updateTag(TAGS.listing(existing.slug));
   redirect('/admin/ilanlar?silindi=1');

@@ -5,6 +5,7 @@ import { ArrowRight, MapPin, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CornerMark } from '@/components/site/topo';
 import { CountUp } from '@/components/motion/count-up';
+import { imgSrcSet } from '@/lib/img';
 import { useParallax } from '@/lib/parallax';
 import { useStore, waLink } from '@/store';
 import type { Listing } from '@/content';
@@ -69,6 +70,8 @@ export function ShowcaseListing({ listing }: { listing: Listing }) {
             <img
               ref={coverRef}
               src={cover}
+              srcSet={imgSrcSet(cover)}
+              sizes="(min-width: 1024px) 55vw, 100vw"
               alt={listing.title}
               className="parallax-cover absolute inset-0 h-full w-full object-cover"
             />

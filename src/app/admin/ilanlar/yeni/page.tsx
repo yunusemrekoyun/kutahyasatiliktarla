@@ -7,7 +7,8 @@ export default function NewListingPage() {
     <Card title="Yeni İlan">
       <p className="mb-4 text-sm text-[#8A6A43]">
         Ekip adına doğrudan ilan girişi — üye başvuruları panel ana sayfasındaki
-        kuyruğa düşer.
+        kuyruğa düşer. Çekim görsellerini yüklemek için ilanı kaydettikten sonra
+        düzenleme sayfasındaki Galeri bölümünü kullanın.
       </p>
       <ListingForm
         action={saveListing.bind(null, null)}

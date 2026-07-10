@@ -2,10 +2,17 @@
 // olduğu için .env otomatik yüklenmez, bu yüzden dotenv/config ilk satır olmalı.
 import 'dotenv/config';
 import { Worker } from 'bullmq';
+import { PrismaClient } from '@prisma/client';
 import { redisConnection } from '../lib/redis';
-import { EMAIL_QUEUE_NAME, type EmailJobData } from '../lib/queue';
+import {
+  EMAIL_QUEUE_NAME,
+  MEDIA_QUEUE_NAME,
+  type EmailJobData,
+  type MediaJobData,
+} from '../lib/queue';
 import { mailer } from './mailer';
 import { kvTable, renderEmail, textToHtml } from './templates';
+import { processMedia } from './media';
 
 const FROM =
   process.env.SMTP_FROM ?? 'Kütahya Satılık Tarla <no-reply@kutahyasatiliktarla.com>';
@@ -92,4 +99,22 @@ worker.on('failed', (job, err) =>
   console.error(`[worker] job ${job?.id} başarısız:`, err),
 );
 
-console.log('[worker] email worker başlatıldı, kuyruk:', EMAIL_QUEUE_NAME);
+// Medya işleme worker'ı — sharp CPU-yoğun olduğundan düşük eşzamanlılık
+const prisma = new PrismaClient();
+
+const mediaWorker = new Worker<MediaJobData>(
+  MEDIA_QUEUE_NAME,
+  async (job) => {
+    await processMedia(prisma, job.data.mediaId);
+  },
+  { connection: redisConnection, concurrency: 2 },
+);
+
+mediaWorker.on('completed', (job) =>
+  console.log(`[worker] medya ${job.data.mediaId} işlendi (job ${job.id})`),
+);
+mediaWorker.on('failed', (job, err) =>
+  console.error(`[worker] medya job ${job?.id} başarısız:`, err),
+);
+
+console.log('[worker] başlatıldı — kuyruklar:', EMAIL_QUEUE_NAME, '+', MEDIA_QUEUE_NAME);

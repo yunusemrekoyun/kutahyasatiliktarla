@@ -64,13 +64,7 @@ export const listingAdminSchema = z
         message: 'Yayına almak için koordinat (enlem/boylam) zorunlu.',
       });
     }
-    if (d.images.length === 0) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['images'],
-        message: 'Yayına almak için en az bir görsel URL girin.',
-      });
-    }
+    // Görsel şartı action'da denetlenir (yüklenen dosyalar formda görünmez)
     if (d.specs.length === 0) {
       ctx.addIssue({
         code: 'custom',

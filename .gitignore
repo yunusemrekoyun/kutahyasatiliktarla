@@ -57,3 +57,6 @@ NOTES.md
 NOTES.local.md
 DECISIONS.md
 TODO.local.md
+
+# Yüklenen medya (runtime verisi — volume/disk, repoya girmez)
+/uploads/

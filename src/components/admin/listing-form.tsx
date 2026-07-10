@@ -155,7 +155,10 @@ export function ListingForm({
         <Field label="Boylam (lng)" error={fe.lng}>
           <AdminInput name="lng" defaultValue={defaults.lng} placeholder="29.9833" />
         </Field>
-        <Field label="Drone video URL" error={fe.droneVideo}>
+        <Field
+          label="Drone video URL (video dosyası yüklediyseniz boş bırakın)"
+          error={fe.droneVideo}
+        >
           <AdminInput
             name="droneVideo"
             defaultValue={defaults.droneVideo}
@@ -165,7 +168,7 @@ export function ListingForm({
       </div>
 
       <Field
-        label="Görsel URL'leri (her satır bir görsel — sıra galeri sırasıdır)"
+        label="Harici görsel URL'leri (isteğe bağlı — yüklenen görsellerin arkasına sıralanır)"
         error={fe.images}
       >
         <AdminTextarea

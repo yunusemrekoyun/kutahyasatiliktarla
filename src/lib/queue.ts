@@ -43,3 +43,18 @@ export const emailQueue = new Queue<EmailJobData, void, EmailJobName>(EMAIL_QUEU
     removeOnFail: 500,
   },
 });
+
+// Medya işleme: yüklenen orijinalden sharp varyantları / ffmpeg posteri üretir
+export const MEDIA_QUEUE_NAME = 'media';
+
+export type MediaJobData = { mediaId: string };
+
+export const mediaQueue = new Queue<MediaJobData>(MEDIA_QUEUE_NAME, {
+  connection: redisConnection,
+  defaultJobOptions: {
+    attempts: 3,
+    backoff: { type: 'exponential', delay: 3000 },
+    removeOnComplete: 100,
+    removeOnFail: 500,
+  },
+});
