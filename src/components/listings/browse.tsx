@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { SlidersHorizontal, Search, X } from 'lucide-react';
+import Link from 'next/link';
+import { Map as MapIcon, SlidersHorizontal, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -407,6 +408,12 @@ export function Browse({ result }: { result: SearchResult }) {
                   </SheetContent>
                 </Sheet>
 
+                <Button asChild variant="outline" size="sm" className="h-11 lg:h-9">
+                  <Link href="/harita">
+                    <MapIcon className="h-4 w-4" />
+                    Haritada Gör
+                  </Link>
+                </Button>
                 <SaveSearchButton chipLabels={chips.map((c) => c.label)} />
                 <Select value={sirala} onValueChange={(v) => setParam('sirala', v === 'one-cikan' ? null : v)}>
                   <SelectTrigger

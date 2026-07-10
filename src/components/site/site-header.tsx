@@ -35,6 +35,7 @@ const navLinks = [
     label: t,
     tur: t as string | null,
   })),
+  { href: '/harita', label: 'Harita', tur: null as string | null },
 ];
 
 /**
@@ -79,7 +80,9 @@ function DesktopNav({ pathname, tur, dark }: { pathname: string; tur: string | n
       />
       {navLinks.map((l) => {
         const active =
-          pathname === '/ilanlar' && (l.tur === null ? !tur : tur === l.tur);
+          l.href === '/harita'
+            ? pathname === '/harita'
+            : pathname === '/ilanlar' && (l.tur === null ? !tur : tur === l.tur);
         return (
           <Link
             key={l.href}

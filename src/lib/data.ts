@@ -218,3 +218,63 @@ export async function getGuidePost(slug: string): Promise<GuidePost | null> {
     return fallbackPosts().find((p) => p.slug === slug) ?? null;
   }
 }
+
+export type MapPoint = {
+  slug: string;
+  title: string;
+  price: string;
+  area: string;
+  district: string;
+  type: string;
+  lat: number;
+  lng: number;
+  img: string | null;
+};
+
+const loadMapPoints = unstable_cache(
+  async (): Promise<MapPoint[]> => {
+    const rows = await prisma.listing.findMany({
+      where: { status: 'aktif', lat: { not: null }, lng: { not: null } },
+      include: {
+        media: { where: { type: 'image' }, orderBy: { position: 'asc' }, take: 1 },
+      },
+      orderBy: { publishedAt: 'desc' },
+    });
+    return rows.map((r) => {
+      const url =
+        ((r.media[0]?.variants as { url?: string }[] | null)?.[0]?.url ?? '') || null;
+      return {
+        slug: r.slug,
+        title: r.title,
+        price: r.price,
+        area: r.area,
+        district: r.district,
+        type: r.type,
+        lat: r.lat as number,
+        lng: r.lng as number,
+        img: url,
+      };
+    });
+  },
+  ['map-points'],
+  { tags: [TAGS.listings], revalidate: 300 },
+);
+
+export async function getMapPoints(): Promise<MapPoint[]> {
+  try {
+    return await loadMapPoints();
+  } catch (e) {
+    logDbFallback('map-points', e);
+    return defaultContent.listings.map((l) => ({
+      slug: l.id,
+      title: l.title,
+      price: l.price,
+      area: l.area,
+      district: l.district,
+      type: l.type,
+      lat: l.lat,
+      lng: l.lng,
+      img: l.images[0] ?? null,
+    }));
+  }
+}

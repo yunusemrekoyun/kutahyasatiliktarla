@@ -765,3 +765,32 @@
 .rich-editor-body .ProseMirror hr,
 .rich-body hr { border: 0; border-top: 1px solid hsl(150 14% 88%); margin: 1.2em 0; }
 .rich-body > * + * { margin-top: 0.85em; }
+
+/* --- Harita işaretçileri: kadastro dilinde fiyat pili --- */
+.kst-pin-wrap { background: none; border: none; }
+.kst-pin {
+  display: inline-block;
+  transform: translate(-50%, -100%);
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: hsl(154 46% 12%);
+  border: 1px solid hsl(34 52% 46%);
+  color: hsl(40 33% 96%);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px hsl(154 46% 8% / 0.35);
+}
+.kst-pin::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  width: 8px;
+  height: 8px;
+  transform: translateX(-50%) rotate(45deg);
+  background: hsl(154 46% 12%);
+  border-right: 1px solid hsl(34 52% 46%);
+  border-bottom: 1px solid hsl(34 52% 46%);
+}
+.leaflet-popup-content-wrapper { border-radius: 10px; }

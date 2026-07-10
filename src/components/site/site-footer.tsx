@@ -37,6 +37,7 @@ export function SiteFooter() {
               { href: '#ilanlar', label: 'İlanlar' },
               { href: '#nasil-calisir', label: 'Nasıl Çalışır' },
               { href: '/ilan-ver', label: 'İlan Ver' },
+              { href: '/harita', label: 'Haritada Ara' },
               { href: '/rehber', label: 'Arazi Rehberi' },
               { href: '/', label: 'Ana Sayfa' },
             ].map((l) => (
