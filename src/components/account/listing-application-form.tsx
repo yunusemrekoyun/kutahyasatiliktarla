@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -49,18 +49,48 @@ export function ListingApplicationForm({
   defaults?: ApplicationDefaults;
   submitLabel?: string;
 }) {
+  // React 19, action'lı formu HER gönderimden sonra sıfırlar — doğrulama
+  // hatasında kullanıcının yazdıkları kaybolmasın diye gönderilen değerleri
+  // saklayıp formu bu değerlerle yeniden kuruyoruz (attempt key'i remount eder).
+  const [attempt, setAttempt] = useState(0);
+  const [values, setValues] = useState<Record<string, string> | null>(null);
   const [state, formAction, pending] = useActionState<ActionResult, FormData>(
-    action,
+    async (prev, formData) => {
+      const result = await action(prev, formData);
+      if (!result?.ok) {
+        const v: Record<string, string> = {};
+        formData.forEach((val, k) => {
+          if (typeof val === 'string') v[k] = val;
+        });
+        setValues(v);
+        setAttempt((n) => n + 1);
+      }
+      return result;
+    },
     { ok: false },
   );
   const fe = state.fieldErrors ?? {};
 
+  const eff: ApplicationDefaults = values
+    ? {
+        title: values.title ?? '',
+        district: values.district || defaults.district,
+        location: values.location ?? '',
+        type: values.type || defaults.type,
+        purpose: (values.purpose as 'satilik' | 'kiralik') ?? 'satilik',
+        areaM2: values.areaM2 ?? '',
+        priceTRY: values.priceTRY ?? '',
+        description: values.description ?? '',
+        droneRequested: 'droneRequested' in values,
+      }
+    : defaults;
+
   return (
-    <form action={formAction} className="space-y-5">
+    <form key={attempt} action={formAction} className="space-y-5">
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <Label className={fieldLabel}>İlçe</Label>
-          <Select name="district" defaultValue={defaults.district} required>
+          <Select name="district" defaultValue={eff.district} required>
             <SelectTrigger className="h-12 w-full rounded-md border-input bg-white">
               <SelectValue placeholder="Seçin" />
             </SelectTrigger>
@@ -76,7 +106,7 @@ export function ListingApplicationForm({
         </div>
         <div>
           <Label className={fieldLabel}>Arazi Türü</Label>
-          <Select name="type" defaultValue={defaults.type} required>
+          <Select name="type" defaultValue={eff.type} required>
             <SelectTrigger className="h-12 w-full rounded-md border-input bg-white">
               <SelectValue placeholder="Seçin" />
             </SelectTrigger>
@@ -112,7 +142,7 @@ export function ListingApplicationForm({
                 type="radio"
                 name="purpose"
                 value={value}
-                defaultChecked={(defaults.purpose ?? 'satilik') === value}
+                defaultChecked={(eff.purpose ?? 'satilik') === value}
                 className="sr-only"
               />
               {label}
@@ -130,7 +160,7 @@ export function ListingApplicationForm({
           id="app-location"
           name="location"
           placeholder="örn. Tavşanlı Çukurköy yolu üzeri, köy girişine 1 km"
-          defaultValue={defaults.location}
+          defaultValue={eff.location}
           required
           className="h-12 bg-white"
         />
@@ -149,7 +179,7 @@ export function ListingApplicationForm({
             inputMode="numeric"
             min={1}
             placeholder="örn. 12500"
-            defaultValue={defaults.areaM2}
+            defaultValue={eff.areaM2}
             required
             className="h-12 bg-white"
           />
@@ -166,7 +196,7 @@ export function ListingApplicationForm({
             inputMode="numeric"
             min={1}
             placeholder="örn. 1850000"
-            defaultValue={defaults.priceTRY}
+            defaultValue={eff.priceTRY}
             required
             className="h-12 bg-white"
           />
@@ -182,7 +212,7 @@ export function ListingApplicationForm({
           id="app-title"
           name="title"
           placeholder="Boş bırakırsanız otomatik oluşturulur"
-          defaultValue={defaults.title}
+          defaultValue={eff.title}
           className="h-12 bg-white"
         />
         <FieldError errors={fe.title} />
@@ -197,7 +227,7 @@ export function ListingApplicationForm({
           name="description"
           rows={5}
           placeholder="Arazinin özellikleri, yol/su/elektrik durumu hakkında bildikleriniz, çevresi..."
-          defaultValue={defaults.description}
+          defaultValue={eff.description}
           required
           className="bg-white"
         />
@@ -208,7 +238,7 @@ export function ListingApplicationForm({
         <input
           type="checkbox"
           name="droneRequested"
-          defaultChecked={defaults.droneRequested}
+          defaultChecked={eff.droneRequested}
           className="mt-1 h-4 w-4 shrink-0 accent-[hsl(154_42%_15%)]"
         />
         <span>

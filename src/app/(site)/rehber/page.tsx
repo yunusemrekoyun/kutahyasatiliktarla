@@ -51,7 +51,7 @@ export default async function Page() {
               </span>
               {post.createdAt ? (
                 <span className="nums mt-2 text-[12px] text-muted-foreground">
-                  {dateFmt.format(post.createdAt)}
+                  {dateFmt.format(new Date(post.createdAt))}
                 </span>
               ) : null}
             </Link>

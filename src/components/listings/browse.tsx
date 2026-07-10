@@ -177,7 +177,7 @@ function AdvancedFilters({
       <div className="flex items-center gap-2">
         {[minK, maxK].map((k, i) => (
           <input
-            key={k}
+            key={`${k}:${get(k)}`}
             type="number"
             inputMode="numeric"
             min={0}

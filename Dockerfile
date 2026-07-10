@@ -30,6 +30,8 @@ COPY package.json tsconfig.json ./
 COPY prisma ./prisma
 COPY src ./src
 RUN npx prisma generate
+# uploads volume'u ilk mount'ta bu sahipliği devralır — node yazabilmeli
+RUN mkdir -p /app/uploads && chown node:node /app/uploads
 USER node
 CMD ["npx", "tsx", "src/worker/index.ts"]
 
@@ -42,6 +44,7 @@ ENV NODE_ENV=production \
 COPY --from=build --chown=node:node /app/.next/standalone ./
 COPY --from=build --chown=node:node /app/.next/static ./.next/static
 COPY --from=build --chown=node:node /app/public ./public
+RUN mkdir -p /app/uploads && chown node:node /app/uploads
 USER node
 EXPOSE 3000
 CMD ["node", "server.js"]

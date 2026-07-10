@@ -51,10 +51,16 @@ export async function moveMediaItem(
   const media = await prisma.media.findUnique({ where: { id: mediaId } });
   if (!media) return actionError('Medya bulunamadı.');
 
-  const siblings = await prisma.media.findMany({
+  // UI ok butonları yalnız yüklenen (/m/) görsellerde — komşuluk da o küme
+  // içinde kurulmalı; araya harici URL satırı girerse sıra şaşmasın.
+  const all = await prisma.media.findMany({
     where: { listingId: media.listingId, type: media.type },
     orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
-    select: { id: true, position: true },
+    select: { id: true, position: true, variants: true },
+  });
+  const siblings = all.filter((m) => {
+    const url = ((m.variants as { url?: string }[] | null)?.[0]?.url ?? '').trim();
+    return url === '' || url.startsWith('/m/');
   });
   const idx = siblings.findIndex((m) => m.id === mediaId);
   const swapWith = direction === 'up' ? siblings[idx - 1] : siblings[idx + 1];

@@ -37,10 +37,12 @@ export function MessageThread({
   const formRef = useRef<HTMLFormElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const [complaintOpen, setComplaintOpen] = useState(false);
+  const [draft, setDraft] = useState('');
   const [state, formAction, pending] = useActionState<ActionResult, FormData>(
     async (prev, formData) => {
       const result = await sendMessage(conversationId, prev, formData);
       if (result.ok) {
+        setDraft('');
         formRef.current?.reset();
         router.refresh();
       }
@@ -107,6 +109,8 @@ export function MessageThread({
           rows={2}
           required
           maxLength={2000}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
           placeholder="Mesajınızı yazın…"
           className="min-h-[3rem] w-full resize-y rounded-md border border-input bg-white px-3 py-2 text-[15px] text-foreground outline-none focus:border-primary"
         />

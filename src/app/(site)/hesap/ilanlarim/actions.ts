@@ -38,6 +38,35 @@ export async function setMyListingStatus(
   const from = allowedFrom[target];
   if (!from) return actionError('Geçersiz durum.');
 
+  // Yeniden yayına dönüş, admin'in yayın şartlarını (görsel+koordinat+yapısal
+  // alanlar) taşımaya devam etmeli — eksikse ekip tamamlamalı.
+  if (target === 'aktif') {
+    const listing = await prisma.listing.findFirst({
+      where: { id: listingId, ownerId: session.user.id },
+      select: {
+        lat: true,
+        lng: true,
+        imarDurumu: true,
+        tapuDurumu: true,
+        yolDurumu: true,
+        _count: { select: { media: { where: { type: 'image' } } } },
+      },
+    });
+    if (
+      !listing ||
+      listing.lat == null ||
+      listing.lng == null ||
+      !listing.imarDurumu ||
+      !listing.tapuDurumu ||
+      !listing.yolDurumu ||
+      listing._count.media === 0
+    ) {
+      return actionError(
+        'İlan bilgileri yayına dönüş için eksik görünüyor — lütfen bizimle iletişime geçin.',
+      );
+    }
+  }
+
   const result = await prisma.listing.updateMany({
     where: { id: listingId, ownerId: session.user.id, status: { in: from } },
     data: { status: target },

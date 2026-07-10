@@ -14,6 +14,7 @@ export async function runSavedSearchDigest(prisma: PrismaClient) {
 
   let sent = 0;
   for (const search of searches) {
+    try {
     const params = search.params as Record<string, string>;
     const filters = parseSearchParams(params);
     const matches = await prisma.listing.findMany({
@@ -53,6 +54,10 @@ export async function runSavedSearchDigest(prisma: PrismaClient) {
       data: { lastNotifiedAt: new Date() },
     });
     sent += 1;
+    } catch (err) {
+      // Tek aramanın hatası diğerlerini durdurmasın
+      console.error(`[worker] özet: arama ${search.id} işlenemedi:`, err);
+    }
   }
   return { searches: searches.length, sent };
 }

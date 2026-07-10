@@ -2,6 +2,7 @@ import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { Readable } from 'node:stream';
 import type { NextRequest } from 'next/server';
+import { getServerSession } from '@/lib/get-session';
 import {
   CONTENT_TYPES,
   UPLOAD_DIR,
@@ -26,6 +27,19 @@ export async function GET(
   }
 
   const [listingId, fileName] = segments;
+
+  // Şikayet ekran görüntüleri özel yazışma kanıtıdır: yalnız admin ya da
+  // dosyayı yükleyen (ad, userId önekiyle başlar) görebilir; cache private.
+  const isComplaint = listingId === 'sikayet';
+  if (isComplaint) {
+    const session = await getServerSession();
+    const allowed =
+      !!session &&
+      (session.user.role === 'admin' ||
+        fileName.startsWith(session.user.id.slice(0, 8)));
+    if (!allowed) return new Response('Not found', { status: 404 });
+  }
+
   const filePath = mediaFilePath(listingId, fileName);
   // isSafeSegment '..' ve ayraçları eler; yine de kök dışına çıkışı reddet
   if (!filePath.startsWith(UPLOAD_DIR)) {
@@ -47,7 +61,9 @@ export async function GET(
     headers: {
       'Content-Type': CONTENT_TYPES[ext] ?? 'application/octet-stream',
       'Content-Length': String(info.size),
-      'Cache-Control': 'public, max-age=31536000, immutable',
+      'Cache-Control': isComplaint
+        ? 'private, max-age=600'
+        : 'public, max-age=31536000, immutable',
     },
   });
 }

@@ -62,12 +62,23 @@ export async function saveListing(
   if (!parsed.success) return zodToActionResult(parsed.error);
   const d = parsed.data;
 
-  // Yayın şartı: en az bir görsel — yüklenen dosyalar VEYA formdaki harici URL'ler
+  // Yayın şartı: en az bir görsel — GERÇEKTEN yüklenmiş dosyalar (/m/ veya
+  // yüklemesi süren) VEYA formdaki harici URL satırları. Textarea'daki /m/
+  // satırları sync tarafından yok sayılır, burada da sayılmaz.
   if (d.status === 'aktif') {
     const uploadedImages = listingId
-      ? await prisma.media.count({ where: { listingId, type: 'image' } })
+      ? (
+          await prisma.media.findMany({
+            where: { listingId, type: 'image' },
+            select: { variants: true },
+          })
+        ).filter((m) => {
+          const url = ((m.variants as { url?: string }[] | null)?.[0]?.url ?? '').trim();
+          return url === '' || url.startsWith('/m/');
+        }).length
       : 0;
-    if (uploadedImages + d.images.length === 0) {
+    const externalLines = d.images.filter((u) => !u.startsWith('/m/')).length;
+    if (uploadedImages + externalLines === 0) {
       return {
         ok: false,
         fieldErrors: {
@@ -126,6 +137,7 @@ export async function saveListing(
     }
 
     const id = listingId;
+    try {
     await prisma.$transaction(async (tx) => {
       await tx.listing.update({
         where: { id },
@@ -138,6 +150,12 @@ export async function saveListing(
       });
       await syncListingMedia(tx, id, d.images, d.droneVideo || undefined);
     });
+    } catch (err) {
+      if (err instanceof Error && err.message.includes('medya öğesi')) {
+        return { ok: false, fieldErrors: { images: [err.message] } };
+      }
+      throw err;
+    }
   } else {
     slug = await uniqueListingSlug(d.title);
     publishedNow = d.status === 'aktif';

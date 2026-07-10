@@ -12,6 +12,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
 
+  // Gövdede { slug } varsa yalnız o ilanın tag'leri düşürülür (worker medya
+  // işleme bittiğinde çağırır); gövdesiz çağrı deploy-sonrası tam tazelemedir.
+  const body = await request.json().catch(() => null);
+  const slug = typeof body?.slug === 'string' ? body.slug : null;
+
+  if (slug) {
+    revalidateTag(TAGS.listings, 'max');
+    revalidateTag(TAGS.listing(slug), 'max');
+    return NextResponse.json({ ok: true, revalidated: slug });
+  }
+
   revalidateTag(TAGS.siteContent, 'max');
   revalidateTag(TAGS.listings, 'max');
   revalidateTag(TAGS.articles, 'max');

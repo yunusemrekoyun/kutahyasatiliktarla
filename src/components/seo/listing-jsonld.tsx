@@ -3,6 +3,11 @@ import type { Listing } from '@/content';
 
 /** İlan detayına schema.org yapısal verisi: RealEstateListing + BreadcrumbList.
  * Server component — script içeriği build/ISR'da üretilir. */
+/** '<' kaçışı: açıklamadaki '</script>' etiketi script bloğunu kıramasın. */
+function jsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, '\\u003c');
+}
+
 export function ListingJsonLd({ listing }: { listing: Listing }) {
   const base = process.env.SITE_URL ?? '';
   const url = `${base}/ilan/${listing.id}`;
@@ -59,11 +64,11 @@ export function ListingJsonLd({ listing }: { listing: Listing }) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(realEstate) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(realEstate) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbs) }}
       />
     </>
   );

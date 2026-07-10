@@ -20,6 +20,15 @@ function shortPrice(price: string): string {
   return `₺${n}`;
 }
 
+/** Kullanıcı verisi popup HTML'ine kaçışsız giremez (üye başlığı vb.). */
+function esc(s: string): string {
+  return s
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;');
+}
+
 /** Işın testi (ray casting): nokta poligonun içinde mi? */
 function inPolygon(lat: number, lng: number, poly: [number, number][]): boolean {
   let inside = false;
@@ -81,10 +90,10 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
           : '';
         marker.bindPopup(
           `<div style="width:200px">${img}
-           <div style="font-weight:600;margin-top:6px;line-height:1.3">${p.title}</div>
-           <div style="margin-top:2px;color:#5b6b57">${p.district} · ${p.area}</div>
-           <div style="margin-top:2px;font-weight:700">${p.price}</div>
-           <a href="/ilan/${p.slug}" style="display:inline-block;margin-top:6px;font-weight:600;color:#8a5a1e">İlana Git →</a>
+           <div style="font-weight:600;margin-top:6px;line-height:1.3">${esc(p.title)}</div>
+           <div style="margin-top:2px;color:#5b6b57">${esc(p.district)} · ${esc(p.area)}</div>
+           <div style="margin-top:2px;font-weight:700">${esc(p.price)}</div>
+           <a href="/ilan/${encodeURIComponent(p.slug)}" style="display:inline-block;margin-top:6px;font-weight:600;color:#8a5a1e">İlana Git →</a>
           </div>`,
           { closeButton: true },
         );

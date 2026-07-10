@@ -103,10 +103,32 @@ worker.on('failed', (job, err) =>
 // Medya işleme worker'ı — sharp CPU-yoğun olduğundan düşük eşzamanlılık
 const prisma = new PrismaClient();
 
+// Varyantlar DB'ye yazılınca public cache'in beklemesin diye app'e haber ver
+const APP_URL =
+  process.env.INTERNAL_APP_URL ?? process.env.SITE_URL ?? 'http://localhost:3000';
+
+async function revalidateListing(slug: string) {
+  const secret = process.env.REVALIDATE_SECRET;
+  if (!secret) return;
+  try {
+    await fetch(`${APP_URL}/api/revalidate`, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${secret}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({ slug }),
+    });
+  } catch (err) {
+    console.warn('[worker] revalidate çağrısı başarısız:', err);
+  }
+}
+
 const mediaWorker = new Worker<MediaJobData>(
   MEDIA_QUEUE_NAME,
   async (job) => {
-    await processMedia(prisma, job.data.mediaId);
+    const result = await processMedia(prisma, job.data.mediaId);
+    if (result?.slug) await revalidateListing(result.slug);
   },
   { connection: redisConnection, concurrency: 2 },
 );

@@ -57,7 +57,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       </h1>
       {post.createdAt ? (
         <p className="nums mt-3 text-[14px] text-muted-foreground">
-          {dateFmt.format(post.createdAt)}
+          {dateFmt.format(new Date(post.createdAt))}
         </p>
       ) : null}
 

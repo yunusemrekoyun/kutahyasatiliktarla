@@ -4,7 +4,9 @@ const MAX_MEDIA = 25; // PDD: ilan başına en fazla 25 medya öğesi
 
 type Tx = Prisma.TransactionClient;
 
-const isUploaded = (url: string) => url.startsWith('/m/');
+// Boş url = yüklemesi henüz tamamlanmamış satır (upload route önce satırı
+// açar) — harici sayılıp SİLİNMEMELİ; yüklenen sınıfında değerlendirilir.
+const isUploaded = (url: string) => url === '' || url.startsWith('/m/');
 
 /** Admin formundaki HARİCİ görsel URL listesi + video URL'ini Media satırlarıyla
  * senkronlar. YALNIZCA harici (URL ile girilmiş) satırları yönetir — yüklenen

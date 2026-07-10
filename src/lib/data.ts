@@ -149,7 +149,9 @@ export type GuidePost = {
   title: string;
   category: string;
   body: string;
-  createdAt: Date | null;
+  // ISO string: unstable_cache sonucu JSON round-trip'inden geçer, Date
+  // nesnesi hit'te string'e dönüşür (canlıda 500'e yol açtı) — baştan string.
+  createdAt: string | null;
 };
 
 const stripHtml = (html: string) => html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -182,7 +184,7 @@ const loadGuidePosts = unstable_cache(
       title: p.title,
       category: p.category,
       body: p.body,
-      createdAt: p.createdAt,
+      createdAt: p.createdAt.toISOString(),
     })),
   ['guide-posts'],
   { tags: [TAGS.articles], revalidate: 300 },
@@ -211,7 +213,7 @@ export async function getGuidePost(slug: string): Promise<GuidePost | null> {
       title: post.title,
       category: post.category,
       body: post.body,
-      createdAt: post.createdAt,
+      createdAt: post.createdAt.toISOString(),
     };
   } catch (e) {
     logDbFallback('guide-post', e);

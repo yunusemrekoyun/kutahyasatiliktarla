@@ -67,6 +67,10 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
             else next.add(slug);
             return next;
           });
+          // client session önbelleği dolu ama sunucuda oturum düşmüş olabilir
+          if (result.error === 'GIRIS') {
+            router.push(`/giris?callbackURL=${encodeURIComponent(pathname)}`);
+          }
         }
       });
     },

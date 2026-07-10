@@ -19,12 +19,15 @@ type Variant = { width: number; format: string; url: string };
 /** variants[0].url sözleşmesi korunur: ilk kayıt her zaman en büyük webp,
  * kaynak dosya listenin sonunda kalır (yeniden işleme için). */
 export async function processMedia(prisma: PrismaClient, mediaId: string) {
-  const media = await prisma.media.findUnique({ where: { id: mediaId } });
-  if (!media) return; // yükleme geri alınmış olabilir
+  const media = await prisma.media.findUnique({
+    where: { id: mediaId },
+    include: { listing: { select: { slug: true } } },
+  });
+  if (!media) return null; // yükleme geri alınmış olabilir
 
   const variants = (media.variants as Variant[] | null) ?? [];
   const source = variants.find((v) => v.format === 'source' || v.format === 'mp4');
-  if (!source?.url.startsWith('/m/')) return; // harici URL — işlenecek dosya yok
+  if (!source?.url.startsWith('/m/')) return null; // harici URL — işlenecek dosya yok
 
   const fileName = source.url.split('/').pop()!;
   const origPath = mediaFilePath(media.listingId, fileName);
@@ -54,7 +57,7 @@ export async function processMedia(prisma: PrismaClient, mediaId: string) {
       where: { id: media.id },
       data: { variants: [...generated, { width: 0, format: 'source', url: source.url }] },
     });
-    return { kind: 'image', variants: generated.length };
+    return { kind: 'image', variants: generated.length, slug: media.listing.slug };
   }
 
   // Video: poster karesi (1. saniye) — dönüştürme yok, mp4 zaten oynatılabilir
@@ -74,5 +77,5 @@ export async function processMedia(prisma: PrismaClient, mediaId: string) {
     where: { id: media.id },
     data: { poster: mediaUrl(media.listingId, posterName) },
   });
-  return { kind: 'video', poster: posterName };
+  return { kind: 'video', poster: posterName, slug: media.listing.slug };
 }

@@ -60,7 +60,10 @@ export default async function Page() {
                     Yayında değil
                   </span>
                 ) : null}
-                <ListingCard listing={listing} className="h-full" />
+                {/* Yayında olmayan ilanın detay sayfası 404 verir — linki kapat */}
+                <div className={active ? 'h-full' : 'pointer-events-none h-full opacity-70'}>
+                  <ListingCard listing={listing} className="h-full" />
+                </div>
               </div>
             ))}
           </div>

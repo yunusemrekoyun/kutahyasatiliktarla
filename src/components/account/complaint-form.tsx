@@ -19,6 +19,7 @@ export function ComplaintForm({
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
+  const [reason, setReason] = useState('');
   const [state, formAction, pending] = useActionState<ActionResult, FormData>(
     async (prev, formData) => {
       const result = await submitComplaint(conversationId, prev, formData);
@@ -77,6 +78,8 @@ export function ComplaintForm({
           rows={3}
           required
           maxLength={3000}
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
           placeholder="Neyi şikayet ediyorsunuz? Gizliliğiniz için yazışmayı ekip göremez — gerekirse ekran görüntüsü ekleyin."
           className="w-full rounded-md border border-input bg-white px-3 py-2 text-[14px] text-foreground outline-none focus:border-primary"
         />
