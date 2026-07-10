@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowRight, MapPin, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { imgSrcSet } from '@/lib/img';
+import { FavoriteButton } from './favorites';
 import { useParallax } from '@/lib/parallax';
 import { useStore, waLink } from '@/store';
 import type { Listing } from '@/content';
@@ -36,6 +37,7 @@ export function ListingCard({
         className="relative block aspect-[4/3] w-full overflow-hidden bg-muted text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
         aria-label={`${listing.title} detaylarını açın`}
       >
+        <FavoriteButton slug={listing.id} className="absolute right-3 top-3 z-10" />
         {cover ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img

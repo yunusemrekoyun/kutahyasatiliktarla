@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { SlidersHorizontal, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,8 +22,11 @@ import { ListingCard } from '@/components/listings/listing-card';
 import { Reveal } from '@/components/motion/reveal';
 import { ParcelFrame, TopoLines } from '@/components/site/topo';
 import { cn } from '@/lib/utils';
-import { LAND_TYPES, type Listing } from '@/content';
-import { useStore, parsePrice, waLink } from '@/store';
+import { LAND_TYPES } from '@/content';
+import { IMAR_LABELS, TAPU_LABELS, TYPE_MAP, YOL_LABELS } from '@/lib/mappers';
+import type { SearchResult } from '@/lib/listing-search';
+import { useStore, waLink } from '@/store';
+import { SaveSearchButton } from './save-search-button';
 
 const SORTS = [
   { value: 'one-cikan', label: 'Öne çıkanlar' },
@@ -31,9 +34,6 @@ const SORTS = [
   { value: 'fiyat-azalan', label: 'Fiyat (önce en yüksek)' },
   { value: 'alan-buyuk', label: 'Alan (önce en büyük)' },
 ] as const;
-
-const norm = (s: string) => s.toLocaleLowerCase('tr-TR');
-const areaNum = (a: string) => Number(String(a).replace(/[^\d]/g, '')) || 0;
 
 /** Sol ray / mobil filtre içeriği: ilçe ve tür listeleri, sayaçlı. */
 function FilterRail({
@@ -134,7 +134,101 @@ function FilterRail({
   );
 }
 
-export function Browse({ listings }: { listings: Listing[] }) {
+const FILTER_KEYS = [
+  'ilce', 'tur', 'q', 'imar', 'tapu', 'yol', 'su', 'elektrik',
+  'minFiyat', 'maxFiyat', 'minAlan', 'maxAlan',
+] as const;
+
+/** Ray altı gelişmiş filtreler: imar/tapu/yol seçmelileri, su/elektrik ve
+ * fiyat-alan aralıkları — hepsi URL-senkron, sunucu yeniden sorgular. */
+function AdvancedFilters({
+  get,
+  setParam,
+}: {
+  get: (k: string) => string;
+  setParam: (k: string, v: string | null) => void;
+}) {
+  const selectRow = (label: string, key: string, options: Record<string, string>) => (
+    <label className="block">
+      <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.16em] text-brass-strong">
+        {label}
+      </span>
+      <select
+        value={get(key)}
+        onChange={(e) => setParam(key, e.target.value || null)}
+        className="h-10 w-full rounded-sm border border-input bg-card px-2.5 text-[14px] text-foreground outline-none focus:border-primary"
+      >
+        <option value="">Tümü</option>
+        {Object.entries(options).map(([v, l]) => (
+          <option key={v} value={v}>
+            {l}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+
+  const rangeRow = (label: string, minK: string, maxK: string) => (
+    <div>
+      <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.16em] text-brass-strong">
+        {label}
+      </span>
+      <div className="flex items-center gap-2">
+        {[minK, maxK].map((k, i) => (
+          <input
+            key={k}
+            type="number"
+            inputMode="numeric"
+            min={0}
+            placeholder={i === 0 ? 'En az' : 'En çok'}
+            defaultValue={get(k)}
+            onBlur={(e) => {
+              const v = e.target.value.trim();
+              if (v !== get(k)) setParam(k, v || null);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+            }}
+            className="nums h-10 w-full rounded-sm border border-input bg-card px-2.5 text-[14px] text-foreground outline-none focus:border-primary"
+          />
+        ))}
+      </div>
+    </div>
+  );
+
+  const toggleRow = (label: string, key: string) => (
+    <label className="flex min-h-10 cursor-pointer items-center gap-2.5 text-[15px] text-foreground/80">
+      <input
+        type="checkbox"
+        checked={get(key) === '1'}
+        onChange={(e) => setParam(key, e.target.checked ? '1' : null)}
+        className="h-4 w-4 accent-[hsl(154_42%_15%)]"
+      />
+      {label}
+    </label>
+  );
+
+  return (
+    <div className="space-y-5">
+      <h3 className="flex items-center gap-3 text-[12px] font-semibold uppercase tracking-[0.16em] text-brass-strong">
+        <span className="h-0.5 w-5 bg-brass" aria-hidden="true" />
+        Arazi Bilgileri
+      </h3>
+      {selectRow('İmar Durumu', 'imar', IMAR_LABELS)}
+      {selectRow('Tapu Durumu', 'tapu', TAPU_LABELS)}
+      {selectRow('Yol Durumu', 'yol', YOL_LABELS)}
+      <div className="space-y-1">
+        {toggleRow('Su var', 'su')}
+        {toggleRow('Elektrik var', 'elektrik')}
+      </div>
+      {rangeRow('Fiyat (₺)', 'minFiyat', 'maxFiyat')}
+      {rangeRow('Alan (m²)', 'minAlan', 'maxAlan')}
+    </div>
+  );
+}
+
+export function Browse({ result }: { result: SearchResult }) {
+  const { listings, total, page, pageCount, facets } = result;
   const { content } = useStore();
   const router = useRouter();
   const pathname = usePathname();
@@ -145,46 +239,58 @@ export function Browse({ listings }: { listings: Listing[] }) {
   const tur = searchParams.get('tur') ?? '';
   const q = searchParams.get('q') ?? '';
   const sirala = searchParams.get('sirala') ?? 'one-cikan';
+  const get = (k: string) => searchParams.get(k) ?? '';
 
-  function setParam(key: string, value: string | null) {
+  function setParam(key: string, value: string | null, scroll = false) {
     const p = new URLSearchParams(searchParams.toString());
     if (value) p.set(key, value);
     else p.delete(key);
-    router.replace(`${pathname}${p.size ? `?${p.toString()}` : ''}`, { scroll: false });
+    if (key !== 'sayfa') p.delete('sayfa'); // filtre değişince ilk sayfa
+    router.replace(`${pathname}${p.size ? `?${p.toString()}` : ''}`, { scroll });
   }
 
   function clearFilters() {
     const p = new URLSearchParams(searchParams.toString());
-    ['ilce', 'tur', 'q'].forEach((k) => p.delete(k));
+    FILTER_KEYS.forEach((k) => p.delete(k));
+    p.delete('sayfa');
     router.replace(`${pathname}${p.size ? `?${p.toString()}` : ''}`, { scroll: false });
   }
 
   const districts = content.districts.map((d) => d.name);
+  // Sayaçlar sunucu facet'lerinden (kendi boyutunun filtresi hariç hesaplanır)
   const countBy = (key: 'district' | 'type', value: string) =>
-    listings.filter((l) => l[key] === value).length;
+    key === 'district'
+      ? (facets.district[value] ?? 0)
+      : (facets.type[TYPE_MAP[value as keyof typeof TYPE_MAP]] ?? 0);
 
-  const visible = useMemo(() => {
-    const filtered = listings.filter((l) => {
-      if (ilce && l.district !== ilce) return false;
-      if (tur && l.type !== tur) return false;
-      if (q) {
-        const hay = norm(`${l.title} ${l.location} ${l.district} ${l.type}`);
-        if (!hay.includes(norm(q))) return false;
-      }
-      return true;
-    });
-    const sorted = [...filtered];
-    if (sirala === 'fiyat-artan') sorted.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
-    if (sirala === 'fiyat-azalan') sorted.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
-    if (sirala === 'alan-buyuk') sorted.sort((a, b) => areaNum(b.area) - areaNum(a.area));
-    return sorted;
-  }, [listings, ilce, tur, q, sirala]);
+  const visible = listings; // filtre + sıralama + sayfalama sunucuda
 
+  const rangeChip = (minK: string, maxK: string, unit: string) => {
+    const min = get(minK);
+    const max = get(maxK);
+    if (!min && !max) return null;
+    const label = min && max ? `${min}–${max} ${unit}` : min ? `≥ ${min} ${unit}` : `≤ ${max} ${unit}`;
+    return { key: `${minK},${maxK}`, label };
+  };
   const chips = [
     ilce ? { key: 'ilce', label: ilce } : null,
     tur ? { key: 'tur', label: tur } : null,
     q ? { key: 'q', label: `“${q}”` } : null,
+    get('imar') ? { key: 'imar', label: IMAR_LABELS[get('imar')] ?? get('imar') } : null,
+    get('tapu') ? { key: 'tapu', label: `${TAPU_LABELS[get('tapu')] ?? get('tapu')} tapu` } : null,
+    get('yol') ? { key: 'yol', label: YOL_LABELS[get('yol')] ?? get('yol') } : null,
+    get('su') ? { key: 'su', label: 'Su var' } : null,
+    get('elektrik') ? { key: 'elektrik', label: 'Elektrik var' } : null,
+    rangeChip('minFiyat', 'maxFiyat', '₺'),
+    rangeChip('minAlan', 'maxAlan', 'm²'),
   ].filter(Boolean) as { key: string; label: string }[];
+
+  function removeChip(key: string) {
+    const p = new URLSearchParams(searchParams.toString());
+    key.split(',').forEach((k) => p.delete(k));
+    p.delete('sayfa');
+    router.replace(`${pathname}${p.size ? `?${p.toString()}` : ''}`, { scroll: false });
+  }
 
   const title = tur ? `${tur} İlanları` : ilce ? `${ilce} İlanları` : 'Tüm İlanlar';
 
@@ -224,6 +330,9 @@ export function Browse({ listings }: { listings: Listing[] }) {
                 countBy={countBy}
                 onPick={(key, value) => setParam(key, value)}
               />
+              <div className="mt-8 border-t border-border pt-6">
+                <AdvancedFilters get={get} setParam={setParam} />
+              </div>
             </div>
           </aside>
 
@@ -232,13 +341,13 @@ export function Browse({ listings }: { listings: Listing[] }) {
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
               <div className="flex flex-wrap items-center gap-2.5">
                 <span className="text-[15px] text-muted-foreground">
-                  <b className="font-semibold text-foreground">{visible.length}</b> ilan
+                  <b className="font-semibold text-foreground">{total}</b> ilan
                 </span>
                 {chips.map((c) => (
                   <button
                     key={c.key}
                     type="button"
-                    onClick={() => setParam(c.key, null)}
+                    onClick={() => removeChip(c.key)}
                     className="flex min-h-9 items-center gap-1.5 rounded-sm bg-secondary px-3 py-1.5 text-[13px] font-semibold text-secondary-foreground transition-colors hover:bg-[hsl(150_16%_85%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     aria-label={`${c.label} filtresini kaldırın`}
                   >
@@ -275,12 +384,15 @@ export function Browse({ listings }: { listings: Listing[] }) {
                           countBy={countBy}
                           onPick={(key, value) => setParam(key, value)}
                         />
+                        <div className="mt-8 border-t border-border pt-6">
+                          <AdvancedFilters get={get} setParam={setParam} />
+                        </div>
                       </div>
                     </div>
                     {/* Onay her an elin altında: alta sabit, listeyle kaymaz */}
                     <div className="border-t border-border bg-background p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
                       <SheetClose asChild>
-                        <Button className="h-12 w-full">{visible.length} ilanı göster</Button>
+                        <Button className="h-12 w-full">{total} ilanı göster</Button>
                       </SheetClose>
                       {chips.length > 0 ? (
                         <button
@@ -295,6 +407,7 @@ export function Browse({ listings }: { listings: Listing[] }) {
                   </SheetContent>
                 </Sheet>
 
+                <SaveSearchButton chipLabels={chips.map((c) => c.label)} />
                 <Select value={sirala} onValueChange={(v) => setParam('sirala', v === 'one-cikan' ? null : v)}>
                   <SelectTrigger
                     className="h-11 w-auto gap-2 rounded-sm border-input bg-card text-[14px] font-medium lg:h-9"
@@ -352,7 +465,7 @@ export function Browse({ listings }: { listings: Listing[] }) {
               // Filtre/sıralama değişince grid remount olur → kartlar yeniden
               // kademeli belirir (etkileşimli yanıt, sert takla değil).
               <div
-                key={`${ilce}|${tur}|${q}|${sirala}`}
+                key={searchParams.toString()}
                 className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3"
               >
                 {visible.map((l, i) => (
@@ -362,6 +475,33 @@ export function Browse({ listings }: { listings: Listing[] }) {
                 ))}
               </div>
             )}
+
+            {pageCount > 1 ? (
+              <nav
+                aria-label="Sayfalama"
+                className="mt-10 flex items-center justify-center gap-3 border-t border-border pt-6"
+              >
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={page <= 1}
+                  onClick={() => setParam('sayfa', page - 1 > 1 ? String(page - 1) : null, true)}
+                >
+                  Önceki
+                </Button>
+                <span className="nums text-[14px] text-muted-foreground">
+                  Sayfa <b className="font-semibold text-foreground">{page}</b> / {pageCount}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={page >= pageCount}
+                  onClick={() => setParam('sayfa', String(page + 1), true)}
+                >
+                  Sonraki
+                </Button>
+              </nav>
+            ) : null}
           </div>
         </div>
       </div>

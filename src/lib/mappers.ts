@@ -43,6 +43,26 @@ export const PURPOSE_LABELS: Record<'satilik' | 'kiralik', string> = {
   kiralik: 'Kiralık',
 };
 
+export const IMAR_LABELS: Record<string, string> = {
+  imarsiz: 'Tarla (imarsız)',
+  koyYerlesik: 'Köy yerleşik alanı',
+  konutImarli: 'Konut imarlı',
+  sanayiTicari: 'Sanayi / Ticari',
+  diger: 'Diğer',
+};
+
+export const YOL_LABELS: Record<string, string> = {
+  cepheli: 'Yola cepheli',
+  yakin: 'Yola yakın',
+  yok: 'Yolu yok',
+};
+
+export const TAPU_LABELS: Record<string, string> = {
+  mustakil: 'Müstakil',
+  hisseli: 'Hisseli',
+  tahsisli: 'Tahsisli',
+};
+
 export const STATUS_LABELS: Record<
   ListingStatus,
   { label: string; tone: 'muted' | 'info' | 'success' | 'warning' | 'danger' }
@@ -103,8 +123,32 @@ export function mapListingRow(row: DbListing & { media: Media[] }): Listing {
     images,
     description: row.description,
     highlights: row.highlights,
-    specs: (row.specs as Spec[] | null) ?? [],
+    specs: mergeStructuredSpecs(row),
   };
+}
+
+/** Yapısal alanlar "Arazi bilgileri" tablosunun başında gösterilir; serbest
+ * satırlardaki imar/tapu/yol/su/elektrik kopyaları elenir (çift satır olmasın).
+ * Yapısal alan hiç girilmemişse (eski kayıt) serbest satırlar aynen kalır. */
+const STRUCTURED_KEYS = ['imar', 'tapu', 'yol', 'su', 'elektrik'];
+
+function mergeStructuredSpecs(row: DbListing): Spec[] {
+  const free = ((row.specs as Spec[] | null) ?? []).filter(Boolean);
+  const hasStructured = row.imarDurumu || row.tapuDurumu || row.yolDurumu;
+  if (!hasStructured) return free;
+
+  const structured: Spec[] = [];
+  if (row.tapuDurumu) structured.push({ label: 'Tapu Durumu', value: TAPU_LABELS[row.tapuDurumu] });
+  if (row.imarDurumu) structured.push({ label: 'İmar Durumu', value: IMAR_LABELS[row.imarDurumu] });
+  if (row.yolDurumu) structured.push({ label: 'Yol Durumu', value: YOL_LABELS[row.yolDurumu] });
+  structured.push({ label: 'Su', value: row.suVar ? 'Var' : 'Yok' });
+  structured.push({ label: 'Elektrik', value: row.elektrikVar ? 'Var' : 'Yok' });
+
+  const rest = free.filter(
+    (s) =>
+      !STRUCTURED_KEYS.some((k) => s.label.toLocaleLowerCase('tr-TR').includes(k)),
+  );
+  return [...structured, ...rest];
 }
 
 /** Chrome (site geneli içerik) parçalarını tek SiteChrome nesnesinde toplar. */

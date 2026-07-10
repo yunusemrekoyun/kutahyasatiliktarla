@@ -95,6 +95,18 @@ export default async function Page({
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
+            <Button asChild variant="outline">
+              <Link href="/hesap/favoriler">
+                Favorilerim
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/hesap/aramalarim">
+                Kayıtlı Aramalarım
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
           </div>
         </div>
 
@@ -103,8 +115,6 @@ export default async function Page({
             Yakında hesabınızda
           </h2>
           <ul className="mt-3 space-y-2 text-[14px] leading-relaxed text-muted-foreground">
-            <li>· Favori ilanlar</li>
-            <li>· Kayıtlı arama uyarıları</li>
           </ul>
         </aside>
       </div>

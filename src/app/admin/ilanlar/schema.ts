@@ -14,6 +14,12 @@ export const LISTING_STATUSES = [
   'reddedildi',
 ] as const;
 
+const optionalEnum = <T extends readonly [string, ...string[]]>(values: T) =>
+  z.preprocess(
+    (v) => (v === '' || v == null ? undefined : v),
+    z.enum(values).optional(),
+  );
+
 const optionalNumber = z.preprocess(
   (v) => (typeof v === 'string' && v.trim() === '' ? undefined : v),
   z.coerce.number({ error: 'Sayı olarak yazın (örn. 39.4242).' }).optional(),
@@ -54,6 +60,11 @@ export const listingAdminSchema = z
     highlights: z.string().transform(strToLines),
     specs: z.string().transform(strToSpecs),
     droneRequested: z.coerce.boolean(),
+    imarDurumu: optionalEnum(['imarsiz', 'koyYerlesik', 'konutImarli', 'sanayiTicari', 'diger'] as const),
+    yolDurumu: optionalEnum(['cepheli', 'yakin', 'yok'] as const),
+    tapuDurumu: optionalEnum(['mustakil', 'hisseli', 'tahsisli'] as const),
+    suVar: z.coerce.boolean(),
+    elektrikVar: z.coerce.boolean(),
   })
   .superRefine((d, ctx) => {
     if (d.status !== 'aktif') return;
@@ -64,14 +75,18 @@ export const listingAdminSchema = z
         message: 'Yayına almak için koordinat (enlem/boylam) zorunlu.',
       });
     }
-    // Görsel şartı action'da denetlenir (yüklenen dosyalar formda görünmez)
-    if (d.specs.length === 0) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['specs'],
-        message: 'Yayına almak için en az bir arazi bilgisi satırı girin.',
-      });
+    if (!d.imarDurumu) {
+      ctx.addIssue({ code: 'custom', path: ['imarDurumu'], message: 'Yayın için imar durumu seçin.' });
     }
+    if (!d.yolDurumu) {
+      ctx.addIssue({ code: 'custom', path: ['yolDurumu'], message: 'Yayın için yol durumu seçin.' });
+    }
+    if (!d.tapuDurumu) {
+      ctx.addIssue({ code: 'custom', path: ['tapuDurumu'], message: 'Yayın için tapu durumu seçin.' });
+    }
+    // Görsel şartı action'da denetlenir (yüklenen dosyalar formda görünmez);
+    // arazi bilgisi tablosunu artık yapısal alanlar dolduruyor — serbest
+    // satırlar (ada/parsel vb.) isteğe bağlı.
   });
 
 export type ListingAdminInput = z.infer<typeof listingAdminSchema>;

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { getSiteChrome } from '@/lib/data';
 import { ContentProvider } from '@/store';
+import { FavoritesProvider } from '@/components/listings/favorites';
 import { SiteHeader } from '@/components/site/site-header';
 import { SiteFooter } from '@/components/site/site-footer';
 import { FloatingWhatsApp } from '@/components/site/floating-whatsapp';
@@ -20,6 +21,7 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
 
   return (
     <ContentProvider content={chrome}>
+      <FavoritesProvider>
       <SiteHeader />
       {/* Yüzen header sabit konumlu: içerik üstten onun payını alır; ana
           sayfadaki hero bu payı negatif marjla geri alıp tam ekran başlar.
@@ -34,6 +36,7 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
       </div>
       <FloatingWhatsApp />
       <MobileActionBar />
+    </FavoritesProvider>
     </ContentProvider>
   );
 }

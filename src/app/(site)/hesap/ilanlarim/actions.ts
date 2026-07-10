@@ -127,6 +127,8 @@ export async function resubmitListing(
       area: formatArea(d.areaM2),
       price: formatTRY(d.priceTRY),
       pricePerM2: formatPricePerM2(d.priceTRY, d.areaM2),
+      priceValue: BigInt(d.priceTRY),
+      areaM2: d.areaM2,
       description: d.description,
       droneRequested: d.droneRequested,
       status: 'incelemede',

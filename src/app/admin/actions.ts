@@ -89,6 +89,7 @@ export async function applyPriceRequest(requestId: string): Promise<ActionResult
       data: {
         price: request.requestedPrice,
         pricePerM2: formatPricePerM2(priceNum, areaNum),
+        priceValue: BigInt(priceNum),
       },
     }),
     prisma.listingPriceRequest.update({

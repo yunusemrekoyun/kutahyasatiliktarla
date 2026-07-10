@@ -1,7 +1,7 @@
 // Bağımsız process — `npm run worker` (tsx watch) ile çalışır. Next dışında
 // olduğu için .env otomatik yüklenmez, bu yüzden dotenv/config ilk satır olmalı.
 import 'dotenv/config';
-import { Worker } from 'bullmq';
+import { Queue, Worker } from 'bullmq';
 import { PrismaClient } from '@prisma/client';
 import { redisConnection } from '../lib/redis';
 import {
@@ -13,6 +13,7 @@ import {
 import { mailer } from './mailer';
 import { kvTable, renderEmail, textToHtml } from './templates';
 import { processMedia } from './media';
+import { runSavedSearchDigest } from './digest';
 
 const FROM =
   process.env.SMTP_FROM ?? 'Kütahya Satılık Tarla <no-reply@kutahyasatiliktarla.com>';
@@ -117,4 +118,25 @@ mediaWorker.on('failed', (job, err) =>
   console.error(`[worker] medya job ${job?.id} başarısız:`, err),
 );
 
-console.log('[worker] başlatıldı — kuyruklar:', EMAIL_QUEUE_NAME, '+', MEDIA_QUEUE_NAME);
+// Kayıtlı arama özeti: her sabah 08:00 Türkiye saati (v0.5 kararı)
+const DIGEST_QUEUE = 'digest';
+const digestQueue = new Queue(DIGEST_QUEUE, { connection: redisConnection });
+await digestQueue.upsertJobScheduler(
+  'saved-search-daily',
+  { pattern: '0 8 * * *', tz: 'Europe/Istanbul' },
+  { name: 'daily' },
+);
+
+const digestWorker = new Worker(
+  DIGEST_QUEUE,
+  async () => {
+    const result = await runSavedSearchDigest(prisma);
+    console.log(`[worker] özet: ${result.sent}/${result.searches} kayıtlı aramaya e-posta`);
+  },
+  { connection: redisConnection, concurrency: 1 },
+);
+digestWorker.on('failed', (job, err) =>
+  console.error(`[worker] özet job ${job?.id} başarısız:`, err),
+);
+
+console.log('[worker] başlatıldı — kuyruklar:', EMAIL_QUEUE_NAME, '+', MEDIA_QUEUE_NAME, '+', DIGEST_QUEUE);

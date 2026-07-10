@@ -39,6 +39,11 @@ function parseForm(formData: FormData) {
     highlights: formData.get('highlights') ?? '',
     specs: formData.get('specs') ?? '',
     droneRequested: formData.get('droneRequested') === 'on',
+    imarDurumu: formData.get('imarDurumu') ?? '',
+    yolDurumu: formData.get('yolDurumu') ?? '',
+    tapuDurumu: formData.get('tapuDurumu') ?? '',
+    suVar: formData.get('suVar') === 'on',
+    elektrikVar: formData.get('elektrikVar') === 'on',
   });
 }
 
@@ -81,6 +86,13 @@ export async function saveListing(
     area: formatArea(d.areaM2),
     price: formatTRY(d.priceTRY),
     pricePerM2: formatPricePerM2(d.priceTRY, d.areaM2),
+    priceValue: BigInt(d.priceTRY),
+    areaM2: d.areaM2,
+    imarDurumu: d.imarDurumu ?? null,
+    yolDurumu: d.yolDurumu ?? null,
+    tapuDurumu: d.tapuDurumu ?? null,
+    suVar: d.suVar,
+    elektrikVar: d.elektrikVar,
     badge: d.badge || null,
     lat: d.lat ?? null,
     lng: d.lng ?? null,

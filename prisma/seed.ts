@@ -3,6 +3,8 @@ import { PrismaClient } from '@prisma/client';
 import { auth } from '../src/lib/auth';
 import { slugify } from '../src/lib/slugify';
 import { TYPE_MAP } from '../src/lib/mappers';
+import { deriveStructured } from '../src/lib/structured-specs';
+import { parsePrice } from '../src/lib/format';
 import { defaultContent } from '../src/content';
 
 const prisma = new PrismaClient();
@@ -79,9 +81,16 @@ async function seedContent(adminId: string) {
   }
 
   for (const l of c.listings) {
+    const structured = deriveStructured(l.specs);
+    const numeric = {
+      priceValue: BigInt(parsePrice(l.price)),
+      areaM2: Math.round(parsePrice(l.area)),
+    };
     const listing = await prisma.listing.upsert({
       where: { slug: l.id },
       create: {
+        ...structured,
+        ...numeric,
         slug: l.id,
         ownerId: adminId,
         title: l.title,

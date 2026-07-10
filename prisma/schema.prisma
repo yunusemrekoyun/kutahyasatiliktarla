@@ -32,6 +32,8 @@ model User {
   messages      Message[]
   complaints    Complaint[]
   notifications Notification[]
+  favorites     Favorite[]
+  savedSearches SavedSearch[]
 
   @@map("user")
 }
@@ -93,6 +95,26 @@ enum ListingType {
   arsa
   bag_bahce
   koy_ici
+}
+
+enum ImarDurumu {
+  imarsiz
+  koyYerlesik
+  konutImarli
+  sanayiTicari
+  diger
+}
+
+enum YolDurumu {
+  cepheli
+  yakin
+  yok
+}
+
+enum TapuDurumu {
+  mustakil
+  hisseli
+  tahsisli
 }
 
 enum ListingStatus {
@@ -169,6 +191,17 @@ model Listing {
   rejectReason   String?        @db.Text
   publishedAt    DateTime?
   viewCount      Int            @default(0)
+  // v0.5: yapısal filtre alanları — yayına almak için imar/yol/tapu zorunlu
+  // (zod); serbest "Etiket | Değer" satırları ayrıntı için specs'te kalır.
+  imarDurumu     ImarDurumu?
+  yolDurumu      YolDurumu?
+  tapuDurumu     TapuDurumu?
+  suVar          Boolean        @default(false)
+  elektrikVar    Boolean        @default(false)
+  // Aralık filtresi/sıralama kaynağı — string gösterim alanları korunur
+  priceValue     BigInt?
+  areaM2         Int?
+  favorites      Favorite[]
   media          Media[]
   conversations  Conversation[]
   priceRequests  ListingPriceRequest[]
@@ -178,6 +211,9 @@ model Listing {
   @@index([status])
   @@index([district])
   @@index([purpose])
+  @@index([status, publishedAt])
+  @@index([priceValue])
+  @@index([areaM2])
 }
 
 // Yayındaki ilan için üyenin fiyat güncelleme talebi — admin uygular/reddeder;
@@ -278,6 +314,32 @@ model Complaint {
   resolvedAt     DateTime?
 
   @@index([status])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, listingId])
+  @@index([userId])
+}
+
+// Kayıtlı arama — her sabah 08:00'de yeni eşleşme varsa tek özet e-postası
+model SavedSearch {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String
+  // /ilanlar query paramları (ilce/tur/amac/imar/tapu/yol/su/elektrik/minFiyat/...)
+  params         Json
+  createdAt      DateTime @default(now())
+  lastNotifiedAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 // Site içi zil bildirimi — e-postanın ikizi (mesaj, moderasyon, fiyat...)

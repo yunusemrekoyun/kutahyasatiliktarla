@@ -27,6 +27,11 @@ const STATUS_OPTIONS = [
 
 export type ListingFormDefaults = {
   title: string;
+  imarDurumu: string;
+  yolDurumu: string;
+  tapuDurumu: string;
+  suVar: boolean;
+  elektrikVar: boolean;
   district: string;
   location: string;
   type: string;
@@ -48,6 +53,11 @@ export type ListingFormDefaults = {
 
 export const EMPTY_LISTING_DEFAULTS: ListingFormDefaults = {
   title: '',
+  imarDurumu: '',
+  yolDurumu: '',
+  tapuDurumu: '',
+  suVar: false,
+  elektrikVar: false,
   district: '',
   location: '',
   type: 'Tarla',
@@ -155,6 +165,42 @@ export function ListingForm({
         <Field label="Boylam (lng)" error={fe.lng}>
           <AdminInput name="lng" defaultValue={defaults.lng} placeholder="29.9833" />
         </Field>
+        <Field label="İmar Durumu" error={fe.imarDurumu}>
+          <AdminSelect name="imarDurumu" defaultValue={defaults.imarDurumu}>
+            <option value="">Seçilmedi</option>
+            <option value="imarsiz">Tarla (imarsız)</option>
+            <option value="koyYerlesik">Köy yerleşik alanı</option>
+            <option value="konutImarli">Konut imarlı</option>
+            <option value="sanayiTicari">Sanayi / Ticari</option>
+            <option value="diger">Diğer</option>
+          </AdminSelect>
+        </Field>
+        <Field label="Tapu Durumu" error={fe.tapuDurumu}>
+          <AdminSelect name="tapuDurumu" defaultValue={defaults.tapuDurumu}>
+            <option value="">Seçilmedi</option>
+            <option value="mustakil">Müstakil</option>
+            <option value="hisseli">Hisseli</option>
+            <option value="tahsisli">Tahsisli</option>
+          </AdminSelect>
+        </Field>
+        <Field label="Yol Durumu" error={fe.yolDurumu}>
+          <AdminSelect name="yolDurumu" defaultValue={defaults.yolDurumu}>
+            <option value="">Seçilmedi</option>
+            <option value="cepheli">Yola cepheli</option>
+            <option value="yakin">Yola yakın</option>
+            <option value="yok">Yolu yok</option>
+          </AdminSelect>
+        </Field>
+        <div className="flex items-end gap-5 pb-2">
+          <label className="flex items-center gap-2 text-sm text-[#1f2a1d]">
+            <input type="checkbox" name="suVar" defaultChecked={defaults.suVar} className="h-4 w-4 accent-[#3d5638]" />
+            Su var
+          </label>
+          <label className="flex items-center gap-2 text-sm text-[#1f2a1d]">
+            <input type="checkbox" name="elektrikVar" defaultChecked={defaults.elektrikVar} className="h-4 w-4 accent-[#3d5638]" />
+            Elektrik var
+          </label>
+        </div>
         <Field
           label="Drone video URL (video dosyası yüklediyseniz boş bırakın)"
           error={fe.droneVideo}
@@ -191,7 +237,7 @@ export function ListingForm({
         <AdminTextarea name="highlights" rows={4} defaultValue={defaults.highlights} />
       </Field>
 
-      <Field label="Arazi bilgileri (her satır: Etiket | Değer)" error={fe.specs}>
+      <Field label="Ek arazi bilgileri (her satır: Etiket | Değer — imar/tapu/yol/su/elektrik yukarıdaki alanlardan gelir)" error={fe.specs}>
         <AdminTextarea
           name="specs"
           rows={6}

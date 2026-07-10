@@ -79,6 +79,11 @@ export default async function EditListingPage({
 
   const defaults: ListingFormDefaults = {
     title: listing.title,
+    imarDurumu: listing.imarDurumu ?? '',
+    yolDurumu: listing.yolDurumu ?? '',
+    tapuDurumu: listing.tapuDurumu ?? '',
+    suVar: listing.suVar,
+    elektrikVar: listing.elektrikVar,
     district: listing.district,
     location: listing.location,
     type: TYPE_LABELS[listing.type],
