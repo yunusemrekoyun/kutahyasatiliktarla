@@ -90,6 +90,10 @@ services:
     image: axllent/mailpit
     container_name: kutahyasatiliktarla-mailpit
     restart: unless-stopped
+    environment:
+      # TEST DÖNEMİ: UI, sitenin /mail yolu altında yayınlanır (nginx proxy).
+      # Gerçek lansmandan önce nginx'teki /mail bloğuyla birlikte kaldırılacak.
+      MP_WEBROOT: /mail
     # SMTP (1025) yalnız iç ağda; UI loopback'te — SSH tüneliyle bakılır.
     # Host portu 8026: VPS'te 8025'i zumra-demo kullanıyor.
     ports:
