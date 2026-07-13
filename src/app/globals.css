@@ -372,6 +372,11 @@
   .op-m-row-r {
     animation: op-marquee-r var(--dur, 72s) linear infinite;
   }
+  /* Duvar ekran dışındayken marquee durur (IntersectionObserver data-wall yazar) */
+  [data-wall='off'] .op-m-row-l,
+  [data-wall='off'] .op-m-row-r {
+    animation-play-state: paused;
+  }
   @media (prefers-reduced-motion: reduce) {
     .op-row-l,
     .op-row-r,

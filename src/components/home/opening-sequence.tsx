@@ -132,11 +132,39 @@ export function OpeningSequence({ listings }: { listings: Listing[] }) {
   const wallPool = listings
     .flatMap((l) => l.images ?? [])
     .map((u) => u.replace(/w=\d+/, 'w=520'));
+  // Mobil duvar ekran dışındayken marquee animasyonu durdurulur (pil/jank)
+  const liteHeroRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = liteHeroRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        el.dataset.wall = entry.isIntersecting ? 'on' : 'off';
+      },
+      { threshold: 0.05 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [mode]);
+
   const wallRows = [0, 1, 2].map((r) => {
     const a = wallPool.filter((_, i) => i % 3 === r);
     const b = a.length >= 4 ? a : wallPool;
     return b.length ? b : [firstCover];
   });
+
+  /** İpucuna tıklanınca sahnenin sonuna yumuşakça in — morph'u atla. */
+  function skipScene() {
+    const section = sectionRef.current;
+    if (!section) return;
+    const top =
+      section.getBoundingClientRect().top +
+      window.scrollY +
+      section.offsetHeight -
+      window.innerHeight +
+      2;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
 
   function go(d: 1 | -1) {
     if (listings.length < 2) return;
@@ -171,11 +199,12 @@ export function OpeningSequence({ listings }: { listings: Listing[] }) {
       aria-label="Tanıtım"
       className={cn(
         scenic
-          ? 'relative -mt-20 h-[220vh] bg-primary lg:-mt-24'
+          ? 'relative -mt-20 h-[170vh] bg-primary lg:-mt-24'
           : '-mt-20 lg:-mt-24',
         // SSR/ilk boyamada sahne henüz bilinmezken masaüstünde 220vh yüksekliği
         // baştan ayır → hydrate olurken alttaki içerik yerinden oynamaz (CLS yok).
-        !mounted && 'bg-primary lg:h-[220vh]',
+        // 170vh: test geri bildirimi — daha uzun pin 'sayfa kaydırılamıyor' hissi verdi.
+        !mounted && 'bg-primary lg:h-[170vh]',
       )}
     >
       <div
@@ -393,24 +422,33 @@ export function OpeningSequence({ listings }: { listings: Listing[] }) {
               </div>
             </div>
 
-            {/* Kaydırma ipucu */}
-            <div
-              className="op-cue pointer-events-none absolute inset-x-0 bottom-7 z-20 flex flex-col items-center gap-1.5 text-white/70"
-              aria-hidden="true"
+            {/* Kaydırma ipucu — tıklanınca sahneyi atlar (test geri bildirimi:
+                kullanıcı zoom evresinde 'kaydıramıyorum' sanabiliyor) */}
+            <button
+              type="button"
+              onClick={skipScene}
+              aria-label="Tanıtımı geçin"
+              className="op-cue absolute inset-x-0 bottom-7 z-20 mx-auto flex w-fit cursor-pointer flex-col items-center gap-1.5 text-white/70 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <span className="text-[11px] font-semibold uppercase tracking-[0.22em]">Kaydırın</span>
               <ChevronDown className="hint-float h-5 w-5" />
-            </div>
+            </button>
           </div>
         ) : lite && active ? (
           <>
             {/* Lite hero — masaüstü açılışının mobil karşılığı: ilan duvarı
                 marquee'si arka planda akar (salt zaman tabanlı), önünde hero
                 metni. Scroll bağı yok; morph yerine akan duvar + slider. */}
-            <div className="relative flex min-h-[100svh] items-center overflow-hidden bg-primary">
+            <div
+              ref={liteHeroRef}
+              className="relative flex min-h-[100svh] items-center overflow-hidden bg-primary"
+            >
               <div className="absolute inset-0" aria-hidden="true">
                 <div className="flex h-full flex-col justify-center gap-3">
-                  {wallRows.map((tiles, r) => {
+                  {wallRows.map((allTiles, r) => {
+                    // Zayıf cihazlarda kasmayı azalt: mobil duvarda sıra başına
+                    // daha az karo yeter (görsel yoğunluk scrim altında zaten kısıtlı)
+                    const tiles = allTiles.slice(0, 5);
                     const size = r === 1 ? 'h-36 w-52' : 'h-28 w-40';
                     return (
                       <div
