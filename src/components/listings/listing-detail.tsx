@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import {
   ChevronDown,
+  ChevronLeft,
   ChevronRight,
   CircleCheck,
   ExternalLink,
@@ -509,6 +510,15 @@ export function ListingDetail({ listing }: { listing: Listing }) {
 
   const images = listing.images ?? [];
   const cover = images[Math.min(idx, Math.max(images.length - 1, 0))];
+
+  // Galeri gezinme: thumbnail'lara ek olarak kapak üstünde ok + parmak kaydırma
+  // (telefonda kullanıcı büyük görseli kaydırmayı bekliyor — test geri bildirimi).
+  const swipeX = useRef<number | null>(null);
+  function goImage(dir: 1 | -1) {
+    if (images.length < 2) return;
+    setIdx((i) => (i + dir + images.length) % images.length);
+    setInteracted(true);
+  }
   const marker: MapMarker[] = [
     { lat: listing.lat, lng: listing.lng, title: listing.title, price: listing.price },
   ];
@@ -546,7 +556,18 @@ export function ListingDetail({ listing }: { listing: Listing }) {
             {/* Kapak — ölçülmüş parsel çerçevesi + tıklamada yumuşak geçen görsel */}
             <Reveal immediate>
               <ParcelFrame>
-                <div className="relative overflow-hidden rounded-lg border border-border bg-muted">
+                <div
+                  className="relative overflow-hidden rounded-lg border border-border bg-muted"
+                  onTouchStart={(e) => {
+                    swipeX.current = e.touches[0].clientX;
+                  }}
+                  onTouchEnd={(e) => {
+                    if (swipeX.current === null) return;
+                    const dx = e.changedTouches[0].clientX - swipeX.current;
+                    swipeX.current = null;
+                    if (Math.abs(dx) > 40) goImage(dx < 0 ? 1 : -1);
+                  }}
+                >
                   <div ref={coverRef} className="parallax-cover relative aspect-[16/10]">
                     {cover ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -556,8 +577,9 @@ export function ListingDetail({ listing }: { listing: Listing }) {
                         srcSet={imgSrcSet(cover)}
                         sizes="(min-width: 1024px) 60vw, 100vw"
                         alt={listing.title}
+                        draggable={false}
                         className={cn(
-                          'absolute inset-0 h-full w-full object-cover',
+                          'absolute inset-0 h-full w-full select-none object-cover',
                           interacted && 'detail-cover-in',
                         )}
                       />
@@ -571,6 +593,31 @@ export function ListingDetail({ listing }: { listing: Listing }) {
                     <span className="absolute left-5 top-5 z-10 rounded-sm bg-background/90 px-3 py-1.5 text-[12px] font-semibold text-foreground backdrop-blur-sm">
                       {listing.badge}
                     </span>
+                  ) : null}
+
+                  {/* Kapakta gezinme: ok + sayaç (telefonda parmak kaydırma da açık) */}
+                  {images.length > 1 ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => goImage(-1)}
+                        aria-label="Önceki fotoğraf"
+                        className="absolute left-2 top-1/2 z-10 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-white/40 bg-[hsl(155_30%_7%_/_0.4)] text-white backdrop-blur-sm transition-colors hover:bg-[hsl(155_30%_7%_/_0.6)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        <ChevronLeft className="h-5 w-5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => goImage(1)}
+                        aria-label="Sonraki fotoğraf"
+                        className="absolute right-2 top-1/2 z-10 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-white/40 bg-[hsl(155_30%_7%_/_0.4)] text-white backdrop-blur-sm transition-colors hover:bg-[hsl(155_30%_7%_/_0.6)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        <ChevronRight className="h-5 w-5" />
+                      </button>
+                      <span className="nums absolute bottom-3 right-3 z-10 rounded-full bg-[hsl(155_30%_7%_/_0.55)] px-2.5 py-1 text-[12px] font-semibold text-white backdrop-blur-sm">
+                        {idx + 1} / {images.length}
+                      </span>
+                    </>
                   ) : null}
                 </div>
               </ParcelFrame>
