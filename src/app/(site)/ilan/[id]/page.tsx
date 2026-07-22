@@ -1,17 +1,26 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getListing, getPublishedListings } from '@/lib/data';
+import { getListing, getSitemapEntries } from '@/lib/data';
 import { ListingDetail } from '@/components/listings/listing-detail';
 import { ListingJsonLd } from '@/components/seo/listing-jsonld';
 import { TrackView } from '@/components/listings/track-view';
 
-/** Yayındaki ilanlar build'de statik üretilir (DB yoksa seed fallback'i);
- * sonradan eklenen ilanlar ilk istekte üretilip cache'lenir. */
+/** En yeni yayındaki ilanlar build'de statik üretilir (DB yoksa seed
+ * fallback'i); geri kalanı (uzun kuyruk + sonradan eklenenler) ilk istekte
+ * üretilip cache'lenir. Binlerce ilanda TÜMÜNÜ build anında üretmeye
+ * çalışmak `next build`'in paralel worker'larının DB bağlantı havuzunu
+ * tüketmesine yol açıyordu (bkz. 2026-07-22 ölçek testi, 5000+ ilan) —
+ * ayrıca dynamicParams zaten aynı sonucu (tam SSR HTML) ilk istekte üretiyor,
+ * yalnızca build anında değil. */
 export const dynamicParams = true;
+const PRERENDER_COUNT = 100;
 
 export async function generateStaticParams() {
-  const listings = await getPublishedListings();
-  return listings.map((l) => ({ id: l.id }));
+  // Yalnızca slug listesi gerekir (sitemap ile aynı ihtiyaç) — tüm ilan
+  // gövdelerini (açıklama/medya dahil) yüklemek binlerce ilanda unstable_cache
+  // yazımını 2MB sınırında sessizce başarısız kılıyordu.
+  const entries = await getSitemapEntries();
+  return entries.slice(0, PRERENDER_COUNT).map((e) => ({ id: e.slug }));
 }
 
 export async function generateMetadata({
