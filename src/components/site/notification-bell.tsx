@@ -42,6 +42,7 @@ export function NotificationBell({ dark }: { dark?: boolean }) {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- yanlış pozitif: load async, setState fetch cevabından sonra çalışır
     void load();
     const t = setInterval(() => void load(), 60_000);
     return () => clearInterval(t);

@@ -158,6 +158,7 @@ export function SiteHeader() {
     // bağlantı, yenileme) header görünür başlar; gizlenme yalnızca gerçek
     // kaydırma olaylarıyla tetiklenir.
     lastY.current = window.scrollY;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- kaydırılmış açılan sayfada (derin bağlantı) ilk konum senkronu
     setStuck(window.scrollY > 24);
     const onScroll = () => {
       const y = window.scrollY;

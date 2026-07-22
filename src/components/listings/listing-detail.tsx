@@ -509,6 +509,7 @@ export function ListingDetail({ listing }: { listing: Listing }) {
   // Paylaşım linki istemcide üretilir (canonical domain varsayımı yok)
   const [pageUrl, setPageUrl] = useState('');
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- window.location yalnız client'ta var; hydration sonrası tek seferlik okuma
     setPageUrl(window.location.href);
   }, []);
   // Kapak görselinde ölçülü ken-burns/parallax (ana sayfadaki kartlarla aynı dil)

@@ -32,6 +32,7 @@ export function Reveal({
     const el = ref.current;
     if (!el) return;
     if (typeof IntersectionObserver === 'undefined') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- IO desteği yoksa içerik gizli kalmasın
       setShown(true);
       return;
     }

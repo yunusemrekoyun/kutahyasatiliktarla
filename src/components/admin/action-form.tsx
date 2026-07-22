@@ -23,6 +23,7 @@ export function ActionForm({
 
   useEffect(() => {
     if (!state.ok) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- aksiyon sonucuna tepki; söndürme zamanlayıcısı zaten effect gerektiriyor
     setSaved(true);
     const t = setTimeout(() => setSaved(false), 2500);
     return () => clearTimeout(t);

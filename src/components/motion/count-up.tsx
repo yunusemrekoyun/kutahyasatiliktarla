@@ -27,6 +27,7 @@ export function CountUp({
     // Metindeki ilk sayıyı bul (binlik nokta dahil): "12.500" → 12500
     const match = value.match(/[\d.]+/);
     if (!match) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- value prop'u değişince animasyonsuz durumda görüneni eşitler
       setDisplay(value);
       return;
     }

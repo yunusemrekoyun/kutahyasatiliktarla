@@ -26,9 +26,9 @@ const config = [
         'warn',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
       ],
-      // React'in yeni danışma kuralı; mount-sync desenlerinde (scroll konumu,
-      // IntersectionObserver ilk değeri) yanlış pozitif veriyor — uyarı olarak kalsın.
-      'react-hooks/set-state-in-effect': 'warn',
+      // Mount-sync gibi meşru kullanımlar tek tek gerekçeli disable yorumuyla
+      // işaretlendi; yenileri bilinçli bir karar gerektirsin diye kural error.
+      'react-hooks/set-state-in-effect': 'error',
     },
   },
 ];

@@ -24,6 +24,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!session?.user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- oturum kapanınca durumu sıfırlama (bağımlılık değişiminde reset)
       setFavored(new Set());
       return;
     }

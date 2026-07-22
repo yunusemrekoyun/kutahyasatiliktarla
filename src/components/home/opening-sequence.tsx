@@ -106,6 +106,7 @@ export function OpeningSequence({ listings }: { listings: Listing[] }) {
   // İlk boyamada (SSR) ağır fallback yerine sade hero; showcase kartı yalnızca
   // mobil/statik kesinleşince eklenir → masaüstünde yük anı sıçraması olmaz.
   const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- standart hydration bayrağı: SSR ile ilk client boyaması aynı kalmalı
   useEffect(() => setMounted(true), []);
   // Taban görsel sabit durur; ok'a basınca yeni görsel yandan kayıp üstüne
   // biner, kayma bitince taban güncellenir → çerçeve hep dolu, temiz kayma.
@@ -120,7 +121,9 @@ export function OpeningSequence({ listings }: { listings: Listing[] }) {
   useEffect(() => {
     if (listings.length > 1) {
       const r = Math.floor(Math.random() * listings.length);
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- rastgele seçim kasıtlı olarak hydration SONRASI yapılır (SSR deterministik kalır)
       setIdx(r);
+
       setBaseSrc(listings[r]?.images?.[0] ?? firstCover);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

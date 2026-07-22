@@ -51,6 +51,7 @@ export default function LeafletMap({
   const [unlocked, setUnlocked] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- SSR bilemez; hydration sonrası tek seferlik yetenek tespiti
     setTouchDevice(window.matchMedia('(pointer: coarse)').matches);
   }, []);
 
