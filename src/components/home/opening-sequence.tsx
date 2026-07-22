@@ -201,7 +201,9 @@ export function OpeningSequence({ listings }: { listings: Listing[] }) {
         // SSR/ilk boyamada sahne henüz bilinmezken masaüstünde 220vh yüksekliği
         // baştan ayır → hydrate olurken alttaki içerik yerinden oynamaz (CLS yok).
         // 170vh: test geri bildirimi — daha uzun pin 'sayfa kaydırılamıyor' hissi verdi.
-        !mounted && 'bg-primary lg:h-[170vh]',
+        // min-h-[100svh]: mobilde de aynı mantık — lite modun hero yüksekliğiyle
+        // eşleşir, hydrate olunca (lite'a geçince) hero boyu zıplamaz.
+        !mounted && 'bg-primary min-h-[100svh] lg:h-[170vh]',
       )}
     >
       <div

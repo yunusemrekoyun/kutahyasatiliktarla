@@ -75,6 +75,16 @@ function DetailHero({ listing, phone, wa }: { listing: Listing; phone: string; w
   const lite = mode === 'lite';
   const poster = listing.images?.[0];
 
+  // Gerçek mod (scenic/lite) hesaplanana kadar (SSR + hydration öncesi) sahne
+  // 'static' placeholder yüksekliğinde (82svh) durur; hydrate olur olmaz asıl
+  // yükseklik (sceneVh / 185svh) devreye girip devasa bir CLS sıçraması
+  // yaratıyordu. `mounted` yalnızca bu ilk pencerede false — reduced-motion
+  // dahil HER nihai mod için hemen sonra true'ya döner, bu yüzden aşağıdaki
+  // rezervasyon kalıcı bir uyumsuzluk bırakmaz.
+  const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- standart hydration bayrağı: SSR ile ilk client boyaması aynı kalmalı
+  useEffect(() => setMounted(true), []);
+
   const eyebrow = (text: string) => (
     <p className="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-brass-ondark">
       <span className="h-0.5 w-8 bg-brass-ondark" aria-hidden="true" />
@@ -269,9 +279,19 @@ function DetailHero({ listing, phone, wa }: { listing: Listing; phone: string; w
     <section
       ref={sectionRef}
       aria-label="İlan tanıtımı"
-      className={cn('bg-primary -mt-20 lg:-mt-24', (scenic || lite) && 'relative')}
+      className={cn(
+        'bg-primary -mt-20 lg:-mt-24',
+        (scenic || lite) && 'relative',
+        // Hydration öncesi gerçek moda en yakın alanı CSS breakpoint'iyle
+        // ayır (mobil: sabit 185svh, masaüstü: --scene-vh) → mod kesinleşince
+        // sahne zıplamaz. mounted=true olunca kalıcı olarak devre dışı kalır.
+        !mounted && 'min-h-[185svh] lg:min-h-[var(--scene-vh)]',
+      )}
       // lite: kısaltılmış mobil sahne — ~1.1 ekran boyu kaydırma (--p 0→1)
-      style={scenic ? { height: `${sceneVh}vh` } : lite ? { height: '185svh' } : undefined}
+      style={{
+        ...(scenic ? { height: `${sceneVh}vh` } : lite ? { height: '185svh' } : undefined),
+        ['--scene-vh' as string]: `${sceneVh}vh`,
+      }}
     >
       <div
         ref={rootRef}
@@ -282,6 +302,10 @@ function DetailHero({ listing, phone, wa }: { listing: Listing; phone: string; w
           // static: KESİN yükseklik — min-h altında h-full zinciri 0'a çöküyor
           // ve başlık paneli ekran dışına kayıyordu (mobil "boş kapak" bug'ı).
           mode === 'static' && 'relative h-[82svh]',
+          // Hydration öncesi bu iç kutu da 82svh'ta duruyordu; lite (en olası
+          // sonuç) 100svh'a geçince alttan sabitli dh-m-stack birkaç piksel
+          // kayıyordu (kalıntı CLS). mounted=true olunca kalıcı olarak silinir.
+          !mounted && 'min-h-[100svh]',
         )}
       >
         {/* Kapak — arkada kalır, kaydırınca yaklaşır + hafif kayar (dh-cover) */}
