@@ -62,3 +62,6 @@ TODO.local.md
 /uploads/
 kutahyasatilik-test-rehberi.html
 kutahyasatiliktarla-test-rehberi.html
+
+# Yerel yedekler (scripts/backup.sh çıktısı)
+/backups/
