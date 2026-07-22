@@ -30,21 +30,10 @@ function esc(s: string): string {
     .replaceAll('"', '&quot;');
 }
 
-/** Işın testi (ray casting): nokta poligonun içinde mi? */
-function inPolygon(lat: number, lng: number, poly: [number, number][]): boolean {
-  let inside = false;
-  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-    const [yi, xi] = poly[i];
-    const [yj, xj] = poly[j];
-    const intersects = yi > lat !== yj > lat && lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi;
-    if (intersects) inside = !inside;
-  }
-  return inside;
-}
-
 /** Harita araması: tüm aktif ilanlar işaretçi olarak gelir; kullanıcı
- * "Bölge Çiz" ile köşe noktaları tıklar, kapatınca içeride kalanlar süzülür.
- * Nokta-poligon testi istemcide — veri zaten işaretçiler için yüklü. */
+ * "Bölge Çiz" ile köşe noktaları tıklar, kapatınca sunucudan (PostGIS
+ * ST_Within, bkz. src/lib/geo.ts) içeride kalan slug'lar gelir — nokta-poligon
+ * testi istemcide yapılmaz, binlerce ilanda da sabit maliyetli kalır. */
 export function HaritaMap({ points }: { points: MapPoint[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
@@ -59,6 +48,8 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
   const [drawing, setDrawing] = useState(false);
   const [vertexCount, setVertexCount] = useState(0);
   const [selected, setSelected] = useState<MapPoint[] | null>(null);
+  const [filtering, setFiltering] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -136,13 +127,35 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function applyFilter(polygon: [number, number][] | null) {
-    const inside = polygon ? points.filter((p) => inPolygon(p.lat, p.lng, polygon)) : null;
-    setSelected(inside);
-    const insideSlugs = new Set((inside ?? points).map((p) => p.slug));
-    markersRef.current.forEach((m, i) => {
-      m.setOpacity(insideSlugs.has(points[i].slug) ? 1 : 0.25);
-    });
+  async function applyFilter(polygon: [number, number][] | null) {
+    if (!polygon) {
+      setSelected(null);
+      setError(false);
+      markersRef.current.forEach((m) => m.setOpacity(1));
+      return;
+    }
+    setFiltering(true);
+    setError(false);
+    try {
+      const res = await fetch('/api/harita/bolge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ points: polygon.map(([lat, lng]) => ({ lat, lng })) }),
+      });
+      if (!res.ok) throw new Error('bölge araması başarısız');
+      const data: { slugs: string[] } = await res.json();
+      const insideSlugs = new Set(data.slugs);
+      setSelected(points.filter((p) => insideSlugs.has(p.slug)));
+      markersRef.current.forEach((m, i) => {
+        m.setOpacity(insideSlugs.has(points[i].slug) ? 1 : 0.25);
+      });
+    } catch {
+      setError(true);
+      setSelected([]);
+      markersRef.current.forEach((m) => m.setOpacity(0.25));
+    } finally {
+      setFiltering(false);
+    }
   }
 
   function startDraw() {
@@ -168,7 +181,7 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
       fillColor: '#a8742c',
       fillOpacity: 0.08,
     }).addTo(map);
-    applyFilter(verticesRef.current);
+    await applyFilter(verticesRef.current);
   }
 
   function resetDraw(clearFilter = true) {
@@ -182,7 +195,7 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
     polygonRef.current = null;
     drawLayerRef.current?.clearLayers();
     if (mapRef.current) mapRef.current.getContainer().style.cursor = '';
-    if (clearFilter) applyFilter(null);
+    if (clearFilter) void applyFilter(null);
   }
 
   const results = selected ?? points;
@@ -192,7 +205,7 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
       {/* Araç çubuğu */}
       <div className="flex flex-wrap items-center gap-3">
         {!drawing ? (
-          <Button type="button" variant="brass" onClick={startDraw} disabled={!ready}>
+          <Button type="button" variant="brass" onClick={startDraw} disabled={!ready || filtering}>
             <PenLine className="h-4 w-4" />
             Bölge Çiz
           </Button>
@@ -208,7 +221,7 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
           </>
         )}
         {selected ? (
-          <Button type="button" variant="outline" onClick={() => resetDraw()}>
+          <Button type="button" variant="outline" onClick={() => resetDraw()} disabled={filtering}>
             <Eraser className="h-4 w-4" />
             Bölgeyi Temizle
           </Button>
@@ -216,6 +229,10 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
         <span className="text-[15px] text-muted-foreground">
           {drawing ? (
             'Haritaya tıklayarak bölgenin köşelerini işaretleyin.'
+          ) : filtering ? (
+            'Bölge aranıyor…'
+          ) : error ? (
+            <span className="text-destructive">Bölge araması başarısız oldu, tekrar deneyin.</span>
           ) : (
             <>
               <b className="font-semibold text-foreground">{results.length}</b> ilan{' '}

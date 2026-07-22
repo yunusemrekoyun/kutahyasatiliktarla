@@ -181,6 +181,10 @@ model Listing {
   // Üye başvuruda koordinat girmez; admin yayına alırken zorunlu kılınır (zod).
   lat            Float?
   lng            Float?
+  // lat/lng'den bir DB trigger'ıyla senkron tutulur (bkz. migration
+  // faz6_harita_postgis) — Prisma Client bu alanı okuyup yazamaz, yalnızca
+  // $queryRaw. Bölge-çizme araması ST_Within ile buradan sorgulanır.
+  geom           Unsupported("geometry(Point, 4326)")?
   tags           String[]
   description    String         @db.Text
   highlights     String[]
@@ -214,6 +218,7 @@ model Listing {
   @@index([status, publishedAt])
   @@index([priceValue])
   @@index([areaM2])
+  @@index([geom], type: Gist)
 }
 
 // Yayındaki ilan için üyenin fiyat güncelleme talebi — admin uygular/reddeder;

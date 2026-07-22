@@ -19,6 +19,8 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed:bulk": "tsx prisma/bulk-seed.ts",
+    "db:seed:bulk:clear": "tsx prisma/bulk-seed.ts --clear",
     "worker": "tsx watch src/worker/index.ts",
     "docker:dev:up": "docker compose -f docker-compose.dev.yml up -d",
     "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
