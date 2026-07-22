@@ -37,7 +37,9 @@ export function LeadMatch() {
     createLead,
     { ok: false },
   );
-  // Anti-spam zaman damgası: form render anı
+  // Anti-spam zaman damgası: formun sunucudan servis edildiği an — sunucu değeri
+  // kasıtlı olarak korunur (input'taki suppressHydrationWarning bu yüzden).
+  // eslint-disable-next-line react-hooks/purity
   const ts = useMemo(() => Date.now(), []);
   const fe = state.fieldErrors ?? {};
   const done = state.ok;
@@ -78,7 +80,7 @@ export function LeadMatch() {
                 aria-hidden="true"
                 className="absolute -left-[9999px] h-0 w-0 opacity-0"
               />
-              <input type="hidden" name="ts" value={ts} />
+              <input type="hidden" name="ts" value={ts} suppressHydrationWarning />
 
               <div className="grid gap-5 sm:grid-cols-2">
                 <div>

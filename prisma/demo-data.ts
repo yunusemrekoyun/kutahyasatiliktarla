@@ -6,7 +6,6 @@ import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import { auth } from '../src/lib/auth';
 import { deriveStructured } from '../src/lib/structured-specs';
-import { parsePrice } from '../src/lib/format';
 
 const prisma = new PrismaClient();
 

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getServerSession } from '@/lib/get-session';
 import { prisma } from '@/lib/prisma';
@@ -12,12 +13,12 @@ function UnauthorizedScreen() {
         <p className="mt-3 text-sm text-[#4b5b47]">
           Bu sayfayı görüntülemek için yönetici yetkisi gerekiyor.
         </p>
-        <a
+        <Link
           href="/"
           className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-[#3d5638] px-4 py-3 text-[#FAF7EF] transition-colors hover:bg-[#2d4228]"
         >
           Siteye Dön
-        </a>
+        </Link>
       </div>
     </div>
   );

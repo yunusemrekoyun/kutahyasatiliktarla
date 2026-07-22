@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Clapperboard, Loader2, Trash2, Upload } from 'lucide-react';
 import { deleteMediaItem, moveMediaItem } from '@/app/admin/ilanlar/media-actions';
 import { outlineBtn, primaryBtn } from './ui';
-import { cn } from '@/lib/utils';
 
 export type MediaItem = {
   id: string;

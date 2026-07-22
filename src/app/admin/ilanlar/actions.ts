@@ -11,12 +11,7 @@ import { uniqueListingSlug } from '@/lib/slugify';
 import { syncListingMedia } from '@/lib/media-sync';
 import { removeListingDir } from '@/lib/media-store';
 import { notifyOwnerPublished } from '@/lib/notify';
-import {
-  actionError,
-  actionOk,
-  zodToActionResult,
-  type ActionResult,
-} from '@/lib/action-result';
+import { actionError, zodToActionResult, type ActionResult } from '@/lib/action-result';
 import { listingAdminSchema } from './schema';
 
 function parseForm(formData: FormData) {

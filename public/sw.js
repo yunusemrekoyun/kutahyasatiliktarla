@@ -1,10 +1,16 @@
 // Basic offline-shell service worker.
-const CACHE = 'kst-v1';
-const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon.svg'];
+const CACHE = 'kst-v2';
+const APP_SHELL = ['/', '/manifest.webmanifest', '/icon.svg'];
 
 self.addEventListener('install', (event) => {
+  // Girdiler tek tek eklenir: biri başarısız olursa kalanlar cache'lenmeye devam eder
+  // (addAll hepsi-ya-da-hiçbiri davranır ve tek 404 tüm shell'i boş bırakır).
   event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(APP_SHELL)).catch(() => {})
+    caches
+      .open(CACHE)
+      .then((cache) =>
+        Promise.allSettled(APP_SHELL.map((url) => cache.add(url)))
+      )
   );
   self.skipWaiting();
 });
@@ -35,7 +41,9 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
           return res;
         })
-        .catch(() => caches.match('/index.html').then((r) => r || fetch(req)))
+        .catch(() =>
+          caches.match(req).then((r) => r || caches.match('/')).then((r) => r || fetch(req))
+        )
     );
     return;
   }
