@@ -57,9 +57,9 @@ export function ListingCard({ listing, className }: { listing: Listing; classNam
       </Link>
 
       <div className="flex flex-1 flex-col p-6">
-        <h3 className="font-heading text-[18px] font-semibold leading-snug tracking-[-0.01em] text-foreground sm:text-[19px]">
+        <h2 className="font-heading text-[18px] font-semibold leading-snug tracking-[-0.01em] text-foreground sm:text-[19px]">
           {listing.title}
-        </h3>
+        </h2>
         <p className="mt-2 flex items-center gap-1.5 text-[14px] text-muted-foreground">
           <MapPin className="h-4 w-4 shrink-0 text-brass" />
           {listing.location}

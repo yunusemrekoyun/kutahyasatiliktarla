@@ -124,7 +124,10 @@ export function LeadMatch() {
                 <div>
                   <Label className={fieldLabel}>İlçe</Label>
                   <Select name="district">
-                    <SelectTrigger className="h-12 w-full rounded-md border-input bg-white">
+                    <SelectTrigger
+                      aria-label="İlçe"
+                      className="h-12 w-full rounded-md border-input bg-white"
+                    >
                       <SelectValue placeholder="Fark etmez" />
                     </SelectTrigger>
                     <SelectContent>
@@ -139,7 +142,10 @@ export function LeadMatch() {
                 <div>
                   <Label className={fieldLabel}>Kullanım Amacı</Label>
                   <Select name="purpose">
-                    <SelectTrigger className="h-12 w-full rounded-md border-input bg-white">
+                    <SelectTrigger
+                      aria-label="Kullanım Amacı"
+                      className="h-12 w-full rounded-md border-input bg-white"
+                    >
                       <SelectValue placeholder="Seçin" />
                     </SelectTrigger>
                     <SelectContent>

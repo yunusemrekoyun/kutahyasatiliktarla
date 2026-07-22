@@ -92,9 +92,9 @@ export function ShowcaseListing({ listing }: { listing: Listing }) {
             <span className="draw-dash h-0.5 w-6 bg-brass" aria-hidden="true" />
             Öne çıkan parsel
           </p>
-          <h3 className="mt-3 font-heading text-2xl font-bold leading-tight tracking-[-0.01em] text-foreground sm:text-[1.75rem]">
+          <h2 className="mt-3 font-heading text-2xl font-bold leading-tight tracking-[-0.01em] text-foreground sm:text-[1.75rem]">
             {listing.title}
-          </h3>
+          </h2>
           <p className="mt-2 flex items-center gap-1.5 text-[15px] text-muted-foreground">
             <MapPin className="h-4 w-4 shrink-0 text-brass-strong" />
             {listing.location}

@@ -78,7 +78,8 @@ export default function LeafletMap({
 
     const latlngs: L.LatLngExpression[] = [];
     markers.forEach((m) => {
-      const marker = L.marker([m.lat, m.lng], { icon }).addTo(map);
+      // title: klavye odaklı pin'e (role=button) erişilebilir ad verir
+      const marker = L.marker([m.lat, m.lng], { icon, title: m.title }).addTo(map);
       const label = m.price ? `${m.title} · ${m.price}` : m.title;
       marker.bindTooltip(label, { direction: 'top', offset: [0, -32] });
       if (m.onClick) {

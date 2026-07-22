@@ -81,7 +81,7 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
           html: `<span class="kst-pin">${shortPrice(p.price)}</span>`,
           iconSize: [0, 0],
         });
-        const marker = L.marker([p.lat, p.lng], { icon }).addTo(map);
+        const marker = L.marker([p.lat, p.lng], { icon, title: p.title }).addTo(map);
         const img = p.img
           ? `<img src="${thumbUrl(p.img)}" alt="" style="width:100%;height:96px;object-fit:cover;border-radius:6px" />`
           : '';
