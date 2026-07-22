@@ -69,9 +69,12 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
         />
       ) : (
         <div className="mt-8 space-y-4 text-[16px] leading-relaxed text-foreground/85">
-          {post.body.split(/\n{2,}|\n/).filter(Boolean).map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
+          {post.body
+            .split(/\n{2,}|\n/)
+            .filter(Boolean)
+            .map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
         </div>
       )}
     </article>

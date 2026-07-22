@@ -4,12 +4,7 @@ import 'server-only';
 import { prisma } from './prisma';
 import { mapListingRow } from './mappers';
 import type { Listing } from '@/content';
-import {
-  PAGE_SIZE,
-  buildWhere,
-  parseSearchParams,
-  type SearchFilters,
-} from './search-core';
+import { PAGE_SIZE, buildWhere, parseSearchParams, type SearchFilters } from './search-core';
 import type { Prisma } from '@prisma/client';
 
 export { PAGE_SIZE, buildWhere, parseSearchParams, type SearchFilters };

@@ -35,10 +35,7 @@ export default async function Page() {
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_20rem]">
         <div className="rounded-lg border border-border bg-card p-5 shadow-soft sm:p-8">
-          <ListingApplicationForm
-            action={createListingApplication}
-            districts={districts}
-          />
+          <ListingApplicationForm action={createListingApplication} districts={districts} />
         </div>
 
         <aside className="lg:pt-2">
@@ -48,7 +45,10 @@ export default async function Page() {
           </h2>
           <ol className="mt-4 space-y-4">
             {STEPS.map((s, i) => (
-              <li key={s} className="flex items-start gap-3 text-[15px] leading-relaxed text-foreground/85">
+              <li
+                key={s}
+                className="flex items-start gap-3 text-[15px] leading-relaxed text-foreground/85"
+              >
                 <span className="nums mt-0.5 font-heading text-sm font-bold text-brass-strong">
                   {String(i + 1).padStart(2, '0')}
                 </span>
@@ -58,8 +58,7 @@ export default async function Page() {
           </ol>
           <p className="mt-6 flex items-start gap-2.5 rounded-lg border border-border bg-muted p-4 text-[14px] leading-relaxed text-muted-foreground">
             <CircleCheck className="mt-0.5 h-4 w-4 shrink-0 text-brass-strong" aria-hidden="true" />
-            Başvurunuzun durumunu Hesabım → İlanlarım sayfasından takip
-            edebilirsiniz.
+            Başvurunuzun durumunu Hesabım → İlanlarım sayfasından takip edebilirsiniz.
           </p>
         </aside>
       </div>

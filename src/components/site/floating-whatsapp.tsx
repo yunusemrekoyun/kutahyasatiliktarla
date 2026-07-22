@@ -7,7 +7,10 @@ export function FloatingWhatsApp() {
   const { content } = useStore();
   return (
     <a
-      href={waLink(content.contact.whatsapp, 'Merhaba, Kütahya’da arazi arıyorum, bilgi alabilir miyim?')}
+      href={waLink(
+        content.contact.whatsapp,
+        'Merhaba, Kütahya’da arazi arıyorum, bilgi alabilir miyim?',
+      )}
       target="_blank"
       rel="noreferrer"
       aria-label="WhatsApp’tan yazın"

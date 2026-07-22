@@ -4,11 +4,7 @@ import { headers } from 'next/headers';
 import { prisma } from '@/lib/prisma';
 import { redisConnection } from '@/lib/redis';
 import { notifyLeadAdmin, notifyLeadConfirm } from '@/lib/notify';
-import {
-  actionOk,
-  zodToActionResult,
-  type ActionResult,
-} from '@/lib/action-result';
+import { actionOk, zodToActionResult, type ActionResult } from '@/lib/action-result';
 import { leadSchema } from './lead-schema';
 
 const RATE_LIMIT_PER_HOUR = 5;
@@ -16,10 +12,7 @@ const RATE_LIMIT_PER_HOUR = 5;
 async function overRateLimit(): Promise<boolean> {
   try {
     const h = await headers();
-    const ip =
-      h.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-      h.get('x-real-ip') ||
-      'unknown';
+    const ip = h.get('x-forwarded-for')?.split(',')[0]?.trim() || h.get('x-real-ip') || 'unknown';
     const key = `lead:rl:${ip}`;
     const count = await redisConnection.incr(key);
     if (count === 1) await redisConnection.expire(key, 3600);
@@ -30,10 +23,7 @@ async function overRateLimit(): Promise<boolean> {
   }
 }
 
-export async function createLead(
-  _prev: ActionResult,
-  formData: FormData,
-): Promise<ActionResult> {
+export async function createLead(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
   // Anti-spam 1: honeypot — botların doldurduğu gizli alan
   if (String(formData.get('website') ?? '').trim() !== '') {
     return actionOk; // sessizce "başarılı"

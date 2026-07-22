@@ -37,11 +37,7 @@ export function useScrollScene<
     const setup = () => {
       teardown();
       teardown = () => {};
-      const next: SceneMode = reduce.matches
-        ? 'static'
-        : desktop.matches
-          ? 'scenic'
-          : 'lite';
+      const next: SceneMode = reduce.matches ? 'static' : desktop.matches ? 'scenic' : 'lite';
       setMode(next);
       if (next === 'static') return;
 

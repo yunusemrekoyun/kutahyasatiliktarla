@@ -15,10 +15,7 @@ export const LISTING_STATUSES = [
 ] as const;
 
 const optionalEnum = <T extends readonly [string, ...string[]]>(values: T) =>
-  z.preprocess(
-    (v) => (v === '' || v == null ? undefined : v),
-    z.enum(values).optional(),
-  );
+  z.preprocess((v) => (v === '' || v == null ? undefined : v), z.enum(values).optional());
 
 const optionalNumber = z.preprocess(
   (v) => (typeof v === 'string' && v.trim() === '' ? undefined : v),
@@ -60,7 +57,13 @@ export const listingAdminSchema = z
     highlights: z.string().transform(strToLines),
     specs: z.string().transform(strToSpecs),
     droneRequested: z.coerce.boolean(),
-    imarDurumu: optionalEnum(['imarsiz', 'koyYerlesik', 'konutImarli', 'sanayiTicari', 'diger'] as const),
+    imarDurumu: optionalEnum([
+      'imarsiz',
+      'koyYerlesik',
+      'konutImarli',
+      'sanayiTicari',
+      'diger',
+    ] as const),
     yolDurumu: optionalEnum(['cepheli', 'yakin', 'yok'] as const),
     tapuDurumu: optionalEnum(['mustakil', 'hisseli', 'tahsisli'] as const),
     suVar: z.coerce.boolean(),
@@ -76,13 +79,25 @@ export const listingAdminSchema = z
       });
     }
     if (!d.imarDurumu) {
-      ctx.addIssue({ code: 'custom', path: ['imarDurumu'], message: 'Yayın için imar durumu seçin.' });
+      ctx.addIssue({
+        code: 'custom',
+        path: ['imarDurumu'],
+        message: 'Yayın için imar durumu seçin.',
+      });
     }
     if (!d.yolDurumu) {
-      ctx.addIssue({ code: 'custom', path: ['yolDurumu'], message: 'Yayın için yol durumu seçin.' });
+      ctx.addIssue({
+        code: 'custom',
+        path: ['yolDurumu'],
+        message: 'Yayın için yol durumu seçin.',
+      });
     }
     if (!d.tapuDurumu) {
-      ctx.addIssue({ code: 'custom', path: ['tapuDurumu'], message: 'Yayın için tapu durumu seçin.' });
+      ctx.addIssue({
+        code: 'custom',
+        path: ['tapuDurumu'],
+        message: 'Yayın için tapu durumu seçin.',
+      });
     }
     // Görsel şartı action'da denetlenir (yüklenen dosyalar formda görünmez);
     // arazi bilgisi tablosunu artık yapısal alanlar dolduruyor — serbest

@@ -30,7 +30,10 @@ export function MobileActionBar() {
           className="h-12 gap-2 border-primary/30 bg-card text-base text-primary hover:border-primary/50"
         >
           <a
-            href={waLink(content.contact.whatsapp, 'Merhaba, Kütahya’da arazi arıyorum, bilgi alabilir miyim?')}
+            href={waLink(
+              content.contact.whatsapp,
+              'Merhaba, Kütahya’da arazi arıyorum, bilgi alabilir miyim?',
+            )}
             target="_blank"
             rel="noreferrer"
           >

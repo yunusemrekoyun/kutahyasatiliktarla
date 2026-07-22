@@ -18,7 +18,9 @@ export async function submitComplaint(
   if (reason.length < 10) {
     return {
       ok: false,
-      fieldErrors: { reason: ['Şikayet gerekçesini biraz daha ayrıntılı yazın (en az 10 karakter).'] },
+      fieldErrors: {
+        reason: ['Şikayet gerekçesini biraz daha ayrıntılı yazın (en az 10 karakter).'],
+      },
     };
   }
 
@@ -28,9 +30,7 @@ export async function submitComplaint(
   } catch {
     images = [];
   }
-  images = images
-    .filter((u) => typeof u === 'string' && u.startsWith('/m/sikayet/'))
-    .slice(0, 3);
+  images = images.filter((u) => typeof u === 'string' && u.startsWith('/m/sikayet/')).slice(0, 3);
 
   const conversation = await prisma.conversation.findUnique({
     where: { id: conversationId },
@@ -38,8 +38,7 @@ export async function submitComplaint(
   });
   if (
     !conversation ||
-    (conversation.buyerId !== session.user.id &&
-      conversation.sellerId !== session.user.id)
+    (conversation.buyerId !== session.user.id && conversation.sellerId !== session.user.id)
   ) {
     return actionError('Sohbet bulunamadı.');
   }

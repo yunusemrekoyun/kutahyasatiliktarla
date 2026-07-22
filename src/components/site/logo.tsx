@@ -16,12 +16,7 @@ export function Logo({
 }) {
   return (
     <span className={cn('flex items-center gap-2.5', className)}>
-      <svg
-        viewBox="0 0 40 40"
-        className="h-9 w-9 shrink-0"
-        role="img"
-        aria-hidden="true"
-      >
+      <svg viewBox="0 0 40 40" className="h-9 w-9 shrink-0" role="img" aria-hidden="true">
         <circle cx="20" cy="20" r="19" fill="#F7F3EA" />
         <clipPath id="kst-emblem">
           <circle cx="20" cy="20" r="19" />

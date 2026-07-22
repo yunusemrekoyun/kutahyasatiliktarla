@@ -7,10 +7,7 @@ import { ChevronDown, ExternalLink, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  ListingApplicationForm,
-  type ApplicationDefaults,
-} from './listing-application-form';
+import { ListingApplicationForm, type ApplicationDefaults } from './listing-application-form';
 import { cn } from '@/lib/utils';
 import type { ActionResult } from '@/lib/action-result';
 import {
@@ -47,13 +44,7 @@ export type MyListing = {
 const fieldLabel =
   'mb-2 block text-[12px] font-semibold uppercase tracking-[0.16em] text-muted-foreground';
 
-export function MyListingCard({
-  listing,
-  districts,
-}: {
-  listing: MyListing;
-  districts: string[];
-}) {
+export function MyListingCard({ listing, districts }: { listing: MyListing; districts: string[] }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [priceOpen, setPriceOpen] = useState(false);
@@ -82,11 +73,7 @@ export function MyListingCard({
         <div className="h-20 w-full shrink-0 overflow-hidden rounded-md bg-muted sm:w-28">
           {listing.coverUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={listing.coverUrl}
-              alt=""
-              className="h-full w-full object-cover"
-            />
+            <img src={listing.coverUrl} alt="" className="h-full w-full object-cover" />
           ) : (
             <div className="grid h-full w-full place-items-center text-muted-foreground">
               <MapPin className="h-6 w-6" />
@@ -157,11 +144,7 @@ export function MyListingCard({
                 Pasife Al
               </Button>
               {!listing.hasPendingPriceRequest ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPriceOpen((v) => !v)}
-                >
+                <Button variant="outline" size="sm" onClick={() => setPriceOpen((v) => !v)}>
                   Fiyat Güncelle
                   <ChevronDown
                     className={cn('h-4 w-4 transition-transform', priceOpen && 'rotate-180')}
@@ -237,8 +220,8 @@ export function MyListingCard({
             </p>
           ) : null}
           <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
-            Fiyat değişikliği, doğrulanmış ilan bilgisi korunacak şekilde
-            ekibimizin onayıyla yayına yansır.
+            Fiyat değişikliği, doğrulanmış ilan bilgisi korunacak şekilde ekibimizin onayıyla yayına
+            yansır.
           </p>
         </div>
       ) : null}

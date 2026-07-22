@@ -23,8 +23,8 @@ export function SiteFooter() {
         <div>
           <Logo brand={content.brand} tone="light" />
           <p className="mt-5 max-w-xs text-[15px] leading-relaxed text-primary-foreground/60">
-            Kütahya ve ilçelerinde tarla, arsa ve arazi alıp satmak isteyenleri
-            buluşturan yerel platform. Gerçek fotoğraf, net bilgi, kolay iletişim.
+            Kütahya ve ilçelerinde tarla, arsa ve arazi alıp satmak isteyenleri buluşturan yerel
+            platform. Gerçek fotoğraf, net bilgi, kolay iletişim.
           </p>
         </div>
 
@@ -108,8 +108,13 @@ export function SiteFooter() {
 
       <div className="relative border-t border-white/10">
         <div className="container flex flex-col items-center justify-between gap-3 py-6 text-sm text-primary-foreground/55 sm:flex-row">
-          <p>© {new Date().getFullYear()} {content.brand}. Tüm hakları saklıdır.</p>
-          <nav aria-label="Yasal bağlantılar" className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-[13px]">
+          <p>
+            © {new Date().getFullYear()} {content.brand}. Tüm hakları saklıdır.
+          </p>
+          <nav
+            aria-label="Yasal bağlantılar"
+            className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-[13px]"
+          >
             {[
               { key: 'kvkk', label: 'KVKK' },
               { key: 'gizlilik', label: 'Gizlilik' },

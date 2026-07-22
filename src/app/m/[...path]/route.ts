@@ -3,12 +3,7 @@ import { stat } from 'node:fs/promises';
 import { Readable } from 'node:stream';
 import type { NextRequest } from 'next/server';
 import { getServerSession } from '@/lib/get-session';
-import {
-  CONTENT_TYPES,
-  UPLOAD_DIR,
-  isSafeSegment,
-  mediaFilePath,
-} from '@/lib/media-store';
+import { CONTENT_TYPES, UPLOAD_DIR, isSafeSegment, mediaFilePath } from '@/lib/media-store';
 
 /** Yüklenen medyayı diskten akıtır: /m/{listingId}/{dosya}.
  * Dosya adları içerik-adresli (mediaId + ek) olduğundan immutable cache'lenir.
@@ -18,11 +13,7 @@ export async function GET(
   { params }: { params: Promise<{ path: string[] }> },
 ) {
   const { path: segments } = await params;
-  if (
-    !Array.isArray(segments) ||
-    segments.length !== 2 ||
-    !segments.every(isSafeSegment)
-  ) {
+  if (!Array.isArray(segments) || segments.length !== 2 || !segments.every(isSafeSegment)) {
     return new Response('Not found', { status: 404 });
   }
 
@@ -35,8 +26,7 @@ export async function GET(
     const session = await getServerSession();
     const allowed =
       !!session &&
-      (session.user.role === 'admin' ||
-        fileName.startsWith(session.user.id.slice(0, 8)));
+      (session.user.role === 'admin' || fileName.startsWith(session.user.id.slice(0, 8)));
     if (!allowed) return new Response('Not found', { status: 404 });
   }
 
@@ -61,9 +51,7 @@ export async function GET(
     headers: {
       'Content-Type': CONTENT_TYPES[ext] ?? 'application/octet-stream',
       'Content-Length': String(info.size),
-      'Cache-Control': isComplaint
-        ? 'private, max-age=600'
-        : 'public, max-age=31536000, immutable',
+      'Cache-Control': isComplaint ? 'private, max-age=600' : 'public, max-age=31536000, immutable',
     },
   });
 }

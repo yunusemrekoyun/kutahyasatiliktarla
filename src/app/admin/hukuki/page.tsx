@@ -17,8 +17,7 @@ export default async function AdminLegalPage() {
   return (
     <Card title="Hukuki Metinler">
       <p className="mb-4 text-xs text-[#8A6A43]">
-        Bu metinler sitede /yasal sayfalarında yayımlanır; kaydettiğiniz anda
-        güncellenir.
+        Bu metinler sitede /yasal sayfalarında yayımlanır; kaydettiğiniz anda güncellenir.
       </p>
       <div className="space-y-3">
         {DOCS.map((d) => {

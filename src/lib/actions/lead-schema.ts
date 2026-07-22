@@ -2,11 +2,7 @@
 import { z } from 'zod';
 
 export const leadSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, 'Adınızı yazın.')
-    .max(100, 'Ad çok uzun.'),
+  name: z.string().trim().min(2, 'Adınızı yazın.').max(100, 'Ad çok uzun.'),
   phone: z
     .string()
     .trim()
@@ -23,9 +19,4 @@ export const leadSchema = z.object({
   }),
 });
 
-export const LEAD_PURPOSES = [
-  'Tarımsal kullanım',
-  'Yatırım',
-  'Konut / bağ evi',
-  'Diğer',
-] as const;
+export const LEAD_PURPOSES = ['Tarımsal kullanım', 'Yatırım', 'Konut / bağ evi', 'Diğer'] as const;

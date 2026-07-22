@@ -3,13 +3,7 @@ import { rm } from 'node:fs/promises';
 import { once } from 'node:events';
 import { NextResponse, type NextRequest } from 'next/server';
 import { requireAdmin } from '@/lib/auth-guards';
-import {
-  IMAGE_EXTS,
-  ensureMediaDir,
-  mediaFilePath,
-  mediaUrl,
-  safeExt,
-} from '@/lib/media-store';
+import { IMAGE_EXTS, ensureMediaDir, mediaFilePath, mediaUrl, safeExt } from '@/lib/media-store';
 
 const MAX_BYTES = 10 * 1024 * 1024;
 const FOLDER = 'icerik'; // hukuki/rehber gövdelerine gömülen görseller

@@ -95,7 +95,11 @@ export function ComplaintForm({
         {images.map((url) => (
           <span key={url} className="relative inline-block">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={url} alt="" className="h-14 w-14 rounded-md border border-border object-cover" />
+            <img
+              src={url}
+              alt=""
+              className="h-14 w-14 rounded-md border border-border object-cover"
+            />
             <button
               type="button"
               aria-label="Görüntüyü kaldır"
@@ -125,13 +129,17 @@ export function ComplaintForm({
             />
           </label>
         ) : null}
-        <span className="text-[12px] text-muted-foreground">
-          Ekran görüntüsü (en çok 3 · 5 MB)
-        </span>
+        <span className="text-[12px] text-muted-foreground">Ekran görüntüsü (en çok 3 · 5 MB)</span>
       </div>
       {uploadError ? <p className="mt-1 text-sm text-destructive">{uploadError}</p> : null}
 
-      <Button type="submit" variant="brass" size="sm" disabled={pending || uploading} className="mt-3">
+      <Button
+        type="submit"
+        variant="brass"
+        size="sm"
+        disabled={pending || uploading}
+        className="mt-3"
+      >
         {pending ? 'Gönderiliyor…' : 'Şikayeti Gönder'}
       </Button>
     </form>

@@ -17,8 +17,12 @@ export async function saveBlogPost(
 ): Promise<ActionResult> {
   await requireAdmin();
 
-  const title = String(formData.get('title') ?? '').trim().slice(0, 160);
-  const category = String(formData.get('category') ?? '').trim().slice(0, 60);
+  const title = String(formData.get('title') ?? '')
+    .trim()
+    .slice(0, 160);
+  const category = String(formData.get('category') ?? '')
+    .trim()
+    .slice(0, 60);
   const body = sanitizeRichHtml(String(formData.get('body') ?? '').slice(0, 100_000)).trim();
   const status = formData.get('status') === 'yayinda' ? 'yayinda' : 'taslak';
 

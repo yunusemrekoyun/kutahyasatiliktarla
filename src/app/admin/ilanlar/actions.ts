@@ -133,18 +133,18 @@ export async function saveListing(
 
     const id = listingId;
     try {
-    await prisma.$transaction(async (tx) => {
-      await tx.listing.update({
-        where: { id },
-        data: {
-          ...data,
-          // yayına dönen ilanda eski red nedeni kalmasın
-          rejectReason: d.status === 'reddedildi' ? undefined : null,
-          publishedAt: publishedNow ? new Date() : undefined,
-        },
+      await prisma.$transaction(async (tx) => {
+        await tx.listing.update({
+          where: { id },
+          data: {
+            ...data,
+            // yayına dönen ilanda eski red nedeni kalmasın
+            rejectReason: d.status === 'reddedildi' ? undefined : null,
+            publishedAt: publishedNow ? new Date() : undefined,
+          },
+        });
+        await syncListingMedia(tx, id, d.images, d.droneVideo || undefined);
       });
-      await syncListingMedia(tx, id, d.images, d.droneVideo || undefined);
-    });
     } catch (err) {
       if (err instanceof Error && err.message.includes('medya öğesi')) {
         return { ok: false, fieldErrors: { images: [err.message] } };

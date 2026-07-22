@@ -34,9 +34,7 @@ export function AuthCard({
             {title}
           </h1>
           {subtitle ? (
-            <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
-              {subtitle}
-            </p>
+            <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{subtitle}</p>
           ) : null}
           <div className="mt-6">{children}</div>
         </div>

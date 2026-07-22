@@ -42,8 +42,7 @@ export default async function Page({
 
       {error ? (
         <p className="mt-6 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-          {authErrorMessage(error)} Bağlantı zaten kullanılmış olabilir — giriş
-          yapmayı deneyin.
+          {authErrorMessage(error)} Bağlantı zaten kullanılmış olabilir — giriş yapmayı deneyin.
         </p>
       ) : null}
 
@@ -56,8 +55,7 @@ export default async function Page({
 
           {total === 0 ? (
             <p className="mt-3 max-w-md leading-relaxed text-muted-foreground">
-              Henüz ilan başvurunuz yok. Arazinizi birkaç dakikada ücretsiz
-              ilana verin.
+              Henüz ilan başvurunuz yok. Arazinizi birkaç dakikada ücretsiz ilana verin.
             </p>
           ) : (
             <dl className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -114,8 +112,7 @@ export default async function Page({
           <h2 className="font-heading text-[16px] font-semibold text-foreground">
             Yakında hesabınızda
           </h2>
-          <ul className="mt-3 space-y-2 text-[14px] leading-relaxed text-muted-foreground">
-          </ul>
+          <ul className="mt-3 space-y-2 text-[14px] leading-relaxed text-muted-foreground"></ul>
         </aside>
       </div>
     </div>

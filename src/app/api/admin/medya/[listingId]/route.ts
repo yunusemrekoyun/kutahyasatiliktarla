@@ -85,8 +85,7 @@ export async function POST(
       select: { id: true, variants: true },
     });
     if (existing) {
-      const url =
-        ((existing.variants as { url?: string }[] | null)?.[0]?.url ?? '').trim();
+      const url = ((existing.variants as { url?: string }[] | null)?.[0]?.url ?? '').trim();
       if (url.startsWith('/m/')) {
         return NextResponse.json(
           { error: 'Zaten yüklenmiş bir video var — önce onu silin.' },

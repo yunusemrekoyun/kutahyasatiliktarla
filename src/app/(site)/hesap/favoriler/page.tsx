@@ -44,8 +44,7 @@ export default async function Page() {
               Henüz favoriniz yok
             </h3>
             <p className="mx-auto mt-2 max-w-sm leading-relaxed text-muted-foreground">
-              İlan kartlarındaki kalp simgesiyle beğendiğiniz arazileri burada
-              toplayın.
+              İlan kartlarındaki kalp simgesiyle beğendiğiniz arazileri burada toplayın.
             </p>
             <Button asChild variant="brass" className="mt-6">
               <Link href="/ilanlar">İlanlara Göz At</Link>

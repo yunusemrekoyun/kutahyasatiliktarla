@@ -7,10 +7,7 @@ import { actionError, actionOk, type ActionResult } from '@/lib/action-result';
 const STATUSES = ['yeni', 'okundu', 'donuldu'] as const;
 type LeadStatus = (typeof STATUSES)[number];
 
-export async function setLeadStatus(
-  leadId: string,
-  status: string,
-): Promise<ActionResult> {
+export async function setLeadStatus(leadId: string, status: string): Promise<ActionResult> {
   await requireAdmin();
   if (!STATUSES.includes(status as LeadStatus)) return actionError('Geçersiz durum.');
   const updated = await prisma.lead.updateMany({

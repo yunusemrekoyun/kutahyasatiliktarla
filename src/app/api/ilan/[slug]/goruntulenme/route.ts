@@ -2,10 +2,7 @@ import { prisma } from '@/lib/prisma';
 
 /** Görüntülenme artışı — public'te render edilmediği için revalidate
  * ÇAĞRILMAZ (aksi halde her görüntüleme sayfa cache'ini düşürürdü). */
-export async function POST(
-  _req: Request,
-  { params }: { params: Promise<{ slug: string }> },
-) {
+export async function POST(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   try {
     await prisma.listing.updateMany({

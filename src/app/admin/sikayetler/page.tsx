@@ -29,8 +29,8 @@ export default async function AdminComplaintsPage() {
   return (
     <Card title={`Şikayetler (${complaints.length})`}>
       <p className="mb-4 text-xs text-[#8A6A43]">
-        Gizlilik gereği yazışma içerikleri görünmez — yalnızca şikayetçinin
-        gerekçesi ve eklediği ekran görüntüleri listelenir.
+        Gizlilik gereği yazışma içerikleri görünmez — yalnızca şikayetçinin gerekçesi ve eklediği
+        ekran görüntüleri listelenir.
       </p>
       {complaints.length === 0 ? (
         <div className="flex flex-col items-center gap-2 py-10 text-sm text-[#4b5b47]">
@@ -40,7 +40,10 @@ export default async function AdminComplaintsPage() {
       ) : (
         <div className="space-y-3">
           {complaints.map((c) => (
-            <article key={c.id} className="rounded-2xl border border-[#D9E3D5] bg-white p-4 text-sm">
+            <article
+              key={c.id}
+              className="rounded-2xl border border-[#D9E3D5] bg-white p-4 text-sm"
+            >
               <div className="flex flex-wrap items-center gap-2">
                 <StatusPill
                   label={c.status === 'acik' ? 'Açık' : 'Kapatıldı'}
@@ -57,9 +60,7 @@ export default async function AdminComplaintsPage() {
                   {dateFmt.format(c.createdAt)}
                 </span>
               </div>
-              <p className="mt-2 whitespace-pre-wrap leading-relaxed text-[#1f2a1d]">
-                {c.reason}
-              </p>
+              <p className="mt-2 whitespace-pre-wrap leading-relaxed text-[#1f2a1d]">{c.reason}</p>
               {c.images.length > 0 ? (
                 <div className="mt-3 flex flex-wrap gap-2">
                   {c.images.map((url) => (

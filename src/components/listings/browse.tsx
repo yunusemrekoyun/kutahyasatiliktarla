@@ -12,13 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
+import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { ListingCard } from '@/components/listings/listing-card';
 import { Reveal } from '@/components/motion/reveal';
 import { ParcelFrame, TopoLines } from '@/components/site/topo';
@@ -136,8 +130,18 @@ function FilterRail({
 }
 
 const FILTER_KEYS = [
-  'ilce', 'tur', 'q', 'imar', 'tapu', 'yol', 'su', 'elektrik',
-  'minFiyat', 'maxFiyat', 'minAlan', 'maxAlan',
+  'ilce',
+  'tur',
+  'q',
+  'imar',
+  'tapu',
+  'yol',
+  'su',
+  'elektrik',
+  'minFiyat',
+  'maxFiyat',
+  'minAlan',
+  'maxAlan',
 ] as const;
 
 /** Ray altı gelişmiş filtreler: imar/tapu/yol seçmelileri, su/elektrik ve
@@ -270,7 +274,8 @@ export function Browse({ result }: { result: SearchResult }) {
     const min = get(minK);
     const max = get(maxK);
     if (!min && !max) return null;
-    const label = min && max ? `${min}–${max} ${unit}` : min ? `≥ ${min} ${unit}` : `≤ ${max} ${unit}`;
+    const label =
+      min && max ? `${min}–${max} ${unit}` : min ? `≥ ${min} ${unit}` : `≤ ${max} ${unit}`;
     return { key: `${minK},${maxK}`, label };
   };
   const chips = [
@@ -312,8 +317,8 @@ export function Browse({ result }: { result: SearchResult }) {
                   {title}
                 </h1>
                 <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
-                  Kütahya merkez ve ilçelerindeki arazi kayıtları. İlçe ve türe
-                  göre süzün; her ilan gerçek fotoğraf ve net arazi bilgisiyle.
+                  Kütahya merkez ve ilçelerindeki arazi kayıtları. İlçe ve türe göre süzün; her ilan
+                  gerçek fotoğraf ve net arazi bilgisiyle.
                 </p>
               </div>
             </div>
@@ -415,7 +420,10 @@ export function Browse({ result }: { result: SearchResult }) {
                   </Link>
                 </Button>
                 <SaveSearchButton chipLabels={chips.map((c) => c.label)} />
-                <Select value={sirala} onValueChange={(v) => setParam('sirala', v === 'one-cikan' ? null : v)}>
+                <Select
+                  value={sirala}
+                  onValueChange={(v) => setParam('sirala', v === 'one-cikan' ? null : v)}
+                >
                   <SelectTrigger
                     className="h-11 w-auto gap-2 rounded-sm border-input bg-card text-[14px] font-medium lg:h-9"
                     aria-label="Sıralama"
@@ -443,8 +451,7 @@ export function Browse({ result }: { result: SearchResult }) {
                   Bu kriterlere uygun ilan bulunamadı
                 </h2>
                 <p className="mx-auto mt-2 max-w-sm leading-relaxed text-muted-foreground">
-                  Filtreleri değiştirin ya da bize ulaşın; size uygun araziyi
-                  birlikte bulalım.
+                  Filtreleri değiştirin ya da bize ulaşın; size uygun araziyi birlikte bulalım.
                 </p>
                 <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
                   <Button

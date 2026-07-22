@@ -26,7 +26,11 @@ export async function generateMetadata({
   }
   return {
     title: listing.title,
-    description: `${listing.location} · ${listing.area} · ${listing.price}. ${listing.description ?? ''}`.slice(0, 160),
+    description:
+      `${listing.location} · ${listing.area} · ${listing.price}. ${listing.description ?? ''}`.slice(
+        0,
+        160,
+      ),
     alternates: { canonical: `/ilan/${listing.id}` },
     openGraph: listing.images[0] ? { images: [listing.images[0]] } : undefined,
   };

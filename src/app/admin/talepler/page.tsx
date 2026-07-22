@@ -47,10 +47,7 @@ export default async function AdminLeadsPage() {
                     {lead.phone}
                   </a>
                   {lead.email ? (
-                    <a
-                      href={`mailto:${lead.email}`}
-                      className="text-[#3d5638] hover:underline"
-                    >
+                    <a href={`mailto:${lead.email}`} className="text-[#3d5638] hover:underline">
                       {lead.email}
                     </a>
                   ) : null}

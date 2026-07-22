@@ -5,11 +5,22 @@ import sanitize from 'sanitize-html';
 export function sanitizeRichHtml(html: string): string {
   return sanitize(html, {
     allowedTags: [
-      'p', 'br', 'strong', 'em', 'u', 's',
-      'h2', 'h3', 'h4',
-      'ul', 'ol', 'li',
-      'blockquote', 'hr',
-      'a', 'img',
+      'p',
+      'br',
+      'strong',
+      'em',
+      'u',
+      's',
+      'h2',
+      'h3',
+      'h4',
+      'ul',
+      'ol',
+      'li',
+      'blockquote',
+      'hr',
+      'a',
+      'img',
     ],
     allowedAttributes: {
       a: ['href', 'target', 'rel'],

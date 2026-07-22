@@ -15,8 +15,7 @@ import { kvTable, renderEmail, textToHtml } from './templates';
 import { processMedia } from './media';
 import { runSavedSearchDigest } from './digest';
 
-const FROM =
-  process.env.SMTP_FROM ?? 'Kütahya Satılık Tarla <no-reply@kutahyasatiliktarla.com>';
+const FROM = process.env.SMTP_FROM ?? 'Kütahya Satılık Tarla <no-reply@kutahyasatiliktarla.com>';
 
 function buildMessage(data: EmailJobData): { subject: string; html: string } {
   switch (data.kind) {
@@ -96,16 +95,13 @@ const worker = new Worker<EmailJobData>(
 worker.on('completed', (job) =>
   console.log(`[worker] ${job.data.kind} → ${job.data.to} (job ${job.id}) gönderildi`),
 );
-worker.on('failed', (job, err) =>
-  console.error(`[worker] job ${job?.id} başarısız:`, err),
-);
+worker.on('failed', (job, err) => console.error(`[worker] job ${job?.id} başarısız:`, err));
 
 // Medya işleme worker'ı — sharp CPU-yoğun olduğundan düşük eşzamanlılık
 const prisma = new PrismaClient();
 
 // Varyantlar DB'ye yazılınca public cache'in beklemesin diye app'e haber ver
-const APP_URL =
-  process.env.INTERNAL_APP_URL ?? process.env.SITE_URL ?? 'http://localhost:3000';
+const APP_URL = process.env.INTERNAL_APP_URL ?? process.env.SITE_URL ?? 'http://localhost:3000';
 
 async function revalidateListing(slug: string) {
   const secret = process.env.REVALIDATE_SECRET;
@@ -161,4 +157,11 @@ digestWorker.on('failed', (job, err) =>
   console.error(`[worker] özet job ${job?.id} başarısız:`, err),
 );
 
-console.log('[worker] başlatıldı — kuyruklar:', EMAIL_QUEUE_NAME, '+', MEDIA_QUEUE_NAME, '+', DIGEST_QUEUE);
+console.log(
+  '[worker] başlatıldı — kuyruklar:',
+  EMAIL_QUEUE_NAME,
+  '+',
+  MEDIA_QUEUE_NAME,
+  '+',
+  DIGEST_QUEUE,
+);

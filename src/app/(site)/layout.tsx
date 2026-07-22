@@ -22,21 +22,21 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
   return (
     <ContentProvider content={chrome}>
       <FavoritesProvider>
-      <SiteHeader />
-      {/* Yüzen header sabit konumlu: içerik üstten onun payını alır; ana
+        <SiteHeader />
+        {/* Yüzen header sabit konumlu: içerik üstten onun payını alır; ana
           sayfadaki hero bu payı negatif marjla geri alıp tam ekran başlar.
           Mobil alt aksiyon çubuğu için alt boşluk: bar yüksekliği + iPhone
           home-indicator safe-area'sı (yoksa footer'ın altı bar altında kalır). */}
-      <div
-        id="top"
-        className="pb-[calc(var(--action-bar-h)+env(safe-area-inset-bottom))] pt-20 lg:pb-0 lg:pt-24"
-      >
-        <main>{children}</main>
-        <SiteFooter />
-      </div>
-      <FloatingWhatsApp />
-      <MobileActionBar />
-    </FavoritesProvider>
+        <div
+          id="top"
+          className="pb-[calc(var(--action-bar-h)+env(safe-area-inset-bottom))] pt-20 lg:pb-0 lg:pt-24"
+        >
+          <main>{children}</main>
+          <SiteFooter />
+        </div>
+        <FloatingWhatsApp />
+        <MobileActionBar />
+      </FavoritesProvider>
     </ContentProvider>
   );
 }

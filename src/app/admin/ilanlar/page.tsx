@@ -27,9 +27,7 @@ export default async function AdminListingsPage({
   searchParams: Promise<{ durum?: string; kayit?: string; silindi?: string }>;
 }) {
   const { durum, kayit, silindi } = await searchParams;
-  const statusFilter = VALID_STATUSES.includes(durum ?? '')
-    ? (durum as ListingStatus)
-    : undefined;
+  const statusFilter = VALID_STATUSES.includes(durum ?? '') ? (durum as ListingStatus) : undefined;
 
   const listings = await prisma.listing.findMany({
     where: statusFilter ? { status: statusFilter } : undefined,
@@ -67,9 +65,7 @@ export default async function AdminListingsPage({
                 href={f.value ? `/admin/ilanlar?durum=${f.value}` : '/admin/ilanlar'}
                 className={cn(
                   'whitespace-nowrap rounded-full px-3 py-1.5 text-xs transition-colors',
-                  active
-                    ? 'bg-[#3d5638] text-[#FAF7EF]'
-                    : 'text-[#2d3a2a] hover:bg-[#1f2a1d]/5',
+                  active ? 'bg-[#3d5638] text-[#FAF7EF]' : 'text-[#2d3a2a] hover:bg-[#1f2a1d]/5',
                 )}
               >
                 {f.label}
@@ -79,9 +75,7 @@ export default async function AdminListingsPage({
         </div>
 
         {listings.length === 0 ? (
-          <p className="py-8 text-center text-sm text-[#4b5b47]">
-            Bu durumda ilan yok.
-          </p>
+          <p className="py-8 text-center text-sm text-[#4b5b47]">Bu durumda ilan yok.</p>
         ) : (
           <div className="space-y-3">
             {listings.map((l) => {

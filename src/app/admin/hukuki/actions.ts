@@ -18,7 +18,9 @@ export async function updateLegalDoc(
   await requireAdmin();
   if (!KEYS.includes(key as LegalKey)) return actionError('Geçersiz belge.');
 
-  const title = String(formData.get('title') ?? '').trim().slice(0, 160);
+  const title = String(formData.get('title') ?? '')
+    .trim()
+    .slice(0, 160);
   const body = sanitizeRichHtml(String(formData.get('body') ?? '').slice(0, 200_000)).trim();
 
   const fieldErrors: Record<string, string[]> = {};

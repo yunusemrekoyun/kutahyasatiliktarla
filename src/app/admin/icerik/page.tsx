@@ -21,8 +21,7 @@ export default async function AdminContentPage() {
     return (
       <Card title="İçerik">
         <p className="text-sm text-red-600">
-          Site içeriği bulunamadı — veritabanı seed edilmemiş görünüyor
-          (npx tsx prisma/seed.ts).
+          Site içeriği bulunamadı — veritabanı seed edilmemiş görünüyor (npx tsx prisma/seed.ts).
         </p>
       </Card>
     );

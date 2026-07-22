@@ -17,7 +17,12 @@ describe('parseSearchParams', () => {
   });
 
   it('biçimli sayıları ve bayrakları çözer', () => {
-    const f = parseSearchParams({ minFiyat: '1.500.000', maxAlan: '25 000', su: '1', elektrik: '0' });
+    const f = parseSearchParams({
+      minFiyat: '1.500.000',
+      maxAlan: '25 000',
+      su: '1',
+      elektrik: '0',
+    });
     expect(f.minFiyat).toBe(1500000);
     expect(f.maxAlan).toBe(25000);
     expect(f.su).toBe(true);

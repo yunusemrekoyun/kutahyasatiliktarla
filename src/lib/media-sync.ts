@@ -31,19 +31,12 @@ export async function syncListingMedia(
   const urlOf = (m: (typeof existing)[number]) =>
     ((m.variants as { url?: string }[] | null)?.[0]?.url ?? '').trim();
 
-  const uploadedImages = existing.filter(
-    (m) => m.type === 'image' && isUploaded(urlOf(m)),
-  );
-  const externalImages = existing.filter(
-    (m) => m.type === 'image' && !isUploaded(urlOf(m)),
-  );
-  const uploadedVideo =
-    existing.find((m) => m.type === 'video' && isUploaded(urlOf(m))) ?? null;
-  const externalVideo =
-    existing.find((m) => m.type === 'video' && !isUploaded(urlOf(m))) ?? null;
+  const uploadedImages = existing.filter((m) => m.type === 'image' && isUploaded(urlOf(m)));
+  const externalImages = existing.filter((m) => m.type === 'image' && !isUploaded(urlOf(m)));
+  const uploadedVideo = existing.find((m) => m.type === 'video' && isUploaded(urlOf(m))) ?? null;
+  const externalVideo = existing.find((m) => m.type === 'video' && !isUploaded(urlOf(m))) ?? null;
 
-  const total =
-    uploadedImages.length + images.length + (uploadedVideo || video ? 1 : 0);
+  const total = uploadedImages.length + images.length + (uploadedVideo || video ? 1 : 0);
   if (total > MAX_MEDIA) {
     throw new Error(`En fazla ${MAX_MEDIA} medya öğesi eklenebilir (şu an ${total}).`);
   }

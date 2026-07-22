@@ -21,11 +21,7 @@ export function ContentProvider({
   content: SiteChrome;
   children: ReactNode;
 }) {
-  return (
-    <ContentContext.Provider value={{ content }}>
-      {children}
-    </ContentContext.Provider>
-  );
+  return <ContentContext.Provider value={{ content }}>{children}</ContentContext.Provider>;
 }
 
 export function useStore(): Store {

@@ -242,9 +242,9 @@ export function ListingApplicationForm({
           className="mt-1 h-4 w-4 shrink-0 accent-[hsl(154_42%_15%)]"
         />
         <span>
-          <span className="font-semibold text-foreground">Drone çekimi istiyorum.</span>{' '}
-          Ekibimiz sahada fotoğraf çekimini her durumda yapar; bu kutuyu
-          işaretlerseniz havadan drone videosu da çekilir.
+          <span className="font-semibold text-foreground">Drone çekimi istiyorum.</span> Ekibimiz
+          sahada fotoğraf çekimini her durumda yapar; bu kutuyu işaretlerseniz havadan drone videosu
+          da çekilir.
         </span>
       </label>
 

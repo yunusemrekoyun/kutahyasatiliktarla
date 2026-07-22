@@ -75,13 +75,14 @@ export function AdminShell({
         </div>
       </header>
 
-      <nav className="border-b border-[#D9E3D5] bg-[#FAF7EF] px-4 sm:px-6" aria-label="Yönetim menüsü">
+      <nav
+        className="border-b border-[#D9E3D5] bg-[#FAF7EF] px-4 sm:px-6"
+        aria-label="Yönetim menüsü"
+      >
         <div className="mx-auto flex max-w-5xl gap-1 overflow-x-auto py-2">
           {NAV.map((item) => {
             const active =
-              item.href === '/admin'
-                ? pathname === '/admin'
-                : pathname.startsWith(item.href);
+              item.href === '/admin' ? pathname === '/admin' : pathname.startsWith(item.href);
             const badge = badgeFor(item.href);
             return (
               <Link

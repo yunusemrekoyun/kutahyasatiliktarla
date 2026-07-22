@@ -1,6 +1,11 @@
 'use client';
 
-import type { ReactNode, InputHTMLAttributes, TextareaHTMLAttributes, SelectHTMLAttributes } from 'react';
+import type {
+  ReactNode,
+  InputHTMLAttributes,
+  TextareaHTMLAttributes,
+  SelectHTMLAttributes,
+} from 'react';
 import { useFormStatus } from 'react-dom';
 import { Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -20,7 +25,9 @@ export function Card({
   className?: string;
 }) {
   return (
-    <section className={cn('rounded-2xl border border-[#D9E3D5] bg-[#FAF7EF] p-5 sm:p-6', className)}>
+    <section
+      className={cn('rounded-2xl border border-[#D9E3D5] bg-[#FAF7EF] p-5 sm:p-6', className)}
+    >
       {title ? (
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-medium text-[#1f2a1d]">{title}</h2>

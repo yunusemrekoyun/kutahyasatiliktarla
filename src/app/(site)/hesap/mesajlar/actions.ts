@@ -83,8 +83,7 @@ export async function sendMessage(
   });
   if (
     !conversation ||
-    (conversation.buyerId !== session.user.id &&
-      conversation.sellerId !== session.user.id)
+    (conversation.buyerId !== session.user.id && conversation.sellerId !== session.user.id)
   ) {
     return actionError('Sohbet bulunamadı.');
   }
@@ -102,9 +101,7 @@ export async function sendMessage(
   });
 
   const recipientId =
-    conversation.buyerId === session.user.id
-      ? conversation.sellerId
-      : conversation.buyerId;
+    conversation.buyerId === session.user.id ? conversation.sellerId : conversation.buyerId;
   const listingTitle = conversation.listing?.title ?? 'İlan';
 
   await pushNotification(recipientId, {

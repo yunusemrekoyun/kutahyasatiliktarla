@@ -33,10 +33,9 @@ function FieldError({ errors }: { errors?: string[] }) {
  * (e-posta verildiyse) talep sahibine kuyruk üzerinden e-posta gider. */
 export function LeadMatch() {
   const { content } = useStore();
-  const [state, formAction, pending] = useActionState<ActionResult, FormData>(
-    createLead,
-    { ok: false },
-  );
+  const [state, formAction, pending] = useActionState<ActionResult, FormData>(createLead, {
+    ok: false,
+  });
   // Anti-spam zaman damgası: formun sunucudan servis edildiği an — sunucu değeri
   // kasıtlı olarak korunur (input'taki suppressHydrationWarning bu yüzden).
   // eslint-disable-next-line react-hooks/purity
@@ -62,8 +61,7 @@ export function LeadMatch() {
                 Talebinizi aldık
               </h3>
               <p className="mt-2 leading-relaxed text-muted-foreground">
-                Kriterlerinize uygun ilanları derleyip en kısa sürede sizinle
-                iletişime geçeceğiz.
+                Kriterlerinize uygun ilanları derleyip en kısa sürede sizinle iletişime geçeceğiz.
               </p>
             </div>
           ) : (
@@ -177,7 +175,10 @@ export function LeadMatch() {
                 />
                 <span>
                   Kişisel verilerimin{' '}
-                  <Link href="/yasal/kvkk" className="font-medium text-foreground underline underline-offset-2">
+                  <Link
+                    href="/yasal/kvkk"
+                    className="font-medium text-foreground underline underline-offset-2"
+                  >
                     KVKK Aydınlatma Metni
                   </Link>{' '}
                   kapsamında işlenmesini kabul ediyorum.
@@ -185,9 +186,7 @@ export function LeadMatch() {
               </label>
               <FieldError errors={fe.kvkkConsent} />
 
-              {state.error ? (
-                <p className="mt-4 text-sm text-destructive">{state.error}</p>
-              ) : null}
+              {state.error ? <p className="mt-4 text-sm text-destructive">{state.error}</p> : null}
 
               <Button
                 type="submit"

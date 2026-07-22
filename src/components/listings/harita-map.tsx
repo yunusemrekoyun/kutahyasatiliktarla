@@ -15,7 +15,8 @@ const KUTAHYA: [number, number] = [39.42, 29.5];
 /** Fiyatı işaretçi pili için kısaltır: ₺1,85M · ₺540B */
 function shortPrice(price: string): string {
   const n = parsePrice(price);
-  if (n >= 1_000_000) return `₺${(n / 1_000_000).toLocaleString('tr-TR', { maximumFractionDigits: 2 })}M`;
+  if (n >= 1_000_000)
+    return `₺${(n / 1_000_000).toLocaleString('tr-TR', { maximumFractionDigits: 2 })}M`;
   if (n >= 1_000) return `₺${Math.round(n / 1_000)}B`;
   return `₺${n}`;
 }
@@ -35,8 +36,7 @@ function inPolygon(lat: number, lng: number, poly: [number, number][]): boolean 
   for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
     const [yi, xi] = poly[i];
     const [yj, xj] = poly[j];
-    const intersects =
-      yi > lat !== yj > lat && lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi;
+    const intersects = yi > lat !== yj > lat && lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi;
     if (intersects) inside = !inside;
   }
   return inside;
@@ -67,10 +67,7 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
       await import('leaflet/dist/leaflet.css' as string);
       if (cancelled || !containerRef.current || mapRef.current) return;
 
-      const map = L.map(containerRef.current, { scrollWheelZoom: true }).setView(
-        KUTAHYA,
-        9,
-      );
+      const map = L.map(containerRef.current, { scrollWheelZoom: true }).setView(KUTAHYA, 9);
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution:
@@ -101,10 +98,9 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
       }
       markersRef.current = markers;
       if (points.length > 1) {
-        map.fitBounds(
-          L.latLngBounds(points.map((p) => [p.lat, p.lng] as [number, number])),
-          { padding: [40, 40] },
-        );
+        map.fitBounds(L.latLngBounds(points.map((p) => [p.lat, p.lng] as [number, number])), {
+          padding: [40, 40],
+        });
       }
 
       drawLayerRef.current = L.layerGroup().addTo(map);
@@ -141,9 +137,7 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
   }, []);
 
   function applyFilter(polygon: [number, number][] | null) {
-    const inside = polygon
-      ? points.filter((p) => inPolygon(p.lat, p.lng, polygon))
-      : null;
+    const inside = polygon ? points.filter((p) => inPolygon(p.lat, p.lng, polygon)) : null;
     setSelected(inside);
     const insideSlugs = new Set((inside ?? points).map((p) => p.slug));
     markersRef.current.forEach((m, i) => {
@@ -204,12 +198,7 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
           </Button>
         ) : (
           <>
-            <Button
-              type="button"
-              variant="brass"
-              onClick={finishDraw}
-              disabled={vertexCount < 3}
-            >
+            <Button type="button" variant="brass" onClick={finishDraw} disabled={vertexCount < 3}>
               Bölgeyi Kapat ({vertexCount} nokta)
             </Button>
             <Button type="button" variant="outline" onClick={() => resetDraw()}>
@@ -229,8 +218,8 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
             'Haritaya tıklayarak bölgenin köşelerini işaretleyin.'
           ) : (
             <>
-              <b className="font-semibold text-foreground">{results.length}</b>{' '}
-              ilan {selected ? 'seçili bölgede' : 'haritada'}
+              <b className="font-semibold text-foreground">{results.length}</b> ilan{' '}
+              {selected ? 'seçili bölgede' : 'haritada'}
             </>
           )}
         </span>

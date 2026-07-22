@@ -110,11 +110,7 @@ export function SectionsForm({ sections }: { sections: Record<string, string> })
   );
 }
 
-export function StatsForm({
-  stats,
-}: {
-  stats: { id: string; value: string; label: string }[];
-}) {
+export function StatsForm({ stats }: { stats: { id: string; value: string; label: string }[] }) {
   return (
     <ActionForm action={updateStats}>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -228,8 +224,8 @@ export function DistrictsEditor({ districts }: { districts: DistrictRow[] }) {
         Bölge Ekle
       </button>
       <p className="mt-3 text-xs text-[#8A6A43]">
-        Sıra vitrindeki sırayı belirler. Bölge silmek yayındaki ilanları silmez;
-        yalnızca vitrin listesinden kaldırır.
+        Sıra vitrindeki sırayı belirler. Bölge silmek yayındaki ilanları silmez; yalnızca vitrin
+        listesinden kaldırır.
       </p>
     </ActionForm>
   );

@@ -9,13 +9,7 @@ import { useParallax } from '@/lib/parallax';
 import { useStore, waLink } from '@/store';
 import type { Listing } from '@/content';
 
-export function ListingCard({
-  listing,
-  className,
-}: {
-  listing: Listing;
-  className?: string;
-}) {
+export function ListingCard({ listing, className }: { listing: Listing; className?: string }) {
   const { content } = useStore();
   const coverRef = useParallax<HTMLImageElement>(18);
   const cover = listing.images?.[0];
@@ -69,7 +63,9 @@ export function ListingCard({
         <p className="mt-2 flex items-center gap-1.5 text-[14px] text-muted-foreground">
           <MapPin className="h-4 w-4 shrink-0 text-brass" />
           {listing.location}
-          <span aria-hidden="true" className="text-border">·</span>
+          <span aria-hidden="true" className="text-border">
+            ·
+          </span>
           <span className="nums">{listing.area}</span>
         </p>
 

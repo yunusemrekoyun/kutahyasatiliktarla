@@ -38,8 +38,8 @@ export default async function Page() {
               Kayıtlı aramanız yok
             </h3>
             <p className="mx-auto mt-2 max-w-sm leading-relaxed text-muted-foreground">
-              İlanlar sayfasında filtrelerinizi seçip &quot;Aramayı kaydet&quot;
-              deyin; yeni eşleşmeleri sabah e-postasıyla alın.
+              İlanlar sayfasında filtrelerinizi seçip &quot;Aramayı kaydet&quot; deyin; yeni
+              eşleşmeleri sabah e-postasıyla alın.
             </p>
             <Button asChild variant="brass" className="mt-6">
               <Link href="/ilanlar">İlanlara Göz At</Link>

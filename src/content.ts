@@ -87,8 +87,7 @@ export const defaultContent: SiteContent = {
   ],
   sections: {
     listingsTitle: 'Öne çıkan ilanlar',
-    listingsSubtitle:
-      'Her ilan gerçek fotoğraf, konum ve doğrulanmış arazi bilgisiyle hazırlanır.',
+    listingsSubtitle: 'Her ilan gerçek fotoğraf, konum ve doğrulanmış arazi bilgisiyle hazırlanır.',
     mapTitle: 'Arazileri Haritada Keşfedin',
     mapSubtitle:
       'Tüm ilanlar Kütahya haritası üzerinde işaretli. Bir pine tıklayın, arazinin drone görüntüsünü ve detaylarını anında açın.',

@@ -139,10 +139,7 @@ export function MessageThread({
         </button>
         {complaintOpen ? (
           <div className="mt-3">
-            <ComplaintForm
-              conversationId={conversationId}
-              onDone={() => setComplaintOpen(false)}
-            />
+            <ComplaintForm conversationId={conversationId} onDone={() => setComplaintOpen(false)} />
           </div>
         ) : null}
       </div>

@@ -20,11 +20,7 @@ import { MediaManager } from '@/components/admin/media-manager';
 import { thumbUrl } from '@/lib/img';
 import { saveListing } from '../actions';
 
-export default async function EditListingPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function EditListingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const listing = await prisma.listing.findUnique({
     where: { id },
@@ -40,10 +36,8 @@ export default async function EditListingPage({
   if (!listing) notFound();
 
   type Variant = { width?: number; format?: string; url?: string };
-  const variantsOf = (m: (typeof listing.media)[number]) =>
-    (m.variants as Variant[] | null) ?? [];
-  const urlOf = (m: (typeof listing.media)[number]) =>
-    (variantsOf(m)[0]?.url ?? '').trim();
+  const variantsOf = (m: (typeof listing.media)[number]) => (m.variants as Variant[] | null) ?? [];
+  const urlOf = (m: (typeof listing.media)[number]) => (variantsOf(m)[0]?.url ?? '').trim();
   const isUploaded = (m: (typeof listing.media)[number]) => urlOf(m).startsWith('/m/');
 
   // Textarea yalnızca HARİCİ URL'leri yönetir; yüklenenler galeri yöneticisinde
@@ -64,15 +58,9 @@ export default async function EditListingPage({
     return {
       id: m.id,
       type: m.type as 'image' | 'video',
-      previewUrl:
-        m.type === 'video'
-          ? (m.poster ?? null)
-          : (thumbUrl(primary) ?? null),
+      previewUrl: m.type === 'video' ? (m.poster ?? null) : (thumbUrl(primary) ?? null),
       processing:
-        uploaded &&
-        (m.type === 'image'
-          ? !variants.some((v) => v.format === 'webp')
-          : !m.poster),
+        uploaded && (m.type === 'image' ? !variants.some((v) => v.format === 'webp') : !m.poster),
       external: !uploaded,
     };
   });

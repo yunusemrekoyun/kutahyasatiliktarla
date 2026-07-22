@@ -42,8 +42,8 @@ export function SignUpForm() {
       <p className="text-[15px] leading-relaxed text-foreground">
         <strong className="font-semibold">E-postanızı kontrol edin.</strong>{' '}
         <span className="text-muted-foreground">
-          {email} adresine bir doğrulama bağlantısı gönderdik. Bağlantıya
-          tıklayınca hesabınız aktifleşecek.
+          {email} adresine bir doğrulama bağlantısı gönderdik. Bağlantıya tıklayınca hesabınız
+          aktifleşecek.
         </span>
       </p>
     );
@@ -56,7 +56,10 @@ export function SignUpForm() {
           Ad Soyad
         </Label>
         <div className="relative">
-          <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+          <User
+            className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
           <Input
             id="name"
             value={name}
@@ -72,7 +75,10 @@ export function SignUpForm() {
           E-posta
         </Label>
         <div className="relative">
-          <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+          <Mail
+            className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
           <Input
             id="email"
             type="email"
@@ -89,7 +95,10 @@ export function SignUpForm() {
           Şifre
         </Label>
         <div className="relative">
-          <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+          <Lock
+            className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
           <Input
             id="password"
             type="password"

@@ -14,8 +14,7 @@ export function deriveStructured(specs: Spec[]): {
   suVar: boolean;
   elektrikVar: boolean;
 } {
-  const find = (key: string) =>
-    specs.find((s) => norm(s.label).includes(key))?.value ?? '';
+  const find = (key: string) => specs.find((s) => norm(s.label).includes(key))?.value ?? '';
 
   const imarRaw = norm(find('imar'));
   const imarDurumu: ImarDurumu | null = !imarRaw

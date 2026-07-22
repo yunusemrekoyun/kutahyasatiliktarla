@@ -18,8 +18,7 @@ export const metadata: Metadata = {
 
 const STATUS_NOTES: Record<string, string | undefined> = {
   incelemede: 'Başvurunuz ekibimiz tarafından inceleniyor.',
-  cekimBekliyor:
-    'Başvurunuz onaylandı — saha çekimi için ekibimiz sizinle iletişime geçecek.',
+  cekimBekliyor: 'Başvurunuz onaylandı — saha çekimi için ekibimiz sizinle iletişime geçecek.',
   reddedildi: undefined, // red nedeni ayrıca gösterilir
 };
 
@@ -47,9 +46,7 @@ export default async function Page({
 
   const listings: MyListing[] = rows.map((row) => {
     const s = STATUS_LABELS[row.status];
-    const cover = thumbUrl(
-      (row.media[0]?.variants as { url?: string }[] | null)?.[0]?.url ?? null,
-    );
+    const cover = thumbUrl((row.media[0]?.variants as { url?: string }[] | null)?.[0]?.url ?? null);
     return {
       id: row.id,
       slug: row.slug,
@@ -102,8 +99,8 @@ export default async function Page({
               Henüz ilanınız yok
             </h3>
             <p className="mx-auto mt-2 max-w-sm leading-relaxed text-muted-foreground">
-              Arazinizi birkaç dakikada ücretsiz ilana verin; çekim ve
-              doğrulamayı ekibimiz üstlensin.
+              Arazinizi birkaç dakikada ücretsiz ilana verin; çekim ve doğrulamayı ekibimiz
+              üstlensin.
             </p>
             <Button asChild variant="brass" className="mt-6">
               <Link href="/ilan-ver">

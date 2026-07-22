@@ -20,13 +20,7 @@ const MAX_MEDIA = 25;
 
 /** İlan galerisi: gerçek dosya yükleme + sıralama + silme. Harici URL
  * satırları formdaki textarea'dan yönetilir ve burada rozetle gösterilir. */
-export function MediaManager({
-  listingId,
-  items,
-}: {
-  listingId: string;
-  items: MediaItem[];
-}) {
+export function MediaManager({ listingId, items }: { listingId: string; items: MediaItem[] }) {
   const router = useRouter();
   const imageInput = useRef<HTMLInputElement>(null);
   const videoInput = useRef<HTMLInputElement>(null);
@@ -183,8 +177,7 @@ export function MediaManager({
                       type="button"
                       aria-label="Arkaya taşı"
                       disabled={
-                        pending ||
-                        uploadedImages[uploadedImages.length - 1]?.id === item.id
+                        pending || uploadedImages[uploadedImages.length - 1]?.id === item.id
                       }
                       onClick={() => mutate(() => moveMediaItem(item.id, 'down'))}
                       className="grid h-7 w-7 place-items-center rounded-md text-[#2d3a2a] hover:bg-[#1f2a1d]/5 disabled:opacity-30"

@@ -8,11 +8,7 @@ import { MessageThread } from '@/components/account/message-thread';
 
 export const metadata: Metadata = { title: 'Mesajlar' };
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await getServerSession();
   if (!session) redirect(`/giris?callbackURL=/hesap/mesajlar/${id}`);

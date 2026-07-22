@@ -6,8 +6,20 @@ import StarterKit from '@tiptap/starter-kit';
 import LinkExtension from '@tiptap/extension-link';
 import ImageExtension from '@tiptap/extension-image';
 import {
-  Bold, Heading2, Heading3, ImagePlus, Italic, Link2, Link2Off,
-  List, ListOrdered, Loader2, Minus, Quote, Redo2, Undo2,
+  Bold,
+  Heading2,
+  Heading3,
+  ImagePlus,
+  Italic,
+  Link2,
+  Link2Off,
+  List,
+  ListOrdered,
+  Loader2,
+  Minus,
+  Quote,
+  Redo2,
+  Undo2,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -106,25 +118,114 @@ export function RichEditor({
     <div className="overflow-hidden rounded-xl border border-[#D9E3D5] bg-white focus-within:border-[#3d5638]">
       <input ref={hidden} type="hidden" name={name} defaultValue={content} />
       <div className="flex flex-wrap items-center gap-0.5 border-b border-[#D9E3D5] bg-[#FAF7EF] px-2 py-1.5">
-        <button type="button" aria-label="Kalın" onClick={() => editor.chain().focus().toggleBold().run()} className={btn(editor.isActive('bold'))}><Bold size={15} /></button>
-        <button type="button" aria-label="İtalik" onClick={() => editor.chain().focus().toggleItalic().run()} className={btn(editor.isActive('italic'))}><Italic size={15} /></button>
+        <button
+          type="button"
+          aria-label="Kalın"
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          className={btn(editor.isActive('bold'))}
+        >
+          <Bold size={15} />
+        </button>
+        <button
+          type="button"
+          aria-label="İtalik"
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          className={btn(editor.isActive('italic'))}
+        >
+          <Italic size={15} />
+        </button>
         <span className="mx-1 h-5 w-px bg-[#D9E3D5]" />
-        <button type="button" aria-label="Başlık" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={btn(editor.isActive('heading', { level: 2 }))}><Heading2 size={15} /></button>
-        <button type="button" aria-label="Alt başlık" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} className={btn(editor.isActive('heading', { level: 3 }))}><Heading3 size={15} /></button>
+        <button
+          type="button"
+          aria-label="Başlık"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          className={btn(editor.isActive('heading', { level: 2 }))}
+        >
+          <Heading2 size={15} />
+        </button>
+        <button
+          type="button"
+          aria-label="Alt başlık"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          className={btn(editor.isActive('heading', { level: 3 }))}
+        >
+          <Heading3 size={15} />
+        </button>
         <span className="mx-1 h-5 w-px bg-[#D9E3D5]" />
-        <button type="button" aria-label="Liste" onClick={() => editor.chain().focus().toggleBulletList().run()} className={btn(editor.isActive('bulletList'))}><List size={15} /></button>
-        <button type="button" aria-label="Sıralı liste" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={btn(editor.isActive('orderedList'))}><ListOrdered size={15} /></button>
-        <button type="button" aria-label="Alıntı" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={btn(editor.isActive('blockquote'))}><Quote size={15} /></button>
-        <button type="button" aria-label="Yatay çizgi" onClick={() => editor.chain().focus().setHorizontalRule().run()} className={btn(false)}><Minus size={15} /></button>
+        <button
+          type="button"
+          aria-label="Liste"
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          className={btn(editor.isActive('bulletList'))}
+        >
+          <List size={15} />
+        </button>
+        <button
+          type="button"
+          aria-label="Sıralı liste"
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          className={btn(editor.isActive('orderedList'))}
+        >
+          <ListOrdered size={15} />
+        </button>
+        <button
+          type="button"
+          aria-label="Alıntı"
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          className={btn(editor.isActive('blockquote'))}
+        >
+          <Quote size={15} />
+        </button>
+        <button
+          type="button"
+          aria-label="Yatay çizgi"
+          onClick={() => editor.chain().focus().setHorizontalRule().run()}
+          className={btn(false)}
+        >
+          <Minus size={15} />
+        </button>
         <span className="mx-1 h-5 w-px bg-[#D9E3D5]" />
-        <button type="button" aria-label="Bağlantı ekle" onClick={setLink} className={btn(editor.isActive('link'))}><Link2 size={15} /></button>
-        <button type="button" aria-label="Bağlantıyı kaldır" onClick={() => editor.chain().focus().unsetLink().run()} className={btn(false)}><Link2Off size={15} /></button>
-        <button type="button" aria-label="Görsel yükle" onClick={() => fileInput.current?.click()} className={btn(false)}>
+        <button
+          type="button"
+          aria-label="Bağlantı ekle"
+          onClick={setLink}
+          className={btn(editor.isActive('link'))}
+        >
+          <Link2 size={15} />
+        </button>
+        <button
+          type="button"
+          aria-label="Bağlantıyı kaldır"
+          onClick={() => editor.chain().focus().unsetLink().run()}
+          className={btn(false)}
+        >
+          <Link2Off size={15} />
+        </button>
+        <button
+          type="button"
+          aria-label="Görsel yükle"
+          onClick={() => fileInput.current?.click()}
+          className={btn(false)}
+        >
           {uploading ? <Loader2 size={15} className="animate-spin" /> : <ImagePlus size={15} />}
         </button>
         <span className="mx-1 h-5 w-px bg-[#D9E3D5]" />
-        <button type="button" aria-label="Geri al" onClick={() => editor.chain().focus().undo().run()} className={btn(false)}><Undo2 size={15} /></button>
-        <button type="button" aria-label="Yinele" onClick={() => editor.chain().focus().redo().run()} className={btn(false)}><Redo2 size={15} /></button>
+        <button
+          type="button"
+          aria-label="Geri al"
+          onClick={() => editor.chain().focus().undo().run()}
+          className={btn(false)}
+        >
+          <Undo2 size={15} />
+        </button>
+        <button
+          type="button"
+          aria-label="Yinele"
+          onClick={() => editor.chain().focus().redo().run()}
+          className={btn(false)}
+        >
+          <Redo2 size={15} />
+        </button>
         <input
           ref={fileInput}
           type="file"

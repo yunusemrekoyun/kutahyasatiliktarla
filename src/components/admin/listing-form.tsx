@@ -5,14 +5,7 @@ import { Trash2 } from 'lucide-react';
 import { LAND_TYPES } from '@/content';
 import { deleteListing } from '@/app/admin/ilanlar/actions';
 import type { ActionResult } from '@/lib/action-result';
-import {
-  AdminInput,
-  AdminSelect,
-  AdminTextarea,
-  Field,
-  SubmitButton,
-  dangerBtn,
-} from './ui';
+import { AdminInput, AdminSelect, AdminTextarea, Field, SubmitButton, dangerBtn } from './ui';
 
 const STATUS_OPTIONS = [
   ['taslak', 'Taslak'],
@@ -238,11 +231,21 @@ export function ListingForm({
         </Field>
         <div className="flex items-end gap-5 pb-2">
           <label className="flex items-center gap-2 text-sm text-[#1f2a1d]">
-            <input type="checkbox" name="suVar" defaultChecked={eff.suVar} className="h-4 w-4 accent-[#3d5638]" />
+            <input
+              type="checkbox"
+              name="suVar"
+              defaultChecked={eff.suVar}
+              className="h-4 w-4 accent-[#3d5638]"
+            />
             Su var
           </label>
           <label className="flex items-center gap-2 text-sm text-[#1f2a1d]">
-            <input type="checkbox" name="elektrikVar" defaultChecked={eff.elektrikVar} className="h-4 w-4 accent-[#3d5638]" />
+            <input
+              type="checkbox"
+              name="elektrikVar"
+              defaultChecked={eff.elektrikVar}
+              className="h-4 w-4 accent-[#3d5638]"
+            />
             Elektrik var
           </label>
         </div>
@@ -282,7 +285,10 @@ export function ListingForm({
         <AdminTextarea name="highlights" rows={4} defaultValue={eff.highlights} />
       </Field>
 
-      <Field label="Ek arazi bilgileri (her satır: Etiket | Değer — imar/tapu/yol/su/elektrik yukarıdaki alanlardan gelir)" error={fe.specs}>
+      <Field
+        label="Ek arazi bilgileri (her satır: Etiket | Değer — imar/tapu/yol/su/elektrik yukarıdaki alanlardan gelir)"
+        error={fe.specs}
+      >
         <AdminTextarea
           name="specs"
           rows={6}

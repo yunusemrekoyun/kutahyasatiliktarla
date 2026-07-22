@@ -50,10 +50,7 @@ export function renderEmail({
 
 /** Basit metni güvenli HTML paragraflarına çevirir. */
 export function textToHtml(text: string): string {
-  const esc = text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+  const esc = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   return esc
     .split(/\n{2,}/)
     .map((p) => `<p style="margin:0 0 12px">${p.replace(/\n/g, '<br/>')}</p>`)

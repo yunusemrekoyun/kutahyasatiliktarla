@@ -3,13 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import sharp from 'sharp';
 import { requireUser } from '@/lib/auth-guards';
 import { redisConnection } from '@/lib/redis';
-import {
-  IMAGE_EXTS,
-  ensureMediaDir,
-  mediaFilePath,
-  mediaUrl,
-  safeExt,
-} from '@/lib/media-store';
+import { IMAGE_EXTS, ensureMediaDir, mediaFilePath, mediaUrl, safeExt } from '@/lib/media-store';
 
 const MAX_BYTES = 5 * 1024 * 1024; // ekran görüntüsü için 5 MB yeter
 const MAX_WIDTH = 2000; // SS için fazlası gereksiz — dev orijinaller küçültülür
@@ -34,7 +28,10 @@ export async function POST(request: NextRequest) {
     const count = await redisConnection.incr(key);
     if (count === 1) await redisConnection.expire(key, 3600);
     if (count > 10) {
-      return NextResponse.json({ error: 'Çok fazla deneme — sonra tekrar deneyin.' }, { status: 429 });
+      return NextResponse.json(
+        { error: 'Çok fazla deneme — sonra tekrar deneyin.' },
+        { status: 429 },
+      );
     }
   } catch {
     // Redis düşükse engelleme

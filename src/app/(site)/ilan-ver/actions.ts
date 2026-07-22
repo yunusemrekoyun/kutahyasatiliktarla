@@ -39,8 +39,7 @@ export async function createListingApplication(
 
   const d = parsed.data;
   const title =
-    d.title?.trim() ||
-    `${inLocative(d.district)} ${PURPOSE_LABELS[d.purpose]} ${d.type}`;
+    d.title?.trim() || `${inLocative(d.district)} ${PURPOSE_LABELS[d.purpose]} ${d.type}`;
   const slug = await uniqueListingSlug(title);
 
   await prisma.listing.create({

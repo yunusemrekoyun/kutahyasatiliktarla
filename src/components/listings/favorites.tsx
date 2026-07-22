@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Heart } from 'lucide-react';
 import { toggleFavorite } from '@/app/(site)/hesap/favoriler/actions';
@@ -78,9 +71,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <FavoritesContext.Provider value={{ favored, toggle }}>
-      {children}
-    </FavoritesContext.Provider>
+    <FavoritesContext.Provider value={{ favored, toggle }}>{children}</FavoritesContext.Provider>
   );
 }
 

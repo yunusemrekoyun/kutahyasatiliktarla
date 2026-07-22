@@ -5,8 +5,18 @@ import { requireUser } from '@/lib/auth-guards';
 import { actionError, actionOk, type ActionResult } from '@/lib/action-result';
 
 const ALLOWED_KEYS = [
-  'ilce', 'tur', 'q', 'imar', 'tapu', 'yol', 'su', 'elektrik',
-  'minFiyat', 'maxFiyat', 'minAlan', 'maxAlan',
+  'ilce',
+  'tur',
+  'q',
+  'imar',
+  'tapu',
+  'yol',
+  'su',
+  'elektrik',
+  'minFiyat',
+  'maxFiyat',
+  'minAlan',
+  'maxAlan',
 ];
 const MAX_SAVED = 10;
 

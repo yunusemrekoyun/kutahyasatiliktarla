@@ -7,7 +7,9 @@ import { TAGS } from '@/lib/cache-tags';
 import { actionError, actionOk, type ActionResult } from '@/lib/action-result';
 
 const str = (formData: FormData, key: string, max = 500) =>
-  String(formData.get(key) ?? '').trim().slice(0, max);
+  String(formData.get(key) ?? '')
+    .trim()
+    .slice(0, max);
 
 export async function updateBrandHero(
   _prev: ActionResult,
@@ -76,10 +78,7 @@ export async function updateSections(
 }
 
 /** İstatistik şeridi — satırlar paralel dizilerle gelir (statId/statValue/statLabel). */
-export async function updateStats(
-  _prev: ActionResult,
-  formData: FormData,
-): Promise<ActionResult> {
+export async function updateStats(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
   await requireAdmin();
   const ids = formData.getAll('statId').map(String);
   const values = formData.getAll('statValue').map(String);
@@ -144,9 +143,15 @@ export async function saveDistricts(
   const clean = rows
     .map((r) => ({
       id: typeof r.id === 'string' && r.id ? r.id : undefined,
-      name: String(r.name ?? '').trim().slice(0, 40),
-      count: String(r.count ?? '').trim().slice(0, 40),
-      text: String(r.text ?? '').trim().slice(0, 200),
+      name: String(r.name ?? '')
+        .trim()
+        .slice(0, 40),
+      count: String(r.count ?? '')
+        .trim()
+        .slice(0, 40),
+      text: String(r.text ?? '')
+        .trim()
+        .slice(0, 200),
     }))
     .filter((r) => r.name);
   if (clean.length === 0) return actionError('En az bir bölge kalmalı.');

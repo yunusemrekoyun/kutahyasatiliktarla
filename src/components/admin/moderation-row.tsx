@@ -43,14 +43,13 @@ export function ModerationActions({ listingId }: { listingId: string }) {
           <Check size={15} />
           Onayla — Çekime Al
         </button>
-        <button
-          type="button"
-          onClick={() => setRejectOpen((v) => !v)}
-          className={dangerBtn}
-        >
+        <button type="button" onClick={() => setRejectOpen((v) => !v)} className={dangerBtn}>
           <X size={15} />
           Reddet
-          <ChevronDown size={14} className={cn('transition-transform', rejectOpen && 'rotate-180')} />
+          <ChevronDown
+            size={14}
+            className={cn('transition-transform', rejectOpen && 'rotate-180')}
+          />
         </button>
         {error ? <span className="text-sm text-red-600">{error}</span> : null}
       </div>

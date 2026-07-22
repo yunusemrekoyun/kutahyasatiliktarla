@@ -31,13 +31,7 @@ export function TopoLines({ className }: { className?: string }) {
 }
 
 /** Pafta köşe işareti — kesikli parsel çerçevesinin köşelerine oturur. */
-export function CornerMark({
-  className,
-  style,
-}: {
-  className?: string;
-  style?: CSSProperties;
-}) {
+export function CornerMark({ className, style }: { className?: string; style?: CSSProperties }) {
   return (
     <svg
       viewBox="0 0 12 12"

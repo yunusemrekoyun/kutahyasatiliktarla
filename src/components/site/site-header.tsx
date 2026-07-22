@@ -13,13 +13,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { LogOut, Menu, Phone, Search, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
+import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { Logo } from './logo';
 import { NotificationBell } from './notification-bell';
@@ -43,7 +37,15 @@ const navLinks = [
  * pirinç çizgi. Yastık ilk görünüşünde olduğu yerde belirir (snap), sonraki
  * geçişlerde öğeden öğeye akar.
  */
-function DesktopNav({ pathname, tur, dark }: { pathname: string; tur: string | null; dark?: boolean }) {
+function DesktopNav({
+  pathname,
+  tur,
+  dark,
+}: {
+  pathname: string;
+  tur: string | null;
+  dark?: boolean;
+}) {
   const navRef = useRef<HTMLElement>(null);
   const [pill, setPill] = useState({ left: 0, width: 0, on: false, snap: true });
 
@@ -71,7 +73,9 @@ function DesktopNav({ pathname, tur, dark }: { pathname: string; tur: string | n
         aria-hidden="true"
         style={{ transform: `translateX(${pill.left}px)`, width: pill.width }}
         className={cn(
-          dark ? 'absolute inset-y-1.5 left-0 rounded-sm bg-white/10' : 'absolute inset-y-1.5 left-0 rounded-sm bg-secondary',
+          dark
+            ? 'absolute inset-y-1.5 left-0 rounded-sm bg-white/10'
+            : 'absolute inset-y-1.5 left-0 rounded-sm bg-secondary',
           pill.snap
             ? 'transition-opacity duration-200'
             : 'transition-[transform,width,opacity] duration-300 ease-out-quart',
@@ -91,16 +95,17 @@ function DesktopNav({ pathname, tur, dark }: { pathname: string; tur: string | n
             className={cn(
               'relative z-10 px-3 py-2 text-[15px] font-medium transition-colors duration-200',
               dark
-                ? active ? 'text-white' : 'text-white/75 hover:text-white'
-                : active ? 'text-foreground' : 'text-foreground/70 hover:text-foreground',
+                ? active
+                  ? 'text-white'
+                  : 'text-white/75 hover:text-white'
+                : active
+                  ? 'text-foreground'
+                  : 'text-foreground/70 hover:text-foreground',
             )}
           >
             {l.label}
             {active ? (
-              <span
-                aria-hidden="true"
-                className="absolute inset-x-3 bottom-0.5 h-[2px] bg-brass"
-              />
+              <span aria-hidden="true" className="absolute inset-x-3 bottom-0.5 h-[2px] bg-brass" />
             ) : null}
           </Link>
         );
@@ -274,7 +279,9 @@ export function SiteHeader() {
                     : 'text-foreground/80 hover:bg-secondary hover:text-foreground',
                 )}
               >
-                <Phone className={cn('h-4 w-4', dark ? 'text-brass-ondark' : 'text-brass-strong')} />
+                <Phone
+                  className={cn('h-4 w-4', dark ? 'text-brass-ondark' : 'text-brass-strong')}
+                />
                 <span className="nums hidden xl:inline">{phone}</span>
               </a>
 
@@ -290,7 +297,9 @@ export function SiteHeader() {
                         : 'text-foreground/80 hover:bg-secondary hover:text-foreground',
                     )}
                   >
-                    <User className={cn('h-4 w-4', dark ? 'text-brass-ondark' : 'text-brass-strong')} />
+                    <User
+                      className={cn('h-4 w-4', dark ? 'text-brass-ondark' : 'text-brass-strong')}
+                    />
                     Hesabım
                   </Link>
                   <button

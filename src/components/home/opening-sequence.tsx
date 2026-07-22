@@ -110,9 +110,7 @@ export function OpeningSequence({ listings }: { listings: Listing[] }) {
   // Taban görsel sabit durur; ok'a basınca yeni görsel yandan kayıp üstüne
   // biner, kayma bitince taban güncellenir → çerçeve hep dolu, temiz kayma.
   const [baseSrc, setBaseSrc] = useState(firstCover);
-  const [incoming, setIncoming] = useState<{ src: string; dir: 1 | -1; seq: number } | null>(
-    null,
-  );
+  const [incoming, setIncoming] = useState<{ src: string; dir: 1 | -1; seq: number } | null>(null);
   const seq = useRef(0);
 
   const active = listings[idx] ?? first;
@@ -129,9 +127,7 @@ export function OpeningSequence({ listings }: { listings: Listing[] }) {
   }, []);
 
   // İlan duvarı: tüm ilan görsellerinden küçük karolar, 3 sıraya dağıtılır.
-  const wallPool = listings
-    .flatMap((l) => l.images ?? [])
-    .map((u) => u.replace(/w=\d+/, 'w=520'));
+  const wallPool = listings.flatMap((l) => l.images ?? []).map((u) => u.replace(/w=\d+/, 'w=520'));
   // Mobil duvar ekran dışındayken marquee animasyonu durdurulur (pil/jank)
   const liteHeroRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -198,9 +194,7 @@ export function OpeningSequence({ listings }: { listings: Listing[] }) {
       ref={sectionRef}
       aria-label="Tanıtım"
       className={cn(
-        scenic
-          ? 'relative -mt-20 h-[170vh] bg-primary lg:-mt-24'
-          : '-mt-20 lg:-mt-24',
+        scenic ? 'relative -mt-20 h-[170vh] bg-primary lg:-mt-24' : '-mt-20 lg:-mt-24',
         // SSR/ilk boyamada sahne henüz bilinmezken masaüstünde 220vh yüksekliği
         // baştan ayır → hydrate olurken alttaki içerik yerinden oynamaz (CLS yok).
         // 170vh: test geri bildirimi — daha uzun pin 'sayfa kaydırılamıyor' hissi verdi.
@@ -209,9 +203,7 @@ export function OpeningSequence({ listings }: { listings: Listing[] }) {
     >
       <div
         ref={rootRef}
-        className={
-          scenic ? 'sticky top-0 h-screen overflow-hidden bg-background' : ''
-        }
+        className={scenic ? 'sticky top-0 h-screen overflow-hidden bg-background' : ''}
       >
         {scenic && active ? (
           <div className="relative h-full w-full">
@@ -220,10 +212,7 @@ export function OpeningSequence({ listings }: { listings: Listing[] }) {
               <div className="flex h-full flex-col justify-center gap-3 lg:gap-4">
                 {wallRows.map((tiles, r) => {
                   // Derinlik: orta sıra büyük/net, dış sıralar küçük/soluk.
-                  const size =
-                    r === 1
-                      ? 'h-44 w-64 lg:h-52 lg:w-80'
-                      : 'h-32 w-48 lg:h-40 lg:w-64';
+                  const size = r === 1 ? 'h-44 w-64 lg:h-52 lg:w-80' : 'h-32 w-48 lg:h-40 lg:w-64';
                   return (
                     <div
                       key={r}
@@ -314,8 +303,22 @@ export function OpeningSequence({ listings }: { listings: Listing[] }) {
                   [536, 760],
                 ].map(([x, y]) => (
                   <g key={`${x}-${y}`} className="scene-corner">
-                    <line x1={x - 13} y1={y} x2={x + 13} y2={y} stroke="hsl(36 74% 66%)" strokeWidth={3} />
-                    <line x1={x} y1={y - 13} x2={x} y2={y + 13} stroke="hsl(36 74% 66%)" strokeWidth={3} />
+                    <line
+                      x1={x - 13}
+                      y1={y}
+                      x2={x + 13}
+                      y2={y}
+                      stroke="hsl(36 74% 66%)"
+                      strokeWidth={3}
+                    />
+                    <line
+                      x1={x}
+                      y1={y - 13}
+                      x2={x}
+                      y2={y + 13}
+                      stroke="hsl(36 74% 66%)"
+                      strokeWidth={3}
+                    />
                   </g>
                 ))}
               </svg>
@@ -393,7 +396,9 @@ export function OpeningSequence({ listings }: { listings: Listing[] }) {
                       <p className="mt-1.5 flex items-center gap-1.5 text-[14px] text-muted-foreground">
                         <MapPin className="h-4 w-4 shrink-0 text-brass-strong" />
                         {active.location}
-                        <span aria-hidden="true" className="text-border">·</span>
+                        <span aria-hidden="true" className="text-border">
+                          ·
+                        </span>
                         <span className="nums">{active.area}</span>
                       </p>
                     </div>
@@ -430,7 +435,9 @@ export function OpeningSequence({ listings }: { listings: Listing[] }) {
               aria-label="Tanıtımı geçin"
               className="op-cue absolute inset-x-0 bottom-7 z-20 mx-auto flex w-fit cursor-pointer flex-col items-center gap-1.5 text-white/70 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <span className="text-[11px] font-semibold uppercase tracking-[0.22em]">Kaydırın</span>
+              <span className="text-[11px] font-semibold uppercase tracking-[0.22em]">
+                Kaydırın
+              </span>
               <ChevronDown className="hint-float h-5 w-5" />
             </button>
           </div>
@@ -544,7 +551,11 @@ export function OpeningSequence({ listings }: { listings: Listing[] }) {
                     if (Math.abs(dx) > 48) go(dx < 0 ? 1 : -1);
                   }}
                 >
-                  <div key={idx} className="op-fade" style={{ ['--sdir' as string]: `${dir * 22}px` }}>
+                  <div
+                    key={idx}
+                    className="op-fade"
+                    style={{ ['--sdir' as string]: `${dir * 22}px` }}
+                  >
                     <ShowcaseListing listing={active} />
                   </div>
                 </div>
@@ -557,10 +568,20 @@ export function OpeningSequence({ listings }: { listings: Listing[] }) {
             <div className="relative flex min-h-[42rem] items-center overflow-hidden bg-primary lg:min-h-[48rem]">
               <div className="absolute inset-0 -z-10">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={HERO_IMG} alt="Kütahya kırsalında gün batımında tarlalar" className="kenburns h-full w-full object-cover" />
+                <img
+                  src={HERO_IMG}
+                  alt="Kütahya kırsalında gün batımında tarlalar"
+                  className="kenburns h-full w-full object-cover"
+                />
                 <div className="absolute inset-0 bg-[hsl(154_40%_10%_/_0.12)]" aria-hidden="true" />
-                <div className="absolute inset-0 bg-gradient-to-r from-[hsl(155_34%_5%_/_0.92)] via-[hsl(155_30%_7%_/_0.42)] via-[42%] to-transparent to-[72%]" aria-hidden="true" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[hsl(155_34%_5%_/_0.78)] via-transparent via-[46%] to-transparent" aria-hidden="true" />
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-[hsl(155_34%_5%_/_0.92)] via-[hsl(155_30%_7%_/_0.42)] via-[42%] to-transparent to-[72%]"
+                  aria-hidden="true"
+                />
+                <div
+                  className="absolute inset-0 bg-gradient-to-t from-[hsl(155_34%_5%_/_0.78)] via-transparent via-[46%] to-transparent"
+                  aria-hidden="true"
+                />
                 <TopoLines className="inset-0 h-full w-full text-white/[0.06]" />
               </div>
               <div className="container pb-20 pt-32 lg:pb-24 lg:pt-40">

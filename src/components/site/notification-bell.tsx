@@ -77,7 +77,9 @@ export function NotificationBell({ dark }: { dark?: boolean }) {
         aria-label={unread > 0 ? `Bildirimler (${unread} okunmamış)` : 'Bildirimler'}
         className={cn(
           'relative grid h-10 w-10 place-items-center rounded-sm transition-colors',
-          dark ? 'text-white/85 hover:bg-white/10 hover:text-white' : 'text-foreground/80 hover:bg-secondary hover:text-foreground',
+          dark
+            ? 'text-white/85 hover:bg-white/10 hover:text-white'
+            : 'text-foreground/80 hover:bg-secondary hover:text-foreground',
         )}
       >
         <Bell className="h-5 w-5" />
@@ -120,7 +122,12 @@ export function NotificationBell({ dark }: { dark?: boolean }) {
                   !n.readAt && 'bg-secondary/50',
                 );
                 return n.href ? (
-                  <Link key={n.id} href={n.href} className={cn(rowClass, 'hover:bg-secondary')} onClick={() => setOpen(false)}>
+                  <Link
+                    key={n.id}
+                    href={n.href}
+                    className={cn(rowClass, 'hover:bg-secondary')}
+                    onClick={() => setOpen(false)}
+                  >
                     {inner}
                   </Link>
                 ) : (

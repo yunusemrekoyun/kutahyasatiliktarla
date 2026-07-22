@@ -25,7 +25,12 @@ function PostFields({ post }: { post?: BlogPostRow }) {
           <AdminInput name="title" defaultValue={post?.title} required />
         </Field>
         <Field label="Kategori">
-          <AdminInput name="category" defaultValue={post?.category} placeholder="Yatırım" required />
+          <AdminInput
+            name="category"
+            defaultValue={post?.category}
+            placeholder="Yatırım"
+            required
+          />
         </Field>
         <Field label="Durum">
           <AdminSelect name="status" defaultValue={post?.status ?? 'yayinda'}>
@@ -67,7 +72,10 @@ export function BlogPostEditor({ post }: { post: BlogPostRow }) {
             {post.category} · {post.status === 'yayinda' ? 'Yayında' : 'Taslak'}
           </span>
         </span>
-        <ChevronDown size={18} className={cn('shrink-0 text-[#3d5638] transition-transform', open && 'rotate-180')} />
+        <ChevronDown
+          size={18}
+          className={cn('shrink-0 text-[#3d5638] transition-transform', open && 'rotate-180')}
+        />
       </button>
 
       {open ? (

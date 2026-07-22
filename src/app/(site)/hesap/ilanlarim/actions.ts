@@ -6,20 +6,9 @@ import { prisma } from '@/lib/prisma';
 import { requireUser } from '@/lib/auth-guards';
 import { TAGS } from '@/lib/cache-tags';
 import { TYPE_MAP, PURPOSE_LABELS } from '@/lib/mappers';
-import {
-  formatArea,
-  formatPricePerM2,
-  formatTRY,
-  inLocative,
-  parsePrice,
-} from '@/lib/format';
+import { formatArea, formatPricePerM2, formatTRY, inLocative, parsePrice } from '@/lib/format';
 import { notifyAdminPriceRequest, notifyAdminResubmission } from '@/lib/notify';
-import {
-  actionError,
-  actionOk,
-  zodToActionResult,
-  type ActionResult,
-} from '@/lib/action-result';
+import { actionError, actionOk, zodToActionResult, type ActionResult } from '@/lib/action-result';
 import { listingApplicationSchema } from '../../ilan-ver/schema';
 
 /** Üye durum geçişleri — beyaz liste: aktif→satildi/kiralandi/pasif, pasif→aktif.
@@ -96,7 +85,10 @@ export async function requestPriceUpdate(
   if (!requested || requested <= 0) {
     return { ok: false, fieldErrors: { requestedPrice: ['Geçerli bir fiyat girin.'] } };
   }
-  const note = String(formData.get('note') ?? '').trim().slice(0, 500) || null;
+  const note =
+    String(formData.get('note') ?? '')
+      .trim()
+      .slice(0, 500) || null;
 
   const listing = await prisma.listing.findFirst({
     where: { id: listingId, ownerId: session.user.id, status: 'aktif' },

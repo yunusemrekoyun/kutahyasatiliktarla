@@ -13,32 +13,39 @@ const dateFmt = new Intl.DateTimeFormat('tr-TR', {
 });
 
 export default async function AdminDashboard() {
-  const [grouped, newLeads, pendingReview, awaitingShoot, priceRequests] =
-    await Promise.all([
-      prisma.listing.groupBy({ by: ['status'], _count: true }),
-      prisma.lead.count({ where: { status: 'yeni' } }),
-      prisma.listing.findMany({
-        where: { status: 'incelemede' },
-        include: { owner: { select: { name: true, email: true } } },
-        orderBy: { updatedAt: 'asc' },
-      }),
-      prisma.listing.findMany({
-        where: { status: 'cekimBekliyor' },
-        include: { owner: { select: { name: true } } },
-        orderBy: { updatedAt: 'asc' },
-      }),
-      prisma.listingPriceRequest.findMany({
-        where: { status: 'bekliyor' },
-        include: { listing: { select: { id: true, title: true, price: true } } },
-        orderBy: { createdAt: 'asc' },
-      }),
-    ]);
+  const [grouped, newLeads, pendingReview, awaitingShoot, priceRequests] = await Promise.all([
+    prisma.listing.groupBy({ by: ['status'], _count: true }),
+    prisma.lead.count({ where: { status: 'yeni' } }),
+    prisma.listing.findMany({
+      where: { status: 'incelemede' },
+      include: { owner: { select: { name: true, email: true } } },
+      orderBy: { updatedAt: 'asc' },
+    }),
+    prisma.listing.findMany({
+      where: { status: 'cekimBekliyor' },
+      include: { owner: { select: { name: true } } },
+      orderBy: { updatedAt: 'asc' },
+    }),
+    prisma.listingPriceRequest.findMany({
+      where: { status: 'bekliyor' },
+      include: { listing: { select: { id: true, title: true, price: true } } },
+      orderBy: { createdAt: 'asc' },
+    }),
+  ]);
 
   const counts = new Map(grouped.map((g) => [g.status as string, g._count]));
   const counters = [
     { label: 'Yayında', value: counts.get('aktif') ?? 0, href: '/admin/ilanlar?durum=aktif' },
-    { label: 'İncelemede', value: counts.get('incelemede') ?? 0, href: '/admin/ilanlar?durum=incelemede' },
-    { label: 'Çekim Bekliyor', value: counts.get('cekimBekliyor') ?? 0, href: '/admin/ilanlar?durum=cekimBekliyor' },
+    {
+      label: 'İncelemede',
+      value: counts.get('incelemede') ?? 0,
+      href: '/admin/ilanlar?durum=incelemede',
+    },
+    {
+      label: 'Çekim Bekliyor',
+      value: counts.get('cekimBekliyor') ?? 0,
+      href: '/admin/ilanlar?durum=cekimBekliyor',
+    },
     { label: 'Fiyat Talebi', value: priceRequests.length, href: '#fiyat-talepleri' },
     { label: 'Yeni Talep', value: newLeads, href: '/admin/talepler' },
   ];
@@ -64,9 +71,15 @@ export default async function AdminDashboard() {
         ) : (
           <div className="space-y-4">
             {pendingReview.map((l) => (
-              <article key={l.id} className="rounded-2xl border border-[#D9E3D5] bg-white p-4 text-sm">
+              <article
+                key={l.id}
+                className="rounded-2xl border border-[#D9E3D5] bg-white p-4 text-sm"
+              >
                 <div className="flex flex-wrap items-center gap-2">
-                  <StatusPill label={STATUS_LABELS[l.status].label} tone={STATUS_LABELS[l.status].tone} />
+                  <StatusPill
+                    label={STATUS_LABELS[l.status].label}
+                    tone={STATUS_LABELS[l.status].tone}
+                  />
                   {l.droneRequested ? (
                     <span className="inline-flex items-center gap-1 rounded-full bg-[#8A6A43]/10 px-2.5 py-1 text-[11px] font-semibold text-[#8A6A43]">
                       <Camera size={12} />
@@ -82,8 +95,8 @@ export default async function AdminDashboard() {
                   {l.district} · {TYPE_LABELS[l.type]} · {l.area} · {l.price}
                 </p>
                 <p className="mt-1 text-[#4b5b47]">
-                  Sahibi: <span className="text-[#1f2a1d]">{l.owner.name}</span> ({l.owner.email})
-                  · Konum: {l.location}
+                  Sahibi: <span className="text-[#1f2a1d]">{l.owner.name}</span> ({l.owner.email}) ·
+                  Konum: {l.location}
                 </p>
                 <p className="mt-2 line-clamp-3 leading-relaxed text-[#4b5b47]">{l.description}</p>
                 <ModerationActions listingId={l.id} />
@@ -126,7 +139,10 @@ export default async function AdminDashboard() {
           ) : (
             <div className="space-y-3">
               {priceRequests.map((r) => (
-                <div key={r.id} className="rounded-2xl border border-[#D9E3D5] bg-white p-4 text-sm">
+                <div
+                  key={r.id}
+                  className="rounded-2xl border border-[#D9E3D5] bg-white p-4 text-sm"
+                >
                   <h3 className="font-medium text-[#1f2a1d]">{r.listing.title}</h3>
                   <p className="mt-1 text-[#4b5b47]">
                     <span className="line-through">{r.listing.price}</span>

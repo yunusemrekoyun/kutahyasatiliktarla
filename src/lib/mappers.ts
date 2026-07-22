@@ -103,7 +103,10 @@ function sortMedia(media: Media[]): Media[] {
  * seed slug'ları eski content id'leriyle birebir aynı. */
 export function mapListingRow(row: DbListing & { media: Media[] }): Listing {
   const media = sortMedia(row.media);
-  const images = media.filter((m) => m.type === 'image').map(firstVariantUrl).filter(Boolean);
+  const images = media
+    .filter((m) => m.type === 'image')
+    .map(firstVariantUrl)
+    .filter(Boolean);
   const video = media.find((m) => m.type === 'video');
   return {
     id: row.slug,
@@ -145,8 +148,7 @@ function mergeStructuredSpecs(row: DbListing): Spec[] {
   structured.push({ label: 'Elektrik', value: row.elektrikVar ? 'Var' : 'Yok' });
 
   const rest = free.filter(
-    (s) =>
-      !STRUCTURED_KEYS.some((k) => s.label.toLocaleLowerCase('tr-TR').includes(k)),
+    (s) => !STRUCTURED_KEYS.some((k) => s.label.toLocaleLowerCase('tr-TR').includes(k)),
   );
   return [...structured, ...rest];
 }
@@ -170,15 +172,9 @@ export function assembleChrome(input: {
     },
     stats: stats.map((s): Stat => ({ value: s.value, label: s.label })),
     sections: sc.sections as SiteContent['sections'],
-    districts: districts.map(
-      (d): District => ({ name: d.name, count: d.count, text: d.text }),
-    ),
-    features: features.map(
-      (f): Feature => ({ iconKey: f.iconKey, title: f.title, text: f.text }),
-    ),
-    articles: posts.map(
-      (p): Article => ({ category: p.category, title: p.title, text: p.body }),
-    ),
+    districts: districts.map((d): District => ({ name: d.name, count: d.count, text: d.text })),
+    features: features.map((f): Feature => ({ iconKey: f.iconKey, title: f.title, text: f.text })),
+    articles: posts.map((p): Article => ({ category: p.category, title: p.title, text: p.body })),
     contact: {
       phone: sc.contactPhone,
       whatsapp: sc.contactWhatsapp,

@@ -43,7 +43,12 @@ export function CountUp({
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     // Küçük sayılarda sayma anlamsız ve "0" flaşı yanıltıcı ("ilan yok" gibi)
-    if (reduce || typeof IntersectionObserver === 'undefined' || !Number.isFinite(target) || target < 2) {
+    if (
+      reduce ||
+      typeof IntersectionObserver === 'undefined' ||
+      !Number.isFinite(target) ||
+      target < 2
+    ) {
       setDisplay(value);
       return;
     }

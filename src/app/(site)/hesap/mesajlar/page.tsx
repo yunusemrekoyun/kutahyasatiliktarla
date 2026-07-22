@@ -77,9 +77,7 @@ export default async function Page() {
                     </span>
                   </div>
                   {last ? (
-                    <p className="mt-1 truncate text-[14px] text-muted-foreground">
-                      {last.body}
-                    </p>
+                    <p className="mt-1 truncate text-[14px] text-muted-foreground">{last.body}</p>
                   ) : null}
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-1.5">

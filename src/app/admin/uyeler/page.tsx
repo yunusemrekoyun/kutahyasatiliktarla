@@ -41,8 +41,8 @@ export default async function AdminMembersPage() {
                 {!u.emailVerified ? <StatusPill label="Doğrulanmamış" tone="warning" /> : null}
               </div>
               <p className="mt-1 text-[#4b5b47]">
-                {dateFmt.format(u.createdAt)} · {u._count.listings} ilan ·{' '}
-                {u._count.buyerThreads} görüşme
+                {dateFmt.format(u.createdAt)} · {u._count.listings} ilan · {u._count.buyerThreads}{' '}
+                görüşme
                 {u.banned && u.banReason ? ` · Neden: ${u.banReason}` : ''}
               </p>
             </div>

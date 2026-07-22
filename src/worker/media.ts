@@ -5,11 +5,7 @@ import { stat } from 'node:fs/promises';
 import { promisify } from 'node:util';
 import sharp from 'sharp';
 import { PrismaClient } from '@prisma/client';
-import {
-  VARIANT_WIDTHS,
-  mediaFilePath,
-  mediaUrl,
-} from '../lib/media-store';
+import { VARIANT_WIDTHS, mediaFilePath, mediaUrl } from '../lib/media-store';
 
 const execFileAsync = promisify(execFile);
 const FFMPEG = process.env.FFMPEG_PATH ?? 'ffmpeg';
@@ -65,11 +61,16 @@ export async function processMedia(prisma: PrismaClient, mediaId: string) {
   const posterPath = mediaFilePath(media.listingId, posterName);
   await execFileAsync(FFMPEG, [
     '-y',
-    '-ss', '1',
-    '-i', origPath,
-    '-frames:v', '1',
-    '-vf', "scale='min(1280,iw)':-2",
-    '-q:v', '3',
+    '-ss',
+    '1',
+    '-i',
+    origPath,
+    '-frames:v',
+    '1',
+    '-vf',
+    "scale='min(1280,iw)':-2",
+    '-q:v',
+    '3',
     posterPath,
   ]);
 

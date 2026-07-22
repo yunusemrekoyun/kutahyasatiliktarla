@@ -92,9 +92,7 @@ export async function getListing(slug: string): Promise<Listing | null> {
     return await load();
   } catch (e) {
     logDbFallback(`listing:${slug}`, e);
-    return (
-      structuredClone(defaultContent.listings.find((l) => l.id === slug)) ?? null
-    );
+    return structuredClone(defaultContent.listings.find((l) => l.id === slug)) ?? null;
   }
 }
 
@@ -111,9 +109,7 @@ const loadSitemapEntries = unstable_cache(
   { tags: [TAGS.listings], revalidate: 3600 },
 );
 
-export async function getSitemapEntries(): Promise<
-  { slug: string; updatedAt: Date }[]
-> {
+export async function getSitemapEntries(): Promise<{ slug: string; updatedAt: Date }[]> {
   try {
     return await loadSitemapEntries();
   } catch (e) {
@@ -131,8 +127,7 @@ export async function getLegalDoc(key: string) {
   type LegalKey = (typeof valid)[number];
   if (!valid.includes(key as LegalKey)) return null;
   const load = unstable_cache(
-    async () =>
-      prisma.legalDoc.findUnique({ where: { key: key as LegalKey } }),
+    async () => prisma.legalDoc.findUnique({ where: { key: key as LegalKey } }),
     ['legal-doc', key],
     { tags: [TAGS.siteContent], revalidate: 3600 },
   );
@@ -154,7 +149,11 @@ export type GuidePost = {
   createdAt: string | null;
 };
 
-const stripHtml = (html: string) => html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+const stripHtml = (html: string) =>
+  html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 
 /** Rehber özeti (kart metni) — HTML gövdeden düz metin kırpar. */
 export function guideSnippet(body: string, max = 180): string {
@@ -243,8 +242,7 @@ const loadMapPoints = unstable_cache(
       orderBy: { publishedAt: 'desc' },
     });
     return rows.map((r) => {
-      const url =
-        ((r.media[0]?.variants as { url?: string }[] | null)?.[0]?.url ?? '') || null;
+      const url = ((r.media[0]?.variants as { url?: string }[] | null)?.[0]?.url ?? '') || null;
       return {
         slug: r.slug,
         title: r.title,
