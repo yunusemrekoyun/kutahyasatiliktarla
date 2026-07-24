@@ -88,7 +88,13 @@ function HeroCopy({
  * kaydırınca sayfa normal akışına döner. Kaydırma kilitlenmez (sticky + --p).
  * Mobil/reduced-motion: normal hero + sabit vitrin kartı.
  */
-export function OpeningSequence({ listings }: { listings: Listing[] }) {
+export function OpeningSequence({
+  listings,
+  totalCount,
+}: {
+  listings: Listing[];
+  totalCount: number;
+}) {
   const { sectionRef, rootRef, mode, scenic } = useScrollScene<HTMLElement, HTMLDivElement>();
   // Ana sayfa lite açılışı zaman+etkileşim tabanlı: --p yazılır ama lite DOM'u
   // --p tüketen sınıf kullanmaz (op-m-* marquee'leri salt zaman tabanlıdır).
@@ -188,7 +194,7 @@ export function OpeningSequence({ listings }: { listings: Listing[] }) {
     : '#';
 
   const stats = [
-    { value: String(listings.length), label: 'Yayında arazi ilanı' },
+    { value: String(totalCount), label: 'Yayında arazi ilanı' },
     ...content.stats.filter((s) => !/ilan/i.test(s.label)).slice(0, 3),
   ];
 

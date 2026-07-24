@@ -90,7 +90,7 @@ export const defaultContent: SiteContent = {
     listingsSubtitle: 'Her ilan gerçek fotoğraf, konum ve doğrulanmış arazi bilgisiyle hazırlanır.',
     mapTitle: 'Arazileri Haritada Keşfedin',
     mapSubtitle:
-      'Tüm ilanlar Kütahya haritası üzerinde işaretli. Bir pine tıklayın, arazinin drone görüntüsünü ve detaylarını anında açın.',
+      'Haritada gezinin, aktif ilanlar göründükçe yüklenir. Bir pine tıklayın, arazinin drone görüntüsünü ve detaylarını anında açın.',
     districtsTitle: 'İlçe ilçe Kütahya',
     districtsSubtitle:
       'Merkez ve ilçelerdeki tarla, arsa ve arazi fırsatlarını ilçelere göre inceleyin.',

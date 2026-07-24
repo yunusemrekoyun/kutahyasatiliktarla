@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getMapPoints, getSiteChrome } from '@/lib/data';
+import { getListingStats, getSiteChrome } from '@/lib/data';
 import { HaritaMap } from '@/components/listings/harita-map';
 import { SectionHeading } from '@/components/site/section-heading';
 
@@ -11,7 +11,10 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const [points, chrome] = await Promise.all([getMapPoints(), getSiteChrome()]);
+  // Pinler sayfa yüküyle değil, harita ilk açılınca ve pan/zoom'da görünür
+  // alan (viewport) için canlı yüklenir (bkz. HaritaMap) — binlerce ilanda
+  // hepsini tek seferde göndermek sayfayı megabaytlarca ağırlaştırıyordu.
+  const [stats, chrome] = await Promise.all([getListingStats(), getSiteChrome()]);
 
   return (
     <div className="container py-12 lg:py-16">
@@ -24,7 +27,7 @@ export default async function Page() {
         }
       />
       <div className="mt-8">
-        <HaritaMap points={points} />
+        <HaritaMap totalCount={stats.total} />
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { Map as LeafletMap, LayerGroup, Marker, Polygon, Polyline } from 'leaflet';
 import { Eraser, MapPin, PenLine, X } from 'lucide-react';
@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import type { MapPoint } from '@/lib/data';
 
 const KUTAHYA: [number, number] = [39.42, 29.5];
+const MOVE_DEBOUNCE_MS = 400;
 
 /** Fiyatı işaretçi pili için kısaltır: ₺1,85M · ₺540B */
 function shortPrice(price: string): string {
@@ -30,101 +31,57 @@ function esc(s: string): string {
     .replaceAll('"', '&quot;');
 }
 
-/** Harita araması: tüm aktif ilanlar işaretçi olarak gelir; kullanıcı
- * "Bölge Çiz" ile köşe noktaları tıklar, kapatınca sunucudan (PostGIS
- * ST_Within, bkz. src/lib/geo.ts) içeride kalan slug'lar gelir — nokta-poligon
- * testi istemcide yapılmaz, binlerce ilanda da sabit maliyetli kalır. */
-export function HaritaMap({ points }: { points: MapPoint[] }) {
+/** Harita araması: pinler yalnızca görünen alan (viewport) için canlı yüklenir
+ * — ilk açılışta ve her pan/zoom'da sunucudan gelir (bkz. src/lib/data.ts
+ * getMapPointsInBounds), tüm aktif ilanlar tek seferde client'a inmez.
+ * "Bölge Çiz" ile köşe noktaları tıklanır, kapatınca sunucudan (PostGIS
+ * ST_Within, bkz. src/lib/geo.ts) içeride kalan slug'lar gelir. */
+export function HaritaMap({ totalCount }: { totalCount: number }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
+  const leafletRef = useRef<typeof import('leaflet') | null>(null);
   const markersRef = useRef<Marker[]>([]);
   const drawLayerRef = useRef<LayerGroup | null>(null);
   const previewRef = useRef<Polyline | null>(null);
   const polygonRef = useRef<Polygon | null>(null);
   const verticesRef = useRef<[number, number][]>([]);
   const drawingRef = useRef(false);
+  const moveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [ready, setReady] = useState(false);
   const [drawing, setDrawing] = useState(false);
   const [vertexCount, setVertexCount] = useState(0);
+  const [points, setPoints] = useState<MapPoint[]>([]);
+  const [mapLoading, setMapLoading] = useState(true);
+  const [truncated, setTruncated] = useState(false);
   const [selected, setSelected] = useState<MapPoint[] | null>(null);
   const [filtering, setFiltering] = useState(false);
   const [error, setError] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      const L = (await import('leaflet')).default;
-      await import('leaflet/dist/leaflet.css' as string);
-      if (cancelled || !containerRef.current || mapRef.current) return;
-
-      const map = L.map(containerRef.current, { scrollWheelZoom: true }).setView(KUTAHYA, 9);
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> katkıda bulunanlar',
-      }).addTo(map);
-
-      const markers: Marker[] = [];
-      for (const p of points) {
-        const icon = L.divIcon({
-          className: 'kst-pin-wrap',
-          html: `<span class="kst-pin">${shortPrice(p.price)}</span>`,
-          iconSize: [0, 0],
-        });
-        const marker = L.marker([p.lat, p.lng], { icon, title: p.title }).addTo(map);
-        const img = p.img
-          ? `<img src="${thumbUrl(p.img)}" alt="" style="width:100%;height:96px;object-fit:cover;border-radius:6px" />`
-          : '';
-        marker.bindPopup(
-          `<div style="width:200px">${img}
-           <div style="font-weight:600;margin-top:6px;line-height:1.3">${esc(p.title)}</div>
-           <div style="margin-top:2px;color:#5b6b57">${esc(p.district)} · ${esc(p.area)}</div>
-           <div style="margin-top:2px;font-weight:700">${esc(p.price)}</div>
-           <a href="/ilan/${encodeURIComponent(p.slug)}" style="display:inline-block;margin-top:6px;font-weight:600;color:#8a5a1e">İlana Git →</a>
-          </div>`,
-          { closeButton: true },
-        );
-        markers.push(marker);
-      }
-      markersRef.current = markers;
-      if (points.length > 1) {
-        map.fitBounds(L.latLngBounds(points.map((p) => [p.lat, p.lng] as [number, number])), {
-          padding: [40, 40],
-        });
-      }
-
-      drawLayerRef.current = L.layerGroup().addTo(map);
-
-      map.on('click', (e) => {
-        if (!drawingRef.current || !drawLayerRef.current) return;
-        const v: [number, number] = [e.latlng.lat, e.latlng.lng];
-        verticesRef.current.push(v);
-        setVertexCount(verticesRef.current.length);
-        L.circleMarker(v, {
-          radius: 5,
-          color: '#a8742c',
-          fillColor: '#a8742c',
-          fillOpacity: 1,
-        }).addTo(drawLayerRef.current);
-        if (previewRef.current) previewRef.current.remove();
-        previewRef.current = L.polyline(verticesRef.current, {
-          color: '#a8742c',
-          weight: 2,
-          dashArray: '6 4',
-        }).addTo(drawLayerRef.current);
-      });
-
-      mapRef.current = map;
-      setReady(true);
-    })();
-    return () => {
-      cancelled = true;
-      mapRef.current?.remove();
-      mapRef.current = null;
-    };
-    // points sayfa yüküyle sabit — harita bir kez kurulur
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  /** Haritanın o anki görünür alanı için pinleri sunucudan getirir. */
+  const loadViewport = useCallback(async () => {
+    const map = mapRef.current;
+    if (!map) return;
+    setMapLoading(true);
+    const b = map.getBounds();
+    const params = new URLSearchParams({
+      minLat: String(b.getSouth()),
+      maxLat: String(b.getNorth()),
+      minLng: String(b.getWest()),
+      maxLng: String(b.getEast()),
+    });
+    try {
+      const res = await fetch(`/api/harita/pinler?${params}`);
+      if (!res.ok) throw new Error('pin yükleme başarısız');
+      const data: { points: MapPoint[]; truncated: boolean } = await res.json();
+      setPoints(data.points);
+      setTruncated(data.truncated);
+    } catch {
+      setPoints([]);
+      setTruncated(false);
+    } finally {
+      setMapLoading(false);
+    }
   }, []);
 
   async function applyFilter(polygon: [number, number][] | null) {
@@ -168,8 +125,8 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
 
   async function finishDraw() {
     const map = mapRef.current;
-    if (!map || verticesRef.current.length < 3) return;
-    const L = (await import('leaflet')).default;
+    const L = leafletRef.current;
+    if (!map || !L || verticesRef.current.length < 3) return;
     drawingRef.current = false;
     setDrawing(false);
     map.getContainer().style.cursor = '';
@@ -198,7 +155,97 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
     if (clearFilter) void applyFilter(null);
   }
 
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const L = (await import('leaflet')).default;
+      await import('leaflet/dist/leaflet.css' as string);
+      if (cancelled || !containerRef.current || mapRef.current) return;
+      leafletRef.current = L;
+
+      const map = L.map(containerRef.current, { scrollWheelZoom: true }).setView(KUTAHYA, 9);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> katkıda bulunanlar',
+      }).addTo(map);
+
+      drawLayerRef.current = L.layerGroup().addTo(map);
+
+      map.on('click', (e) => {
+        if (!drawingRef.current || !drawLayerRef.current) return;
+        const v: [number, number] = [e.latlng.lat, e.latlng.lng];
+        verticesRef.current.push(v);
+        setVertexCount(verticesRef.current.length);
+        L.circleMarker(v, {
+          radius: 5,
+          color: '#a8742c',
+          fillColor: '#a8742c',
+          fillOpacity: 1,
+        }).addTo(drawLayerRef.current);
+        if (previewRef.current) previewRef.current.remove();
+        previewRef.current = L.polyline(verticesRef.current, {
+          color: '#a8742c',
+          weight: 2,
+          dashArray: '6 4',
+        }).addTo(drawLayerRef.current);
+      });
+
+      // Pan/zoom sonrası pinler yeniden yüklenir; çizim sürerken dokunulmaz
+      // (kullanıcı vertex yerleştirirken harita kayarsa çizim bozulmasın).
+      map.on('moveend', () => {
+        if (drawingRef.current) return;
+        if (moveTimerRef.current) clearTimeout(moveTimerRef.current);
+        moveTimerRef.current = setTimeout(() => {
+          resetDraw();
+          void loadViewport();
+        }, MOVE_DEBOUNCE_MS);
+      });
+
+      mapRef.current = map;
+      setReady(true);
+      void loadViewport();
+    })();
+    return () => {
+      cancelled = true;
+      if (moveTimerRef.current) clearTimeout(moveTimerRef.current);
+      mapRef.current?.remove();
+      mapRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Görünür alan (points) her yenilendiğinde marker'lar yeniden kurulur.
+  useEffect(() => {
+    const L = leafletRef.current;
+    const map = mapRef.current;
+    if (!L || !map) return;
+    markersRef.current.forEach((m) => m.remove());
+    markersRef.current = points.map((p) => {
+      const icon = L.divIcon({
+        className: 'kst-pin-wrap',
+        html: `<span class="kst-pin">${shortPrice(p.price)}</span>`,
+        iconSize: [0, 0],
+      });
+      const marker = L.marker([p.lat, p.lng], { icon, title: p.title }).addTo(map);
+      const img = p.img
+        ? `<img src="${thumbUrl(p.img)}" alt="" style="width:100%;height:96px;object-fit:cover;border-radius:6px" />`
+        : '';
+      marker.bindPopup(
+        `<div style="width:200px">${img}
+         <div style="font-weight:600;margin-top:6px;line-height:1.3">${esc(p.title)}</div>
+         <div style="margin-top:2px;color:#5b6b57">${esc(p.district)} · ${esc(p.area)}</div>
+         <div style="margin-top:2px;font-weight:700">${esc(p.price)}</div>
+         <a href="/ilan/${encodeURIComponent(p.slug)}" style="display:inline-block;margin-top:6px;font-weight:600;color:#8a5a1e">İlana Git →</a>
+        </div>`,
+        { closeButton: true },
+      );
+      return marker;
+    });
+  }, [points]);
+
   const results = selected ?? points;
+  const initialLoading = mapLoading && points.length === 0 && !selected;
 
   return (
     <div>
@@ -233,10 +280,16 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
             'Bölge aranıyor…'
           ) : error ? (
             <span className="text-destructive">Bölge araması başarısız oldu, tekrar deneyin.</span>
+          ) : initialLoading ? (
+            'Harita yükleniyor…'
           ) : (
             <>
               <b className="font-semibold text-foreground">{results.length}</b> ilan{' '}
-              {selected ? 'seçili bölgede' : 'haritada'}
+              {selected ? 'seçili bölgede' : 'bu bölgede'}
+              {!selected && truncated ? (
+                <span className="ml-2 text-brass-strong">— daha fazlası için yakınlaştırın</span>
+              ) : null}
+              {!selected ? <span className="ml-2">· toplam {totalCount} ilan</span> : null}
             </>
           )}
         </span>
@@ -253,11 +306,13 @@ export function HaritaMap({ points }: { points: MapPoint[] }) {
 
       {/* Sonuçlar */}
       <div className="mt-8">
-        {results.length === 0 ? (
+        {initialLoading ? null : results.length === 0 ? (
           <div className="rounded-lg border border-dashed border-input bg-muted/50 py-12 text-center">
             <MapPin className="mx-auto h-8 w-8 text-brass-strong" aria-hidden="true" />
             <p className="mt-3 text-muted-foreground">
-              Çizdiğiniz bölgede ilan yok — bölgeyi genişletmeyi deneyin.
+              {selected
+                ? 'Çizdiğiniz bölgede ilan yok — bölgeyi genişletmeyi deneyin.'
+                : 'Bu bölgede haritalı ilan yok — haritayı kaydırın veya uzaklaştırın.'}
             </p>
           </div>
         ) : (

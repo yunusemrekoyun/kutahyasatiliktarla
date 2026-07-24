@@ -53,26 +53,82 @@ export async function getSiteChrome(): Promise<SiteChrome> {
   }
 }
 
-const loadPublishedListings = unstable_cache(
-  async (): Promise<Listing[]> => {
-    const rows = await prisma.listing.findMany({
-      where: { status: 'aktif' },
-      include: { media: true },
-      orderBy: [{ publishedAt: 'desc' }, { createdAt: 'desc' }],
-    });
-    return rows.map(mapListingRow);
+export type ListingStats = { total: number; byDistrict: Record<string, number> };
+
+const loadListingStats = unstable_cache(
+  async (): Promise<ListingStats> => {
+    const [total, grouped] = await Promise.all([
+      prisma.listing.count({ where: { status: 'aktif' } }),
+      prisma.listing.groupBy({
+        by: ['district'],
+        where: { status: 'aktif' },
+        _count: { _all: true },
+      }),
+    ]);
+    const byDistrict = Object.fromEntries(grouped.map((g) => [g.district, g._count._all]));
+    return { total, byDistrict };
   },
-  ['published-listings'],
+  ['listing-stats'],
   { tags: [TAGS.listings], revalidate: 300 },
 );
 
-export async function getPublishedListings(): Promise<Listing[]> {
+/** Ana sayfanın "X ilan" / ilçe kartı sayaçları için ucuz agregat — tam ilan
+ * listesini (açıklama/medya dahil) yüklemeye gerek kalmadan count+groupBy.
+ * Eskiden getPublishedListings() tüm satırları çekip JS'te sayıyordu; binlerce
+ * ilanda bu hem unstable_cache'in 2MB sınırını aşıyor hem gereksiz yavaştı. */
+export async function getListingStats(): Promise<ListingStats> {
   try {
-    return await loadPublishedListings();
+    return await loadListingStats();
   } catch (e) {
-    logDbFallback('published-listings', e);
-    return structuredClone(defaultContent.listings);
+    logDbFallback('listing-stats', e);
+    const byDistrict: Record<string, number> = {};
+    for (const l of defaultContent.listings) {
+      byDistrict[l.district] = (byDistrict[l.district] ?? 0) + 1;
+    }
+    return { total: defaultContent.listings.length, byDistrict };
   }
+}
+
+// Rastgele "öne çıkan" seçimi için aday havuzu — en yeni N ilan, cache'lenir;
+// seçimin kendisi (shuffle) her çağrıda taze yapılır (bkz. getFeaturedListings).
+const FEATURED_POOL_SIZE = 300;
+
+const loadFeaturedPool = unstable_cache(
+  async (): Promise<Listing[]> => {
+    const rows = await prisma.listing.findMany({
+      where: { status: 'aktif', media: { some: {} } },
+      include: { media: true },
+      orderBy: { publishedAt: 'desc' },
+      take: FEATURED_POOL_SIZE,
+    });
+    return rows.map(mapListingRow);
+  },
+  ['featured-listings-pool'],
+  { tags: [TAGS.listings], revalidate: 300 },
+);
+
+function shuffled<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/** Ana sayfanın açılış sekansı + vitrin gridi için öne çıkan ilanlar —
+ * şimdilik bilinçli olarak rastgele (2026-07 kararı; seçim kriteri ileride
+ * değişebilir). En yeni {@link FEATURED_POOL_SIZE} ilanlık cache'lenmiş
+ * havuzdan her çağrıda taze karılıp `limit` kadarı döner. */
+export async function getFeaturedListings(limit: number): Promise<Listing[]> {
+  let pool: Listing[];
+  try {
+    pool = await loadFeaturedPool();
+  } catch (e) {
+    logDbFallback('featured-listings', e);
+    pool = structuredClone(defaultContent.listings);
+  }
+  return shuffled(pool).slice(0, limit);
 }
 
 export async function getListing(slug: string): Promise<Listing | null> {
@@ -232,49 +288,78 @@ export type MapPoint = {
   img: string | null;
 };
 
-const loadMapPoints = unstable_cache(
-  async (): Promise<MapPoint[]> => {
-    const rows = await prisma.listing.findMany({
-      where: { status: 'aktif', lat: { not: null }, lng: { not: null } },
-      include: {
-        media: { where: { type: 'image' }, orderBy: { position: 'asc' }, take: 1 },
-      },
-      orderBy: { publishedAt: 'desc' },
-    });
-    return rows.map((r) => {
-      const url = ((r.media[0]?.variants as { url?: string }[] | null)?.[0]?.url ?? '') || null;
-      return {
-        slug: r.slug,
-        title: r.title,
-        price: r.price,
-        area: r.area,
-        district: r.district,
-        type: r.type,
-        lat: r.lat as number,
-        lng: r.lng as number,
-        img: url,
-      };
-    });
-  },
-  ['map-points'],
-  { tags: [TAGS.listings], revalidate: 300 },
-);
+type MediaVariant = { url?: string };
+type ListingRowForMap = {
+  slug: string;
+  title: string;
+  price: string;
+  area: string;
+  district: string;
+  type: string;
+  lat: number | null;
+  lng: number | null;
+  media: { variants: unknown }[];
+};
 
-export async function getMapPoints(): Promise<MapPoint[]> {
+function mapToMapPoint(r: ListingRowForMap): MapPoint {
+  const url = ((r.media[0]?.variants as MediaVariant[] | null)?.[0]?.url ?? '') || null;
+  return {
+    slug: r.slug,
+    title: r.title,
+    price: r.price,
+    area: r.area,
+    district: r.district,
+    type: r.type,
+    lat: r.lat as number,
+    lng: r.lng as number,
+    img: url,
+  };
+}
+
+export type MapBounds = { minLat: number; maxLat: number; minLng: number; maxLng: number };
+
+// Tek viewport'ta gösterilecek üst sınır — aşılırsa çağıran taraf (HaritaMap)
+// kullanıcıyı yakınlaştırmaya yönlendirir (bkz. 2026-07-22 ölçek testi:
+// harita önceden TÜM aktif ilanları (binlerce) tek seferde gönderiyordu).
+export const MAP_POINTS_LIMIT = 300;
+
+/** Haritanın görünür alanındaki (viewport) aktif ilanlar — canlı sorgu,
+ * kasıtlı olarak cache'lenmez (sınırlar sürekli/kullanıcıya özel değişir;
+ * `status` index'i zaten satır sayısını daraltıyor, lat/lng aralığı ucuz
+ * bir kalan filtre). */
+export async function getMapPointsInBounds(bounds: MapBounds): Promise<MapPoint[]> {
   try {
-    return await loadMapPoints();
+    const rows = await prisma.listing.findMany({
+      where: {
+        status: 'aktif',
+        lat: { gte: bounds.minLat, lte: bounds.maxLat },
+        lng: { gte: bounds.minLng, lte: bounds.maxLng },
+      },
+      include: { media: { where: { type: 'image' }, orderBy: { position: 'asc' }, take: 1 } },
+      orderBy: { publishedAt: 'desc' },
+      take: MAP_POINTS_LIMIT,
+    });
+    return rows.map(mapToMapPoint);
   } catch (e) {
-    logDbFallback('map-points', e);
-    return defaultContent.listings.map((l) => ({
-      slug: l.id,
-      title: l.title,
-      price: l.price,
-      area: l.area,
-      district: l.district,
-      type: l.type,
-      lat: l.lat,
-      lng: l.lng,
-      img: l.images[0] ?? null,
-    }));
+    logDbFallback('map-points-bounds', e);
+    return defaultContent.listings
+      .filter(
+        (l) =>
+          l.lat >= bounds.minLat &&
+          l.lat <= bounds.maxLat &&
+          l.lng >= bounds.minLng &&
+          l.lng <= bounds.maxLng,
+      )
+      .map((l) => ({
+        slug: l.id,
+        title: l.title,
+        price: l.price,
+        area: l.area,
+        district: l.district,
+        type: l.type,
+        lat: l.lat,
+        lng: l.lng,
+        img: l.images[0] ?? null,
+      }));
   }
 }
